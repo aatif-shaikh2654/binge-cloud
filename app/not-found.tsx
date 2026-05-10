@@ -1,61 +1,51 @@
 "use client";
 
-import React from "react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Home, ArrowLeft, Ghost } from "lucide-react";
 
 const NotFound = () => {
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center bg-background overflow-hidden px-6">
-      {/* Cinematic Background Elements */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px] animate-pulse delay-700" />
-      
-      <div className="relative z-10 flex flex-col items-center max-w-2xl text-center">
-        {/* Animated Icon */}
-        <div className="mb-8 p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-xl animate-in zoom-in duration-700">
-          <Ghost className="w-16 h-16 text-blue-500 animate-bounce" />
-        </div>
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background px-6 relative overflow-hidden">
+      {/* Extremely subtle ambient glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-        {/* 404 Text */}
-        <h1 className="text-[120px] md:text-[180px] font-black tracking-tighter leading-none mb-4 bg-gradient-to-b from-white to-white/20 bg-clip-text text-transparent select-none">
-          404
+      <div className="relative z-10 flex flex-col items-center max-w-sm text-center">
+        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          Error 404
+        </span>
+
+        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4 leading-tight animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+          Page Not Found
         </h1>
 
-        <h2 className="text-2xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-          Oops! You&apos;ve drifted out of orbit.
-        </h2>
-
-        <p className="text-white/50 text-lg md:text-xl mb-12 leading-relaxed max-w-lg">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved to a 
-          different sector of the cloud.
+        <p className="text-white/40 text-sm font-medium mb-12 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+          The page you are looking for doesn&apos;t exist or has been moved to
+          another dimension.
         </p>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <Link
-            href="/"
-            className="flex items-center justify-center gap-2 px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all hover:scale-[1.05] active:scale-[0.95] shadow-[0_20px_50px_rgba(37,99,235,0.3)] w-full sm:w-auto"
-          >
-            <Home className="w-5 h-5" />
-            RETURN TO BASE
+        <div className="flex flex-col items-center gap-6 w-full animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+          <Link href="/" className="w-full">
+            <Button className="w-full bg-white text-black hover:bg-blue-600 hover:text-white transition-all rounded-xl h-12 font-black uppercase tracking-widest text-[10px] shadow-[0_10px_30px_rgba(255,255,255,0.05)]">
+              Return Home
+            </Button>
           </Link>
-          
+
           <button
             onClick={() => window.history.back()}
-            className="flex items-center justify-center gap-2 px-10 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-black rounded-2xl transition-all hover:scale-[1.05] active:scale-[0.95] w-full sm:w-auto backdrop-blur-md"
+            className="flex items-center gap-2 text-white/30 hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.3em]"
           >
-            <ArrowLeft className="w-5 h-5" />
-            GO BACK
+            <ArrowLeft className="w-4 h-4" />
+            Go Back
           </button>
         </div>
       </div>
 
-      {/* Subtle Footer Decorative Text */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-3 opacity-20 select-none">
-        <div className="h-px w-12 bg-white" />
-        <span className="text-[10px] font-black uppercase tracking-[0.4em]">BingeCloud Sector 404</span>
-        <div className="h-px w-12 bg-white" />
+      {/* Footer Badge */}
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 opacity-10">
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
+          BingeCloud Systems
+        </span>
       </div>
     </div>
   );

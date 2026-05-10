@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
-import Image from "next/image";
-import { FaPlay } from "react-icons/fa";
-import { Star, Plus, Volume2, VolumeX } from "lucide-react";
-import Link from "next/link";
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { type TMDBMovie } from "@/app/types/tmdb";
-import { cn } from "@/lib/utils";
 import { getMovieVideos } from "@/app/services/all.service";
 import { MediaType } from "@/app/types/common";
+import { type TMDBMovie } from "@/app/types/tmdb";
+import { cn } from "@/lib/utils";
+import { Plus, Star, Volume2, VolumeX } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useMemo, useRef, useState } from "react";
+import { FaPlay } from "react-icons/fa";
 
 interface MovieCardProps {
   movie: TMDBMovie;
@@ -121,10 +121,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
           style={{ transformOrigin: "center" }}
         >
           {/* Video Section */}
-          <Link
-            href={watchUrl}
-            className="relative aspect-video h-[200px] overflow-hidden flex items-center justify-center w-full bg-background"
-          >
+          <div className="relative aspect-video h-[200px] overflow-hidden flex items-center justify-center w-full bg-background">
             {videoKey ? (
               <>
                 {!isVideoLoaded && (
@@ -159,15 +156,17 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
                 </button>
               </>
             ) : (
-              <Image
-                src={`${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`}
-                alt="Preview"
-                fill
-                sizes="380px"
-                className="object-cover"
-              />
+              <Link href={watchUrl}>
+                <Image
+                  src={`${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`}
+                  alt="Preview"
+                  fill
+                  sizes="380px"
+                  className="object-cover"
+                />
+              </Link>
             )}
-          </Link>
+          </div>
 
           {/* Info Section */}
           <div className="p-5 flex flex-col gap-4">

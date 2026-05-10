@@ -1,13 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { type TMDBSeason } from "@/app/types/tmdb";
-import { getSeasonDetails } from "@/app/services/all.service";
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
+import { getSeasonDetails } from "@/app/services/all.service";
+import { TMDBEpisode, type TMDBSeason } from "@/app/types/tmdb";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { Calendar, Clock, Loader2, Play, Star } from "lucide-react";
 import Image from "next/image";
-import { Play, Clock, Star, Loader2, Calendar } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import React, { useState } from "react";
 
 interface EpisodeSectionProps {
   tvId: number;
@@ -15,10 +23,15 @@ interface EpisodeSectionProps {
 }
 
 const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
+  const params = useParams();
+  const mediaType = params.media_type as string;
+
   const [selectedSeason, setSelectedSeason] = useState(() => {
     if (!seasons || seasons.length === 0) return 1;
     const firstSeason = seasons.find((s) => s.season_number > 0);
-    return firstSeason ? firstSeason.season_number : seasons[0]?.season_number || 1;
+    return firstSeason
+      ? firstSeason.season_number
+      : seasons[0]?.season_number || 1;
   });
 
   const { data, isLoading } = useQuery({
@@ -28,35 +41,50 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
   });
 
   const episodes = data?.episodes || [];
+  const watchUrl = (episode: TMDBEpisode) => {
+    return `/${mediaType}/watch?id=${tvId}&season=${selectedSeason}&episode=${episode.episode_number}`;
+  };
 
   return (
-    <div className="mt-24 space-y-12">
-      <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-6 gap-6">
-        <div className="space-y-2">
-          <h3 className="text-xs font-black uppercase tracking-[0.4em] text-blue-500">
+    <div className="mt-12 md:mt-24 space-y-8 md:space-y-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-4 md:pb-6 gap-4 md:gap-6">
+        <div className="space-y-1 md:space-y-2">
+          <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-blue-500">
             Episodes
           </h3>
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase">
+          <h2 className="text-2xl md:text-5xl font-black tracking-tighter">
             Seasons & Stories
           </h2>
         </div>
 
         {/* Season Selector */}
         <div className="flex flex-wrap gap-2">
-          {seasons.map((season) => (
-            <button
-              key={season.id}
-              onClick={() => setSelectedSeason(season.season_number)}
-              className={cn(
-                "px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all border",
-                selectedSeason === season.season_number
-                  ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                  : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
-              )}
+          <Select
+            value={`${selectedSeason} Season`}
+            onValueChange={(value) =>
+              setSelectedSeason(parseInt(value as string))
+            }
+          >
+            <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] h-11 rounded-full px-6 transition-all hover:bg-white/10">
+              <SelectValue placeholder="Select Season" />
+            </SelectTrigger>
+            <SelectContent
+              side="bottom"
+              align="end"
+              sideOffset={12}
+              className="bg-zinc-950 border-white/10 shadow-2xl rounded-xl p-1 overflow-hidden"
             >
-              Season {season.season_number}
-            </button>
-          ))}
+              {seasons.map((season) => (
+                <SelectItem
+                  key={season.id}
+                  value={`${season.season_number} Season`}
+                  className="text-[10px] font-black uppercase tracking-widest data-[highlighted]:bg-white data-[highlighted]:text-black! data-[highlighted]:**:text-black! py-3 px-6 transition-all duration-300 rounded-lg cursor-pointer"
+                >
+                  {season.season_number} Season
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -65,15 +93,19 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {episodes.map((episode, index) => (
-            <div
+            <Link
               key={episode.id}
-              className="group relative bg-white/5 rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 animate-in fade-in slide-in-from-bottom-10"
-              style={{ animationDelay: `${index * 50}ms`, animationFillMode: "backwards" }}
+              href={watchUrl(episode)}
+              className="group relative bg-white/5 rounded-xl md:rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col"
+              style={{
+                animationDelay: `${index * 50}ms`,
+                animationFillMode: "backwards",
+              }}
             >
               {/* Episode Image */}
-              <div className="relative aspect-video w-full overflow-hidden">
+              <div className="relative aspect-video w-32 sm:w-40 md:w-full overflow-hidden shrink-0">
                 {episode.still_path ? (
                   <Image
                     src={`${TMDB_IMAGE_BASE_URL}/w500${episode.still_path}`}
@@ -84,45 +116,48 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                   />
                 ) : (
                   <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                    <Play className="w-12 h-12 text-white/10" />
+                    <Play className="w-8 h-8 md:w-12 md:h-12 text-white/10" />
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform">
-                    <Play className="w-5 h-5 fill-white text-white ml-1" />
+                  <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform">
+                    <Play className="w-3 h-3 md:w-5 md:h-5 fill-white text-white ml-0.5 md:ml-1" />
                   </div>
                 </div>
-                <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-[10px] font-black">
+                <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-1.5 py-0.5 md:px-2 md:py-1 bg-black/60 backdrop-blur-md rounded text-[8px] md:text-[10px] font-black uppercase">
                   EP {episode.episode_number}
                 </div>
               </div>
 
               {/* Episode Info */}
-              <div className="p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-black text-white group-hover:text-blue-500 transition-colors line-clamp-1">
+              <div className="p-3 md:p-5 flex-1 flex flex-col justify-center min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="text-xs md:text-sm font-black text-white group-hover:text-blue-500 transition-colors line-clamp-1">
                     {episode.name}
                   </h4>
-                  <div className="flex items-center gap-1 text-green-500 text-[10px] font-black">
-                    <Star className="w-3 h-3 fill-green-500" />
+                  <div className="flex items-center gap-1 text-green-500 text-[8px] md:text-[10px] font-black shrink-0">
+                    <Star className="w-2.5 h-2.5 md:w-3 md:h-3 fill-green-500" />
                     {(episode.vote_average * 10).toFixed(0)}%
                   </div>
                 </div>
-                <p className="text-xs text-white/40 line-clamp-2 font-medium leading-relaxed">
-                  {episode.overview || "No description available for this episode."}
+                <p className="hidden md:line-clamp-2 text-[10px] md:text-xs text-white/40 font-medium leading-relaxed mt-1 md:mt-2">
+                  {episode.overview ||
+                    "No description available for this episode."}
                 </p>
-                <div className="flex items-center gap-4 pt-2">
-                  <div className="flex items-center gap-1.5 text-white/30 text-[10px] font-bold uppercase tracking-widest">
-                    <Clock className="w-3 h-3" />
+                <div className="flex items-center gap-3 md:gap-4 mt-2 md:mt-3">
+                  <div className="flex items-center gap-1 md:gap-1.5 text-white/30 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">
+                    <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" />
                     {episode.runtime || 0}m
                   </div>
-                  <div className="flex items-center gap-1.5 text-white/30 text-[10px] font-bold uppercase tracking-widest">
-                    <Calendar className="w-3 h-3" />
-                    {episode.air_date ? new Date(episode.air_date).getFullYear() : "N/A"}
+                  <div className="flex items-center gap-1 md:gap-1.5 text-white/30 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">
+                    <Calendar className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                    {episode.air_date
+                      ? new Date(episode.air_date).getFullYear()
+                      : "N/A"}
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

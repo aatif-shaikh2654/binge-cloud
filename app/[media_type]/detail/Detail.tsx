@@ -16,7 +16,7 @@ const Detail: React.FC<DetailProps> = ({ details, credits, tmdbType }) => {
   if (!details) return null;
 
   return (
-    <div className="relative min-h-screen w-full bg-background text-white selection:bg-blue-600 selection:text-white pb-20">
+    <div className="relative min-h-screen w-full bg-background text-white selection:bg-blue-600 selection:text-white pb-10 md:pb-20">
       <DetailHero details={details} tmdbType={tmdbType} />
 
       {/* Episodes Section (For TV Shows) */}
@@ -28,7 +28,7 @@ const Detail: React.FC<DetailProps> = ({ details, credits, tmdbType }) => {
 
       {/* Dedicated Cast Section: Spans Full Width */}
       {credits?.cast && credits.cast.length > 0 && (
-        <div className="relative z-10 mt-24">
+        <div className="relative z-10 mt-12 md:mt-24">
           <div className="container mx-auto px-6 lg:px-20">
             <CastSlider cast={credits.cast} />
           </div>

@@ -33,8 +33,6 @@ export async function GET(request: NextRequest) {
     }
   });
 
-  console.log(`[Proxy] Fetching: ${url.toString()}`);
-  
   try {
     const response = await fetch(url.toString(), {
       method: "GET",

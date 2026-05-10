@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { Server } from "lucide-react";
 import { PLAYER_SERVERS, type PlayerServer } from "@/app/constants/player";
+import { buttonVariants } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -10,8 +10,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { Server } from "lucide-react";
+import React, { useState } from "react";
 
 interface ServerSwitcherProps {
   currentServer: PlayerServer;
@@ -25,16 +26,16 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
   const [open, setOpen] = useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger>
-        <Button
-          variant="outline"
-          className="bg-black/40 backdrop-blur-md border-white/10 text-white hover:bg-white/20 h-10 px-3 rounded-xl gap-2 shadow-2xl"
-        >
-          <Server className="w-4 h-4 text-blue-400" />
-          <span className="hidden sm:inline font-black uppercase tracking-widest text-[10px]">
-            {currentServer.name}
-          </span>
-        </Button>
+      <SheetTrigger
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          "bg-black/40 backdrop-blur-md border-white/10 text-white hover:bg-white/20 h-10 px-3 rounded-xl gap-2 shadow-2xl",
+        )}
+      >
+        <Server className="w-4 h-4 text-blue-400" />
+        <span className="hidden sm:inline font-black uppercase tracking-widest text-[10px]">
+          {currentServer.name}
+        </span>
       </SheetTrigger>
       <SheetContent
         side="right"

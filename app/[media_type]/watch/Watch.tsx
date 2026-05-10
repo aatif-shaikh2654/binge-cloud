@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { PLAYER_SERVERS, type PlayerServer } from "@/app/constants/player";
-import ServerSwitcher from "../_components/ServerSwitcher";
 import { type TMDBSeason } from "@/app/types/tmdb";
+import { ArrowLeft } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React from "react";
 import EpisodeSwitcher from "../_components/EpisodeSwitcher";
+import ServerSwitcher from "../_components/ServerSwitcher";
 
 interface WatchProps {
   id: string;
@@ -56,13 +56,13 @@ const Watch: React.FC<WatchProps> = ({ id, tmdbType, seasons }) => {
       {/* Back Button */}
       <button
         onClick={handleBack}
-        className="absolute top-6 left-6 z-50 p-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-white/20 transition-all group"
+        className="absolute top-6 left-6 z-[100] p-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-white/20 transition-all group"
       >
         <ArrowLeft className="w-6 h-6 transition-transform group-hover:-translate-x-1" />
       </button>
 
       {/* Server Switcher */}
-      <div className="absolute top-6 flex flex-col items-end gap-2 right-6 z-50">
+      <div className="absolute top-6 flex flex-col items-end gap-2 right-6 z-[100]">
         <div className="flex items-center gap-3">
           {tmdbType === "tv" && seasons && (
             <EpisodeSwitcher
@@ -81,10 +81,10 @@ const Watch: React.FC<WatchProps> = ({ id, tmdbType, seasons }) => {
       </div>
 
       {/* Video Player Iframe - Background layer */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <iframe
           src={videoUrl}
-          className="w-full h-full border-none"
+          className="w-full h-full border-none pointer-events-auto"
           allowFullScreen
           allow="autoplay; encrypted-media; picture-in-picture"
           title="BingeCloud Video Player"

@@ -1,18 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import { cn } from "@/lib/utils";
+import { Clock, Home, Layers, Search, Tv } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  Search,
-  Tv,
-  Layers,
-  Heart,
-  Clock,
-} from "lucide-react";
+import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
-import { cn } from "@/lib/utils";
 
 const sidebarItems = [
   { icon: Search, label: "Search", href: "/search" },
@@ -21,7 +14,6 @@ const sidebarItems = [
   { icon: Tv, label: "Web Series", href: "/series" },
   { icon: Layers, label: "Anime", href: "/anime" },
   { icon: Layers, label: "Categories", href: "/categories" },
-  { icon: Heart, label: "Wishlist", href: "/wishlist" },
   { icon: Clock, label: "History", href: "/history" },
 ];
 
@@ -49,6 +41,9 @@ const Sidebar = () => {
               <Link
                 key={item.label}
                 href={item.href}
+                onClick={() => {
+                  setIsHovered(false);
+                }}
                 className={cn(
                   "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group",
                   isActive

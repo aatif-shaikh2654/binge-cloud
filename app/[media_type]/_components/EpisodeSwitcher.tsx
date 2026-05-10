@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { type TMDBSeason } from "@/app/types/tmdb";
 import { getSeasonDetails } from "@/app/services/all.service";
-import { List, ChevronRight, Play, Loader2 } from "lucide-react";
+import { type TMDBSeason } from "@/app/types/tmdb";
+import { buttonVariants } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -12,8 +11,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronRight, List, Loader2, Play } from "lucide-react";
+import React, { useState } from "react";
 
 interface EpisodeSwitcherProps {
   tvId: number;
@@ -43,21 +44,21 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger>
-        <Button
-          variant="outline"
-          className="bg-blue-600/10 backdrop-blur-md border-blue-500/30 text-white hover:bg-blue-600/20 h-12 px-4 rounded-xl gap-3 shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:border-blue-500/60 transition-all group/btn"
-        >
-          <div className="relative">
-            <List className="w-5 h-5 text-blue-400 group-hover/btn:scale-110 transition-transform" />
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-          </div>
-          <div className="flex flex-col items-start text-left">
-            <span className="font-black uppercase tracking-widest text-[12px] leading-none">
-              S{currentSeason} • E{currentEpisode}
-            </span>
-          </div>
-        </Button>
+      <SheetTrigger
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          "bg-blue-600/10 backdrop-blur-md border-blue-500/30 text-white hover:bg-blue-600/20 h-12 px-4 rounded-xl gap-3 shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:border-blue-500/60 transition-all group/btn",
+        )}
+      >
+        <div className="relative">
+          <List className="w-5 h-5 text-blue-400 group-hover/btn:scale-110 transition-transform" />
+          <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+        </div>
+        <div className="flex flex-col items-start text-left">
+          <span className="font-black uppercase tracking-widest text-[12px] leading-none">
+            S{currentSeason} • E{currentEpisode}
+          </span>
+        </div>
       </SheetTrigger>
       <SheetContent
         side="right"

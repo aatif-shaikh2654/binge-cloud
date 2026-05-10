@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { Users } from "lucide-react";
-import { type TMDBCast } from "@/app/types/tmdb";
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
+import { type TMDBCast } from "@/app/types/tmdb";
+import { Users } from "lucide-react";
+import Image from "next/image";
+import React from "react";
 
 interface CastCardProps {
   person: TMDBCast;
@@ -36,12 +36,12 @@ const CastCard: React.FC<CastCardProps> = ({ person, index }) => {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
         <div className="absolute bottom-4 left-4 right-4">
-          <p className="text-[10px] text-blue-400 font-black uppercase tracking-tighter truncate leading-none mb-1">
+          <p className="text-[10px] text-blue-400 font-black tracking-tighter truncate leading-none mb-1">
             {person.character}
           </p>
         </div>
       </div>
-      <h4 className="text-sm font-black text-white group-hover:text-blue-500 transition-colors uppercase tracking-tight">
+      <h4 className="text-sm font-black text-white group-hover:text-blue-500 transition-colors tracking-tight">
         {person.name}
       </h4>
     </div>

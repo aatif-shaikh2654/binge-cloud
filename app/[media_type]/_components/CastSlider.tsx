@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { type TMDBCast } from "@/app/types/tmdb";
 import CastCard from "@/components/common/CastCard";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState } from "react";
+import { Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
 import "swiper/css";
@@ -22,13 +22,13 @@ const CastSlider: React.FC<CastSliderProps> = ({ cast }) => {
   if (!cast || cast.length === 0) return null;
 
   return (
-    <div className="space-y-12">
-      <div className="flex items-end justify-between border-b border-white/5 pb-6">
-        <div className="space-y-2">
-          <h3 className="text-xs font-black uppercase tracking-[0.4em] text-blue-500">
+    <div className="space-y-8 md:space-y-12">
+      <div className="flex items-end justify-between border-b border-white/5 pb-4 md:pb-6">
+        <div className="space-y-1 md:space-y-2 w-full md:w-auto">
+          <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-blue-500">
             The Ensemble
           </h3>
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase">
+          <h2 className="text-2xl md:text-5xl font-black tracking-tighter">
             Main Casting
           </h2>
         </div>
@@ -50,7 +50,7 @@ const CastSlider: React.FC<CastSliderProps> = ({ cast }) => {
         </div>
       </div>
 
-      <div className="relative">
+      <div className="overflow-hidden md:overflow-visible relative">
         <Swiper
           modules={[Navigation]}
           navigation={{

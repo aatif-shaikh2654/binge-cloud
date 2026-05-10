@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { Star, Plus, Share2 } from "lucide-react";
-import { type TMDBMovie } from "@/app/types/tmdb";
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import Link from "next/link";
+import { type TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
+import { Plus, Star } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
 import { FaPlay } from "react-icons/fa";
 
 interface DetailHeroProps {
@@ -28,27 +28,27 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
   return (
     <>
       {/* Cinematic Background Backdrop */}
-      <div className="absolute inset-0 w-full h-[85vh] overflow-hidden">
+      <div className="absolute inset-0 w-full h-[50vh] md:h-[50vh] overflow-hidden">
         {details.backdrop_path || details.poster_path ? (
           <Image
             src={`${TMDB_IMAGE_BASE_URL}/original${details.backdrop_path || details.poster_path}`}
             alt={details.title || details.name || "Backdrop"}
             fill
             sizes="100vw"
-            className="object-cover opacity-20 blur-[3px] scale-105 animate-in fade-in duration-1000"
+            className="object-cover opacity-60 md:opacity-60 blur-none md:blur-[1px] scale-105 animate-in fade-in duration-1000"
             priority
           />
         ) : (
           <div className="absolute inset-0 bg-background" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 md:via-background/50 to-transparent hidden md:block" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 md:via-background/50 to-transparent" />
       </div>
 
       {/* Hero Section: Poster & Main Info */}
-      <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-32 lg:pt-48 flex flex-col lg:flex-row gap-12 lg:gap-20">
+      <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-32 lg:pt-48 flex flex-col items-start text-left lg:flex-row gap-8 lg:gap-20">
         {/* Poster - More subtle animation */}
-        <div className="hidden lg:block w-64 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
+        <div className="w-42 md:w-58 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
           <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-white/20 group">
             {details.poster_path && (
               <Image
@@ -64,9 +64,9 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
         </div>
 
         {/* Info Content - staggered feel with slide-up */}
-        <div className="flex-1 max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200 fill-mode-backwards">
-          <div className="space-y-5">
-            <div className="flex flex-wrap items-center gap-3">
+        <div className="flex-1 max-w-3xl space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200 fill-mode-backwards">
+          <div className="space-y-3 md:space-y-5">
+            <div className="flex flex-wrap items-center justify-start gap-3">
               <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-black uppercase tracking-wider">
                 <Star className="w-3 h-3 fill-green-500" />
                 {rating}% Match
@@ -76,7 +76,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
                   {releaseYear}
                 </span>
               )}
-              <span className="text-white/60 text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 border border-white/10 rounded">
+              <span className="text-white/60 text-[10px] font-black tracking-widest px-1.5 py-0.5 border border-white/10 rounded">
                 {tmdbType === "movie" ? "Movie" : "TV"}
               </span>
               {runtime > 0 && (
@@ -97,11 +97,11 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
               </p>
             )}
 
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap items-center justify-start gap-x-2">
               {details.genres?.map((genre) => (
                 <span
                   key={genre.id}
-                  className="text-[10px] font-black uppercase tracking-widest text-blue-500/80 hover:text-blue-500 transition-colors cursor-default"
+                  className="px-3 py-1 rounded-full border border-white/20 bg-white/5 text-[9px] lg:text-[10px] font-black text-white/90 tracking-tight"
                 >
                   {genre.name}
                 </span>
@@ -110,7 +110,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
           </div>
 
           {/* Action Buttons - Slightly smaller */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center justify-start gap-3">
             <Link href={watchUrl}>
               <Button
                 variant="premium"
@@ -121,20 +121,21 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
                 Now
               </Button>
             </Link>
-            <button className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all hover:scale-[1.05] active:scale-90">
-              <Plus className="w-5 h-5" />
-            </button>
-            <button className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all hover:scale-[1.05] active:scale-90">
-              <Share2 className="w-5 h-5" />
-            </button>
+            <Button
+              variant="glass"
+              size="icon-xl"
+              className="size-11 lg:size-12"
+            >
+              <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
+            </Button>
           </div>
 
           <div className="space-y-3 max-w-2xl">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 flex items-center gap-3">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 flex items-center justify-start gap-3">
               Storyline
-              <div className="h-px flex-1 bg-white/10" />
+              <div className="h-px flex-1 bg-white/10 hidden lg:block" />
             </h3>
-            <p className="text-base md:text-lg text-white/80 leading-relaxed font-medium">
+            <p className="text-sm md:text-lg text-white/80 leading-relaxed font-medium">
               {details.overview}
             </p>
           </div>
