@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig, Method } from "axios";
-import axiosInstance from "./axios";
+import axiosInstance, { tmdbInstance } from "./axios";
 
 export interface ApiResponse<T> {
   data: T;
@@ -15,42 +15,57 @@ interface ApiServiceOptions<TPayload = unknown> extends AxiosRequestConfig {
   payload?: TPayload;
 }
 
-const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "http://localhost:3000";
-};
-
 /**
- * Main API Service that communicates with our local TMDB proxy.
- * This handles mapping the 'url' to the 'endpoint' parameter required by the proxy
- * and adds default parameters like language.
+ * Main API Service that communicates with TMDB.
+ * - Server-side: Calls TMDB directly via tmdbInstance for performance and reliability.
+ * - Client-side: Calls our local /api/movies proxy to avoid CORS and hide API keys.
  */
 export const ApiService = async <TResponse, TPayload = unknown>(
   options: ApiServiceOptions<TPayload>,
 ): Promise<TResponse> => {
   const { method, url, params, payload, ...rest } = options;
 
-  // In Next.js, for server-side calls, we need an absolute URL.
   const isServer = typeof window === "undefined";
-  const requestUrl = isServer ? `${getBaseUrl()}/api/movies` : "/api/movies";
 
   try {
-    const response = await axiosInstance.request<TResponse>({
-      method,
-      url: requestUrl,
-      params: {
-        endpoint: url,
-        language: "en-US", // Set default language here
-        ...params,
-      },
-      data: payload,
-      ...rest,
-    });
+    if (isServer) {
+      // Direct call to TMDB on the server.
+      // tmdbInstance has baseURL: ".../3", so we strip any leading "3/" or "/3/" from the url.
+      const cleanUrl = url.replace(/^\/?3\//, "");
 
-    return response as TResponse;
+      const response = await tmdbInstance.request<TResponse>({
+        method,
+        url: cleanUrl,
+        params: {
+          language: "en-US",
+          ...params,
+        },
+        data: payload,
+        ...rest,
+      });
+
+      return response as TResponse;
+    } else {
+      // Proxy call via local API route on the client.
+      const response = await axiosInstance.request<TResponse>({
+        method,
+        url: "/api/movies",
+        params: {
+          endpoint: url,
+          language: "en-US",
+          ...params,
+        },
+        data: payload,
+        ...rest,
+      });
+
+      return response as TResponse;
+    }
   } catch (error) {
-    console.error(`ApiService Error [${method} ${url}]:`, error);
+    console.error(
+      `ApiService ${isServer ? "[Server]" : "[Client]"} Error [${method} ${url}]:`,
+      error,
+    );
     throw error;
   }
 };

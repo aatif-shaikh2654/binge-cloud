@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Clock, Loader2, Play, Star } from "lucide-react";
+import { Calendar, Clock, Loader2, Play, Star, Tv2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -91,6 +91,28 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
       {isLoading ? (
         <div className="flex justify-center py-20">
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+        </div>
+      ) : episodes.length === 0 ? (
+        <div className="relative group overflow-hidden border border-white/5 bg-zinc-950/50 rounded-[2rem] p-12 md:p-24 text-center space-y-6 animate-in fade-in zoom-in-95 duration-700">
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-transparent pointer-events-none" />
+          <div className="relative space-y-6">
+            <div className="inline-flex p-5 md:p-8 bg-white/5 rounded-[2rem] border border-white/10 group-hover:border-blue-500/50 transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">
+              <Tv2 className="w-10 h-10 md:w-16 md:h-16 text-blue-500" />
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-2xl md:text-4xl font-black tracking-tighter text-white">
+                Episodes Incoming
+              </h3>
+              <p className="text-white/40 text-xs md:text-base max-w-md mx-auto font-medium leading-relaxed">
+                We couldn&apos;t find any episodes for Season {selectedSeason} yet. Our servers are syncing with TMDB to bring you the latest content.
+              </p>
+            </div>
+            <div className="flex justify-center pt-4">
+              <div className="px-6 py-2 bg-white/5 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/60">
+                Season {selectedSeason} • Empty
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
