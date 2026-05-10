@@ -15,6 +15,12 @@ interface ApiServiceOptions<TPayload = unknown> extends AxiosRequestConfig {
   payload?: TPayload;
 }
 
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return "http://localhost:3000";
+};
+
 /**
  * Main API Service that communicates with our local TMDB proxy.
  * This handles mapping the 'url' to the 'endpoint' parameter required by the proxy
@@ -27,9 +33,7 @@ export const ApiService = async <TResponse, TPayload = unknown>(
 
   // In Next.js, for server-side calls, we need an absolute URL.
   const isServer = typeof window === "undefined";
-  const requestUrl = isServer
-    ? `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/movies`
-    : "/api/movies";
+  const requestUrl = isServer ? `${getBaseUrl()}/api/movies` : "/api/movies";
 
   try {
     const response = await axiosInstance.request<TResponse>({
