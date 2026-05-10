@@ -1,7 +1,7 @@
-import React from "react";
-import { getMediaDetails, getMediaCredits } from "@/app/services/all.service";
+import { getMediaCredits, getMediaDetails } from "@/app/services/all.service";
 import { notFound } from "next/navigation";
 import Detail from "./Detail";
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ media_type: string }>;

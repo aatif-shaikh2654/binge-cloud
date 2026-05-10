@@ -1,6 +1,7 @@
 import { getMediaList } from "@/app/services/all.service";
 import { notFound } from "next/navigation";
 import MediaList from "./MediaList";
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ media_type: string }>;

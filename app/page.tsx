@@ -1,6 +1,7 @@
 import Herosection from "@/components/common/Herosection";
-import { getTrendingMovies } from "./services/all.service";
 import MediaSlider from "@/components/common/MediaSlider";
+import { getTrendingMovies } from "./services/all.service";
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   // Fetch trending movies on the server

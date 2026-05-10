@@ -1,7 +1,7 @@
-import React from "react";
+import { getMediaDetails } from "@/app/services/all.service";
 import { notFound } from "next/navigation";
 import Watch from "./Watch";
-import { getMediaDetails } from "@/app/services/all.service";
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ media_type: string }>;

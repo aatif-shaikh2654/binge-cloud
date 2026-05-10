@@ -1,5 +1,6 @@
 import { getTrendingMovies } from "@/app/services/all.service";
 import TrendingList from "./TrendingList";
+export const dynamic = "force-dynamic";
 
 export default async function TrendingPage() {
   // Fetch first page on server
