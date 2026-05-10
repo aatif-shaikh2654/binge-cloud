@@ -1,0 +1,185 @@
+import { ApiService } from "./api.service";
+import {
+  type TMDBMovie,
+  type TMDBResponse,
+  type TMDBImageResponse,
+  type TMDBCreditsResponse,
+  type TMDBSeasonDetails,
+} from "@/app/types/tmdb";
+import { tmdbInstance } from "./axios";
+
+/**
+ * Helper to fetch a movie/show logo path directly from TMDB
+ */
+const fetchMovieLogo = async (
+  id: number,
+  type: "movie" | "tv",
+): Promise<string | undefined> => {
+  try {
+    const data = (await tmdbInstance.get<TMDBImageResponse>(
+      `${type}/${id}/images`,
+      {
+        params: { include_image_language: "en,null" },
+      },
+    )) as unknown as TMDBImageResponse;
+
+    const logo =
+      data.logos?.find(
+        (l) => l.file_path.endsWith(".png") || l.file_path.endsWith(".svg"),
+      ) || data.logos?.[0];
+
+    return logo?.file_path;
+  } catch {
+    // Error is already logged by axios interceptor
+    return undefined;
+  }
+};
+
+/**
+ * Service to fetch trending movies/series/all from TMDB
+ */
+export const getTrendingMovies = async (
+  page: number = 1,
+): Promise<TMDBResponse<TMDBMovie>> => {
+  const trending = await ApiService<TMDBResponse<TMDBMovie>>({
+    method: "GET",
+    url: "3/trending/all/day",
+    params: { page },
+  });
+
+  const results = trending.results || [];
+
+  // Fetch logos for the first 8 items for the Hero Section (Server-side only, page 1 only)
+  if (typeof window === "undefined" && results.length > 0 && page === 1) {
+    const moviesWithLogos = await Promise.all(
+      results.slice(0, 8).map(async (item) => {
+        const type = item.media_type === "tv" ? "tv" : "movie";
+        const logo_path = await fetchMovieLogo(item.id, type);
+        return { ...item, logo_path };
+      }),
+    );
+
+    return {
+      ...trending,
+      results: [...moviesWithLogos, ...results.slice(8)],
+    };
+  }
+
+  return trending;
+};
+
+/**
+ * Service to fetch popular movies
+ */
+export const getPopularMovies = async (
+  page: number = 1,
+): Promise<TMDBResponse<TMDBMovie>> => {
+  return ApiService<TMDBResponse<TMDBMovie>>({
+    method: "GET",
+    url: "3/movie/popular",
+    params: { page },
+  });
+};
+
+/**
+ * Service to fetch movie/TV show videos (trailers)
+ */
+export const getMovieVideos = async (
+  id: number,
+  type: "movie" | "tv",
+): Promise<TMDBResponse<{ id: string; key: string; name: string; type: string; site: string }>> => {
+  return ApiService<TMDBResponse<{ id: string; key: string; name: string; type: string; site: string }>>({
+    method: "GET",
+    url: `3/${type}/${id}/videos`,
+  });
+};
+
+/**
+ * Service to fetch a list of movies or TV shows
+ */
+export const getMediaList = async (
+  type: "movie" | "tv",
+  category: string = "popular",
+  page: number = 1,
+): Promise<TMDBResponse<TMDBMovie>> => {
+  return ApiService<TMDBResponse<TMDBMovie>>({
+    method: "GET",
+    url: `3/${type}/${category}`,
+    params: { page },
+  });
+};
+
+/**
+ * Service to fetch media details
+ */
+export const getMediaDetails = async (
+  id: string | number,
+  type: "movie" | "tv",
+): Promise<TMDBMovie> => {
+  return ApiService<TMDBMovie>({
+    method: "GET",
+    url: `3/${type}/${id}`,
+  });
+};
+
+/**
+ * Service to fetch media credits (casting)
+ */
+export const getMediaCredits = async (
+  id: string | number,
+  type: "movie" | "tv",
+): Promise<TMDBCreditsResponse> => {
+  return ApiService<TMDBCreditsResponse>({
+    method: "GET",
+    url: `3/${type}/${id}/credits`,
+  });
+};
+
+/**
+ * Service to fetch season details (episodes)
+ */
+export const getSeasonDetails = async (
+  tvId: string | number,
+  seasonNumber: number,
+): Promise<TMDBSeasonDetails> => {
+  return ApiService<TMDBSeasonDetails>({
+    method: "GET",
+    url: `3/tv/${tvId}/season/${seasonNumber}`,
+  });
+};
+
+/**
+ * Service to search for movies, TV shows, and people
+ */
+export const searchMedia = async (
+  query: string,
+  page: number = 1,
+): Promise<TMDBResponse<TMDBMovie>> => {
+  return ApiService<TMDBResponse<TMDBMovie>>({
+    method: "GET",
+    url: "3/search/multi",
+    params: { query, page, include_adult: false },
+  });
+};
+
+/**
+ * Service to discover media with advanced filters
+ */
+export const discoverMedia = async (
+  type: "movie" | "tv",
+  params: {
+    page?: number;
+    with_genres?: string;
+    primary_release_year?: string;
+    first_air_date_year?: string;
+    "vote_average.gte"?: number;
+    sort_by?: string;
+    include_adult?: boolean;
+  },
+): Promise<TMDBResponse<TMDBMovie>> => {
+  return ApiService<TMDBResponse<TMDBMovie>>({
+    method: "GET",
+    url: `3/discover/${type}`,
+    params: { ...params, include_adult: false },
+  });
+};
