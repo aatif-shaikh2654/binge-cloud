@@ -1,6 +1,38 @@
 import { getMediaDetails } from "@/app/services/all.service";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Watch from "./Watch";
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps): Promise<Metadata> {
+  const { media_type } = await params;
+  const { id } = await searchParams;
+
+  const typeMap: Record<string, "movie" | "tv"> = {
+    movies: "movie",
+    series: "tv",
+    movie: "movie",
+    tv: "tv",
+  };
+
+  const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
+
+  try {
+    const details = await getMediaDetails(id, tmdbType);
+    if (!details) return { title: "Watch" };
+
+    const title = details.title || details.name;
+    return {
+      title: `Watching - ${title}`,
+      description: `Now streaming ${title} on Binge Cloud.`,
+    };
+  } catch (error) {
+    return { title: "Watch" };
+  }
+}
+
 export const dynamic = "force-dynamic";
 
 interface PageProps {

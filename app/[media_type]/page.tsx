@@ -1,6 +1,20 @@
 import { getMediaList } from "@/app/services/all.service";
 import { notFound } from "next/navigation";
 import MediaList from "./MediaList";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { media_type } = await params;
+  const isMovies = media_type === "movies";
+
+  return {
+    title: isMovies ? "Popular Movies" : "Trending Series",
+    description: `Discover our curated selection of top-rated ${media_type}. From blockbusters to hidden gems, find everything you love here.`,
+  };
+}
+
 export const dynamic = "force-dynamic";
 
 interface PageProps {

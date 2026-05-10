@@ -1,6 +1,43 @@
 import { getMediaCredits, getMediaDetails } from "@/app/services/all.service";
 import { notFound } from "next/navigation";
 import Detail from "./Detail";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: PageProps): Promise<Metadata> {
+  const { media_type } = await params;
+  const { id } = await searchParams;
+
+  const typeMap: Record<string, "movie" | "tv"> = {
+    movies: "movie",
+    series: "tv",
+    movie: "movie",
+    tv: "tv",
+  };
+
+  const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
+
+  try {
+    const details = await getMediaDetails(id, tmdbType);
+    if (!details) return { title: "Detail" };
+
+    const title = details.title || details.name;
+    return {
+      title: title,
+      description: details.overview,
+      openGraph: {
+        images: [
+          `https://image.tmdb.org/t/p/w1280${details.backdrop_path || details.poster_path}`,
+        ],
+      },
+    };
+  } catch (error) {
+    return { title: "Detail" };
+  }
+}
+
 export const dynamic = "force-dynamic";
 
 interface PageProps {

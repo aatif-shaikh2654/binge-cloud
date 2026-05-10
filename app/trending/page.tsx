@@ -1,5 +1,13 @@
 import { getTrendingMovies } from "@/app/services/all.service";
 import TrendingList from "./TrendingList";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Trending",
+  description:
+    "See what the world is watching today. Our daily updated list of most popular content across the globe.",
+};
+
 export const dynamic = "force-dynamic";
 
 export default async function TrendingPage() {

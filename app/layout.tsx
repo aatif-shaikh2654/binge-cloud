@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
-import "./globals.css";
-import { cn } from "@/lib/utils";
 import Sidebar from "@/components/common/Sidebar";
 import QueryProvider from "@/components/providers/QueryProvider";
+import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+import { Manrope } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
+import "./globals.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -12,9 +13,46 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Binge Cloud - Experience the Speed of Cloud",
+  title: {
+    default: "Binge Cloud — Your Ultimate Cinematic Streaming Hub",
+    template: "%s | Binge Cloud",
+  },
   description:
-    "Binge Cloud offers ultra-fast cloud services with a focus on speed and reliability.",
+    "Experience ultra-fast streaming and a curated library of trending movies and TV shows. Binge Cloud combines speed, reliability, and a premium cinematic interface for the modern viewer.",
+  keywords: [
+    "Binge Cloud",
+    "Streaming",
+    "Movies",
+    "TV Shows",
+    "Online Movies",
+    "Cinematic Experience",
+    "Ultra-fast Streaming",
+  ],
+  authors: [{ name: "Binge Cloud Team" }],
+  openGraph: {
+    title: "Binge Cloud — Your Ultimate Cinematic Streaming Hub",
+    description:
+      "Experience ultra-fast streaming and a curated library of trending movies and TV shows.",
+    url: "",
+    siteName: "Binge Cloud",
+    images: [
+      {
+        url: "/bing-cloud.png",
+        width: 1200,
+        height: 630,
+        alt: "Binge Cloud Logo",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Binge Cloud — Your Ultimate Cinematic Streaming Hub",
+    description:
+      "Experience ultra-fast streaming and a curated library of trending movies and TV shows.",
+    images: ["/bing-cloud.png"],
+  },
   icons: {
     icon: [
       { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -42,6 +80,17 @@ export default function RootLayout({
           manrope.className,
         )}
       >
+        <NextTopLoader
+          color="#2563eb"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #2563eb,0 0 5px #2563eb"
+        />
         <Sidebar />
         <main className="flex-1 min-w-0 lg:pl-20 pb-16 lg:pb-0">
           <QueryProvider>{children}</QueryProvider>
