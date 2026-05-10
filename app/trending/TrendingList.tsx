@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import MovieCard from "@/components/common/MovieCard";
-import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
 import { getTrendingMovies } from "@/app/services/all.service";
+import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
+import MovieCard from "@/components/common/MovieCard";
 import { Loader2 } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface TrendingListProps {
   initialData: TMDBResponse<TMDBMovie>;
@@ -66,8 +66,8 @@ const TrendingList: React.FC<TrendingListProps> = ({ initialData }) => {
   }, [page]);
 
   return (
-    <div className="px-8 lg:px-24 flex flex-col gap-10">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-x-6 gap-y-10">
+    <div className="px-4 lg:px-24 flex flex-col gap-10">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 md:gap-x-6 md:gap-y-10 gap-x-3 gap-y-6">
         {items.map((item, index) => (
           <div
             key={`${item.id}-${index}`}

@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import { ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
-import MovieCard from "./MovieCard";
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
+import React, { useRef } from "react";
+import { Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import MovieCard from "./MovieCard";
 
 // Import Swiper styles
+import Link from "next/link";
 import "swiper/css";
 import "swiper/css/navigation";
-import Link from "next/link";
 
 interface MediaSliderProps {
   movies: TMDBMovie[];
@@ -32,7 +32,7 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
   if (!movies || movies.length === 0) return null;
 
   return (
-    <section className={cn("px-8 lg:px-24 py-12", className)}>
+    <section className={cn("px-8 lg:px-24 md:py-12 pb-12", className)}>
       {/* Section Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
