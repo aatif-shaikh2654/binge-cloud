@@ -29,7 +29,7 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
       <SheetTrigger
         className={cn(
           buttonVariants({ variant: "outline" }),
-          "bg-black/40 backdrop-blur-md border-white/10 text-white hover:bg-white/20 h-10 px-3 rounded-xl gap-2 shadow-2xl",
+          "bg-black/40 backdrop-blur-md border-white/10 text-white hover:bg-white/20 h-12 px-3 rounded-xl gap-2 shadow-2xl",
         )}
       >
         <Server className="w-4 h-4 text-blue-400" />
@@ -39,7 +39,7 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="bg-sidebar/95 backdrop-blur-xl border-white/5 text-white w-full sm:max-w-[300px] p-0 flex flex-col gap-0"
+        className="bg-sidebar/85 backdrop-blur-xl border-white/5 text-white w-full! md:w-[480px]!  p-0 flex flex-col gap-0"
       >
         <SheetHeader className="p-6 border-b border-white/5">
           <SheetTitle className="text-white text-lg font-black tracking-tight flex items-center gap-2">

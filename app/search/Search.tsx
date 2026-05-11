@@ -1,22 +1,23 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Search as SearchIcon,
-  Loader2,
-  X,
-  SlidersHorizontal,
-} from "lucide-react";
 import { useDebounce } from "@/app/hooks/useDebounce";
 import {
-  searchMedia,
   discoverMedia,
   getTrendingMovies,
+  searchMedia,
 } from "@/app/services/all.service";
+import { TMDBMovie } from "@/app/types/tmdb";
 import MovieCard from "@/components/common/MovieCard";
+import PageHeader from "@/components/common/PageHeader";
 import { cn } from "@/lib/utils";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { TMDBMovie } from "@/app/types/tmdb";
+import {
+  Loader2,
+  Search as SearchIcon,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import FilterPanel from "./_components/FilterPanel";
 
 const CONTENT_TYPES = [
@@ -70,70 +71,65 @@ const Search = () => {
   const debouncedQuery = useDebounce(query, 500);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery({
-    queryKey: ["search", debouncedQuery, filters],
-    queryFn: async ({ pageParam = 1 }) => {
-      if (debouncedQuery.trim()) {
-        const response = await searchMedia(debouncedQuery, pageParam);
-        return {
-          ...response,
-          results: response.results.filter(
-            (item: TMDBMovie) =>
-              (item.media_type === "movie" || item.media_type === "tv") &&
-              item.poster_path,
-          ),
-        };
-      } else {
-        // Discovery mode
-        const params: Record<string, string | number> = {
-          page: pageParam,
-          sort_by: filters.sortBy,
-        };
-
-        if (filters.selectedGenres.length > 0) {
-          params.with_genres = filters.selectedGenres.join(",");
-        }
-
-        if (filters.fromYear !== "Any") {
-          params["primary_release_date.gte"] = `${filters.fromYear}-01-01`;
-          params["first_air_date.gte"] = `${filters.fromYear}-01-01`;
-        }
-
-        if (filters.toYear !== "Any") {
-          params["primary_release_date.lte"] = `${filters.toYear}-12-31`;
-          params["first_air_date.lte"] = `${filters.toYear}-12-31`;
-        }
-
-        if (filters.minRating !== "Any Rating") {
-          params["vote_average.gte"] = parseFloat(filters.minRating);
-        }
-
-        if (filters.contentType === "all") {
-          if (
-            filters.selectedGenres.length === 0 &&
-            filters.fromYear === "Any" &&
-            filters.toYear === "Any" &&
-            filters.minRating === "Any Rating"
-          ) {
-            return getTrendingMovies(pageParam);
-          } else {
-            return discoverMedia("movie", params);
-          }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ["search", debouncedQuery, filters],
+      queryFn: async ({ pageParam = 1 }) => {
+        if (debouncedQuery.trim()) {
+          const response = await searchMedia(debouncedQuery, pageParam);
+          return {
+            ...response,
+            results: response.results.filter(
+              (item: TMDBMovie) =>
+                (item.media_type === "movie" || item.media_type === "tv") &&
+                item.poster_path,
+            ),
+          };
         } else {
-          return discoverMedia(filters.contentType, params);
+          // Discovery mode
+          const params: Record<string, string | number> = {
+            page: pageParam,
+            sort_by: filters.sortBy,
+          };
+
+          if (filters.selectedGenres.length > 0) {
+            params.with_genres = filters.selectedGenres.join(",");
+          }
+
+          if (filters.fromYear !== "Any") {
+            params["primary_release_date.gte"] = `${filters.fromYear}-01-01`;
+            params["first_air_date.gte"] = `${filters.fromYear}-01-01`;
+          }
+
+          if (filters.toYear !== "Any") {
+            params["primary_release_date.lte"] = `${filters.toYear}-12-31`;
+            params["first_air_date.lte"] = `${filters.toYear}-12-31`;
+          }
+
+          if (filters.minRating !== "Any Rating") {
+            params["vote_average.gte"] = parseFloat(filters.minRating);
+          }
+
+          if (filters.contentType === "all") {
+            if (
+              filters.selectedGenres.length === 0 &&
+              filters.fromYear === "Any" &&
+              filters.toYear === "Any" &&
+              filters.minRating === "Any Rating"
+            ) {
+              return getTrendingMovies(pageParam);
+            } else {
+              return discoverMedia("movie", params);
+            }
+          } else {
+            return discoverMedia(filters.contentType, params);
+          }
         }
-      }
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
-  });
+      },
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
+    });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -176,13 +172,15 @@ const Search = () => {
   const totalResults = data?.pages[0]?.total_results || 0;
 
   return (
-    <div className="min-h-screen bg-background pt-10 pb-20 px-4 sm:px-10 lg:px-16 text-white">
+    <div className="min-h-screen bg-background pt-8 pb-20 px-0 text-white">
       <div className="mx-auto mb-8">
-        <div className="flex flex-col gap-2 mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">Search</h1>
-        </div>
+        <PageHeader
+          title="Search"
+          description="Find your favorite movies and series across our entire library."
+          className="mb-6"
+        />
 
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center px-4 lg:px-24">
           <div className="relative flex-1 group">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
               <SearchIcon className="w-4 h-4 text-white/40" />
@@ -221,7 +219,7 @@ const Search = () => {
 
         <div
           className={cn(
-            "mt-4 overflow-hidden transition-all duration-500 ease-in-out",
+            "mt-4 overflow-hidden transition-all duration-500 ease-in-out px-4 lg:px-24",
             showFilters
               ? "max-h-[1000px] opacity-100 mb-10"
               : "max-h-0 opacity-0",
@@ -242,7 +240,7 @@ const Search = () => {
         </div>
       </div>
 
-      <div className="max-w-[1800px] mx-auto">
+      <div className="max-w-[1800px] mx-auto px-4 lg:px-24">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-40 gap-6">
             <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
@@ -278,7 +276,7 @@ const Search = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-x-5 gap-y-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 md:gap-x-6 md:gap-y-10 gap-x-3 gap-y-6">
               {results.map((item, idx) => (
                 <div
                   key={`${item.media_type}-${item.id}-${idx}`}

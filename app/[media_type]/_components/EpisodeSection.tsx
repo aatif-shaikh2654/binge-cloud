@@ -14,6 +14,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, Loader2, Play, Star, Tv2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useHistoryStore } from "@/lib/store/useHistoryStore";
+import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
@@ -25,14 +27,28 @@ interface EpisodeSectionProps {
 const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
   const params = useParams();
   const mediaType = params.media_type as string;
+  const { history } = useHistoryStore();
+
+  const historyItem = history.find(
+    (h) => h.id === tvId && h.media_type === "tv",
+  );
 
   const [selectedSeason, setSelectedSeason] = useState(() => {
+    if (historyItem?.season) return historyItem.season;
     if (!seasons || seasons.length === 0) return 1;
     const firstSeason = seasons.find((s) => s.season_number > 0);
     return firstSeason
       ? firstSeason.season_number
       : seasons[0]?.season_number || 1;
   });
+
+  const [prevHistorySeason, setPrevHistorySeason] = useState(historyItem?.season);
+  if (historyItem?.season !== prevHistorySeason) {
+    setPrevHistorySeason(historyItem?.season);
+    if (historyItem?.season) {
+      setSelectedSeason(historyItem.season);
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ["episodes", tvId, selectedSeason],
@@ -116,72 +132,102 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {episodes.map((episode, index) => (
-            <Link
-              key={episode.id}
-              href={watchUrl(episode)}
-              className="group relative bg-white/5 rounded-xl md:rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col"
-              style={{
-                animationDelay: `${index * 50}ms`,
-                animationFillMode: "backwards",
-              }}
-            >
-              {/* Episode Image */}
-              <div className="relative aspect-video w-32 sm:w-40 md:w-full overflow-hidden shrink-0">
-                {episode.still_path ? (
-                  <Image
-                    src={`${TMDB_IMAGE_BASE_URL}/w500${episode.still_path}`}
-                    alt={episode.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                    <Play className="w-8 h-8 md:w-12 md:h-12 text-white/10" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center transform scale-90 group-hover:scale-100 transition-transform">
-                    <Play className="w-3 h-3 md:w-5 md:h-5 fill-white text-white ml-0.5 md:ml-1" />
-                  </div>
-                </div>
-                <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-1.5 py-0.5 md:px-2 md:py-1 bg-black/60 backdrop-blur-md rounded text-[8px] md:text-[10px] font-black uppercase">
-                  EP {episode.episode_number}
-                </div>
-              </div>
+          {episodes.map((episode, index) => {
+            const isCurrentlyWatching =
+              historyItem?.season === selectedSeason &&
+              historyItem?.episode === episode.episode_number;
 
-              {/* Episode Info */}
-              <div className="p-3 md:p-5 flex-1 flex flex-col justify-center min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-xs md:text-sm font-black text-white group-hover:text-blue-500 transition-colors line-clamp-1">
-                    {episode.name}
-                  </h4>
-                  <div className="flex items-center gap-1 text-green-500 text-[8px] md:text-[10px] font-black shrink-0">
-                    <Star className="w-2.5 h-2.5 md:w-3 md:h-3 fill-green-500" />
-                    {(episode.vote_average * 10).toFixed(0)}%
+            return (
+              <Link
+                key={episode.id}
+                href={watchUrl(episode)}
+                className={cn(
+                  "group relative rounded-xl md:rounded-2xl overflow-hidden border transition-all duration-500 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col",
+                  isCurrentlyWatching
+                    ? "bg-blue-600/10 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.15)]"
+                    : "bg-white/5 border-white/5 hover:border-white/20",
+                )}
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                  animationFillMode: "backwards",
+                }}
+              >
+                {/* Episode Image */}
+                <div className="relative aspect-video w-32 sm:w-40 md:w-full overflow-hidden shrink-0">
+                  {episode.still_path ? (
+                    <Image
+                      src={`${TMDB_IMAGE_BASE_URL}/w500${episode.still_path}`}
+                      alt={episode.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                      <Play className="w-8 h-8 md:w-12 md:h-12 text-white/10" />
+                    </div>
+                  )}
+                  <div
+                    className={cn(
+                      "absolute inset-0 transition-opacity flex items-center justify-center",
+                      isCurrentlyWatching
+                        ? "bg-blue-600/20 opacity-100"
+                        : "bg-black/40 opacity-0 group-hover:opacity-100",
+                    )}
+                  >
+                    <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)] transform scale-90 group-hover:scale-100 transition-transform">
+                      <Play className="w-3 h-3 md:w-5 md:h-5 fill-white text-white ml-0.5 md:ml-1" />
+                    </div>
+                  </div>
+                  <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-1.5 py-0.5 md:px-2 md:py-1 bg-black/60 backdrop-blur-md rounded text-[8px] md:text-[10px] font-black uppercase">
+                    EP {episode.episode_number}
+                  </div>
+
+                  {isCurrentlyWatching && (
+                    <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-1 bg-blue-600 rounded text-[8px] font-black uppercase tracking-widest shadow-lg">
+                      Watching
+                    </div>
+                  )}
+                </div>
+
+                {/* Episode Info */}
+                <div className="p-3 md:p-5 flex-1 flex flex-col justify-center min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4
+                      className={cn(
+                        "text-xs md:text-sm font-black transition-colors line-clamp-1",
+                        isCurrentlyWatching ? "text-blue-400" : "text-white group-hover:text-blue-500",
+                      )}
+                    >
+                      {episode.name}
+                    </h4>
+                    <div className="flex items-center gap-1 text-green-500 text-[8px] md:text-[10px] font-black shrink-0">
+                      <Star className="w-2.5 h-2.5 md:w-3 md:h-3 fill-green-500" />
+                      {(episode.vote_average * 10).toFixed(0)}%
+                    </div>
+                  </div>
+                  <p className="hidden md:line-clamp-2 text-[10px] md:text-xs text-white/40 font-medium leading-relaxed mt-1 md:mt-2">
+                    {episode.overview ||
+                      "No description available for this episode."}
+                  </p>
+                  <div className="flex items-center gap-3 md:gap-4 mt-2 md:mt-3">
+                    <div className="flex items-center gap-1 md:gap-1.5 text-white/30 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">
+                      <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                      {episode.runtime || 0}m
+                    </div>
+                    <div className="flex items-center gap-1 md:gap-1.5 text-white/30 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">
+                      <Calendar className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                      {episode.air_date
+                        ? new Date(episode.air_date).getFullYear()
+                        : "N/A"}
+                    </div>
                   </div>
                 </div>
-                <p className="hidden md:line-clamp-2 text-[10px] md:text-xs text-white/40 font-medium leading-relaxed mt-1 md:mt-2">
-                  {episode.overview ||
-                    "No description available for this episode."}
-                </p>
-                <div className="flex items-center gap-3 md:gap-4 mt-2 md:mt-3">
-                  <div className="flex items-center gap-1 md:gap-1.5 text-white/30 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">
-                    <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" />
-                    {episode.runtime || 0}m
-                  </div>
-                  <div className="flex items-center gap-1 md:gap-1.5 text-white/30 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">
-                    <Calendar className="w-2.5 h-2.5 md:w-3 md:h-3" />
-                    {episode.air_date
-                      ? new Date(episode.air_date).getFullYear()
-                      : "N/A"}
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
+
       )}
     </div>
   );

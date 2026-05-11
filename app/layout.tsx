@@ -1,3 +1,4 @@
+import Footer from "@/components/common/Footer";
 import Sidebar from "@/components/common/Sidebar";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { cn } from "@/lib/utils";
@@ -61,6 +62,10 @@ export const metadata: Metadata = {
     shortcut: "/favicon/favicon.ico",
     apple: "/favicon/apple-touch-icon.png",
   },
+  robots: {
+    index: false,
+    follow: false,
+  },
   manifest: "/favicon/site.webmanifest",
 };
 
@@ -92,9 +97,12 @@ export default function RootLayout({
           shadow="0 0 10px #2563eb,0 0 5px #2563eb"
         />
         <Sidebar />
-        <main className="flex-1 min-w-0 lg:pl-20 pb-16 lg:pb-0">
-          <QueryProvider>{children}</QueryProvider>
-        </main>
+        <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
+          <main className="flex-1">
+            <QueryProvider>{children}</QueryProvider>
+          </main>
+          <Footer />
+        </div>
       </body>
     </html>
   );

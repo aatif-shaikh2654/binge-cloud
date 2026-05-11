@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight, List, Loader2, Play } from "lucide-react";
+import Image from "next/image";
 import React, { useState } from "react";
 
 interface EpisodeSwitcherProps {
@@ -62,7 +63,7 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="bg-sidebar/95 backdrop-blur-xl border-white/5 text-white w-full sm:max-w-[320px] p-0 flex flex-col"
+        className="bg-sidebar/85 backdrop-blur-xl border-white/5 text-white w-full! md:w-[480px]! p-0 flex flex-col"
       >
         <SheetHeader className="p-6 border-b border-white/5">
           <SheetTitle className="text-white text-lg font-black tracking-tight flex items-center gap-2">
@@ -89,8 +90,8 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
           </div>
         </SheetHeader>
 
-        <ScrollArea className="flex-1">
-          <div className="p-4 flex flex-col gap-2">
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="p-4 flex flex-col gap-3">
             {isLoading ? (
               <div className="flex justify-center py-10">
                 <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
@@ -103,26 +104,60 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
                     onEpisodeChange(selectedSeason, episode.episode_number);
                     setOpen(false);
                   }}
-                  className={`flex items-center gap-4 p-3 rounded-xl border transition-all duration-300 group ${
+                  className={`flex items-center gap-3 p-2.5 rounded-xl border transition-all duration-500 group ${
                     currentSeason === selectedSeason &&
                     currentEpisode === episode.episode_number
-                      ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/20"
-                      : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20"
+                      ? "bg-blue-600/20 border-blue-500/50 text-white shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                      : "bg-white/[0.02] border-white/5 text-white/60 hover:bg-white/[0.05] hover:border-white/10"
                   }`}
                 >
-                  <div className="text-[10px] font-black opacity-40 w-6">
-                    {episode.episode_number}
+                  <div className="relative w-24 h-14 shrink-0 rounded-md overflow-hidden bg-white/5 border border-white/5 group-hover:border-blue-500/30 transition-all duration-500">
+                    {episode.still_path ? (
+                      <Image
+                        src={`https://image.tmdb.org/t/p/w300${episode.still_path}`}
+                        alt={episode.name}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-blue-600/5">
+                        <span className="text-[10px] font-black opacity-20">
+                          N/A
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                    {currentSeason === selectedSeason &&
+                      currentEpisode === episode.episode_number && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-blue-600/40 backdrop-blur-[2px]">
+                          <Play className="w-5 h-5 fill-white" />
+                        </div>
+                      )}
                   </div>
-                  <div className="flex-1 text-left">
-                    <p className="text-xs font-bold line-clamp-1">
+
+                  <div className="flex-1 text-left min-w-0 py-0.5">
+                    <p
+                      className={cn(
+                        "text-[13px] font-bold line-clamp-1 transition-colors duration-300",
+                        currentSeason === selectedSeason &&
+                          currentEpisode === episode.episode_number
+                          ? "text-blue-400"
+                          : "group-hover:text-white",
+                      )}
+                    >
                       {episode.name}
                     </p>
+                    <p className="text-[10px] font-medium text-white/30 line-clamp-1 mt-1 uppercase tracking-wider">
+                      Episode {episode.episode_number}
+                    </p>
                   </div>
-                  {currentSeason === selectedSeason &&
-                  currentEpisode === episode.episode_number ? (
-                    <Play className="w-3 h-3 fill-white" />
-                  ) : (
-                    <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                  {!(
+                    currentSeason === selectedSeason &&
+                    currentEpisode === episode.episode_number
+                  ) && (
+                    <ChevronRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-40 group-hover:translate-x-0 transition-all duration-300 text-white" />
                   )}
                 </button>
               ))

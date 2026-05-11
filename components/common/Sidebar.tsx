@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Clock, Home, Layers, Search, Tv } from "lucide-react";
+import { Bookmark, Clock, Home, Layers, Search, Tv } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -10,11 +10,11 @@ import { MdOutlineMovie } from "react-icons/md";
 const sidebarItems = [
   { icon: Search, label: "Search", href: "/search" },
   { icon: Home, label: "Home", href: "/" },
-  { icon: MdOutlineMovie, label: "Movies", href: "/movies" },
-  { icon: Tv, label: "Web Series", href: "/series" },
+  { icon: MdOutlineMovie, label: "Movies", href: "/movie" },
+  { icon: Tv, label: "Web Series", href: "/tv" },
   { icon: Layers, label: "Anime", href: "/anime" },
-  { icon: Layers, label: "Categories", href: "/categories" },
   { icon: Clock, label: "History", href: "/history" },
+  { icon: Bookmark, label: "Watch Later", href: "/watch-later" },
 ];
 
 const Sidebar = () => {
@@ -54,7 +54,7 @@ const Sidebar = () => {
               >
                 <item.icon
                   className={cn(
-                    "transition-all duration-300 flex-shrink-0 z-10",
+                    "transition-all duration-300 shrink-0 z-10",
                     isActive ? "w-5 h-5" : "w-5 h-5",
                   )}
                 />
@@ -68,7 +68,7 @@ const Sidebar = () => {
                       : "w-0 opacity-0 ml-0",
                   )}
                 >
-                  <span className="font-black text-[14px] tracking-wide whitespace-nowrap font-sans">
+                  <span className="font-bold text-[13px] tracking-wide whitespace-nowrap font-sans">
                     {item.label}
                   </span>
                 </div>
@@ -84,7 +84,7 @@ const Sidebar = () => {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 w-full h-18 bg-sidebar/95 backdrop-blur-2xl border-t border-white/5 flex items-center justify-around lg:hidden z-[100] pb-2">
+      <nav className="fixed bottom-0 left-0 w-full h-[70px] bg-sidebar/95 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around lg:hidden z-100 px-2">
         {sidebarItems.slice(0, 5).map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -92,14 +92,28 @@ const Sidebar = () => {
               key={item.label}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1.5 transition-all duration-300",
-                isActive ? "text-white scale-110" : "text-[#8197a4]",
+                "flex flex-col items-center justify-center gap-1 transition-all duration-300 relative px-4 py-2",
+                isActive ? "text-white" : "text-[#8197a4] hover:text-white/80",
               )}
             >
-              <item.icon className="w-5.5 h-5.5" />
-              <span className="text-[10px] font-black uppercase tracking-wider font-sans">
+              <item.icon
+                className={cn(
+                  "w-5 h-5 transition-all duration-300",
+                  isActive ? "scale-110" : "scale-100",
+                )}
+              />
+              <span
+                className={cn(
+                  "text-[8px] font-bold uppercase tracking-wider font-sans transition-all duration-300",
+                  isActive ? "opacity-100" : "opacity-60",
+                )}
+              >
                 {item.label}
               </span>
+
+              {isActive && (
+                <div className="absolute bottom-1 w-1 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
+              )}
             </Link>
           );
         })}

@@ -3,7 +3,10 @@
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
-import { Plus, Star } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
+import { toast } from "sonner";
+import { Bookmark, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -15,6 +18,18 @@ interface DetailHeroProps {
 }
 
 const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
+  const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+
+  const inWatchlist = isInWatchlist(details.id, tmdbType);
+
+  const handleWatchlistToggle = () => {
+    toggleWatchlist({ ...details, media_type: tmdbType });
+    if (inWatchlist) {
+      toast.error(`Removed from Watchlist`);
+    } else {
+      toast.success(`Added to Watchlist`);
+    }
+  };
   const releaseYear = new Date(
     details?.release_date || details?.first_air_date || "",
   ).getFullYear();
@@ -122,11 +137,19 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
               </Button>
             </Link>
             <Button
-              variant="glass"
+              variant={inWatchlist ? "premium" : "glass"}
               size="icon-xl"
-              className="size-11 lg:size-12"
+              className={cn(
+                "size-11 lg:size-12 transition-all duration-300",
+                inWatchlist && "bg-white text-black hover:bg-white/90",
+              )}
+              onClick={handleWatchlistToggle}
             >
-              <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
+              {inWatchlist ? (
+                <Bookmark className="w-4 h-4 lg:w-5 lg:h-5 fill-black" />
+              ) : (
+                <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
+              )}
             </Button>
           </div>
 

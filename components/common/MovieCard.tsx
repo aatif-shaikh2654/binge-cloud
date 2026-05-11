@@ -4,12 +4,15 @@ import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { getMovieVideos } from "@/app/services/all.service";
 import { MediaType } from "@/app/types/common";
 import { type TMDBMovie } from "@/app/types/tmdb";
+import { Button } from "@/components/ui/button";
+import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
 import { cn } from "@/lib/utils";
-import { Plus, Star, Volume2, VolumeX } from "lucide-react";
+import { Bookmark, Plus, Star, Volume2, VolumeX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
+import { toast } from "sonner";
 
 interface MovieCardProps {
   movie: TMDBMovie;
@@ -23,6 +26,20 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+
+  const inWatchlist = isInWatchlist(movie.id, movie.media_type);
+
+  const handleWatchlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWatchlist(movie);
+    if (inWatchlist) {
+      toast.error(`Removed from Watchlist`);
+    } else {
+      toast.success(`Added to Watchlist`);
+    }
+  };
 
   const rating = (movie.vote_average * 10).toFixed(0);
   const releaseYear = new Date(
@@ -59,8 +76,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
     return "movie";
   }, [mediaType, movie.media_type]);
 
-  const watchUrl = `/${currentMediaType === "tv" ? "series" : "movies"}/watch?id=${movie.id}`;
-  const detailUrl = `/${currentMediaType === "tv" ? "series" : "movies"}/detail?id=${movie.id}`;
+  const watchUrl = `/${currentMediaType}/watch?id=${movie.id}`;
+  const detailUrl = `/${currentMediaType}/detail?id=${movie.id}`;
 
   return (
     <div
@@ -134,19 +151,20 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
                   />
                 )}
                 <iframe
-                  src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1`}
+                  src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}`}
                   className={cn(
-                    "w-[250%] h-[250%] border-none transition-opacity duration-500",
+                    "w-full h-full scale-[1.35] transition-opacity duration-500",
                     isVideoLoaded ? "opacity-100" : "opacity-0",
                   )}
                   onLoad={() => setIsVideoLoaded(true)}
-                  allow="autoplay; encrypted-media"
+                  allow="autoplay"
                 />
-
-                {/* Mute toggle */}
                 <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsMuted(!isMuted);
+                  }}
+                  className="absolute bottom-4 right-4 z-30 p-2 bg-black/60 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all"
                 >
                   {isMuted ? (
                     <VolumeX className="w-4 h-4" />
@@ -156,48 +174,60 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
                 </button>
               </>
             ) : (
-              <Link href={watchUrl}>
-                <Image
-                  src={`${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`}
-                  alt="Preview"
-                  fill
-                  sizes="380px"
-                  className="object-cover"
-                />
-              </Link>
+              <Image
+                src={`${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`}
+                alt="Preview"
+                fill
+                sizes="380px"
+                className="object-cover"
+              />
             )}
+            <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
           </div>
 
-          {/* Info Section */}
-          <div className="p-5 flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              <Link
-                href={watchUrl}
-                className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-white/90 transition-colors"
-              >
-                <FaPlay className="w-3 h-3 text-black fill-black ml-1" />
-              </Link>
-              <button className="w-10 h-10 rounded-full bg-transparent border-2 border-white/30 flex items-center justify-center hover:border-white transition-colors">
-                <Plus className="w-3 h-3 text-white" />
-              </button>
+          {/* Content Section */}
+          <div className="p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Link href={watchUrl}>
+                  <Button variant="premium" size="sm" className="gap-2">
+                    <FaPlay className="text-xs" />
+                    Play Now
+                  </Button>
+                </Link>
+                <Button
+                  variant={inWatchlist ? "premium" : "glass"}
+                  size="icon-sm"
+                  className={cn(
+                    "size-9",
+                    inWatchlist && "bg-white text-black hover:bg-white/90",
+                  )}
+                  onClick={handleWatchlistToggle}
+                >
+                  {inWatchlist ? (
+                    <Bookmark className="w-4 h-4 fill-black" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-2 group/info">
-              <Link
-                href={detailUrl}
-                className="text-lg font-black text-white leading-tight hover:text-blue-400 transition-colors"
-              >
-                {movie.title || movie.name}
-              </Link>
-              <Link href={watchUrl} className="flex items-center gap-3 text-sm">
-                <span className="text-green-500 font-bold">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-green-500 font-black text-xs uppercase tracking-wider">
                   {rating}% Match
                 </span>
-                <span className="text-white/60">{releaseYear}</span>
-                <span className="px-2 py-0.5 border border-white/30 rounded text-[10px] font-black text-white/80 uppercase">
-                  {movie.media_type === "tv" ? "TV Series" : "Movie"}
+                <span className="text-white/40 text-[10px] font-bold border border-white/10 px-1.5 py-0.5 rounded uppercase">
+                  {releaseYear}
                 </span>
-              </Link>
+              </div>
+              <h3 className="text-lg font-black text-white leading-tight mb-2">
+                {movie.title || movie.name}
+              </h3>
+              <p className="text-white/60 text-xs line-clamp-3 leading-relaxed font-medium">
+                {movie.overview}
+              </p>
             </div>
           </div>
         </div>

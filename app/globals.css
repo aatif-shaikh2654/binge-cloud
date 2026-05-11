@@ -123,7 +123,7 @@
   }
   body {
     background-color: #04070d !important;
-    background-image: 
+    background-image:
       radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
       radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.03) 0px, transparent 50%) !important;
     background-attachment: fixed !important;
@@ -134,7 +134,7 @@
   }
 }
 
-button{
+button {
   cursor: pointer !important;
 }
 
@@ -179,5 +179,31 @@ button{
     to {
       width: 100%;
     }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .shimmer {
+    animation: shimmer 2s infinite linear;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.05) 8%,
+      rgba(255, 255, 255, 0.1) 18%,
+      rgba(255, 255, 255, 0.05) 33%
+    );
+    background-size: 1000px 100%;
+  }
+
+  /* Slider Alignment Fix */
+  .movie-slider-container .slick-track {
+    margin-left: 0 !important;
+    margin-right: auto !important;
   }
 }

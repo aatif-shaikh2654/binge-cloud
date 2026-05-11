@@ -11,8 +11,6 @@ export async function generateMetadata({
   const { id } = await searchParams;
 
   const typeMap: Record<string, "movie" | "tv"> = {
-    movies: "movie",
-    series: "tv",
     movie: "movie",
     tv: "tv",
   };
@@ -28,7 +26,7 @@ export async function generateMetadata({
       title: `Watching - ${title}`,
       description: `Now streaming ${title} on Binge Cloud.`,
     };
-  } catch (error) {
+  } catch {
     return { title: "Watch" };
   }
 }
@@ -50,20 +48,15 @@ export default async function WatchPage({ params, searchParams }: PageProps) {
 
   // Map route names to TMDB types
   const typeMap: Record<string, "movie" | "tv"> = {
-    movies: "movie",
-    series: "tv",
     movie: "movie",
     tv: "tv",
   };
 
   const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
 
-  // Fetch details to get seasons for TV shows
-  let seasons = undefined;
-  if (tmdbType === "tv") {
-    const details = await getMediaDetails(id, "tv");
-    seasons = details?.seasons;
-  }
+  // Fetch details to get seasons for TV shows and media info for history
+  const details = await getMediaDetails(id, tmdbType);
+  const seasons = details?.seasons;
 
-  return <Watch id={id} tmdbType={tmdbType} seasons={seasons} />;
+  return <Watch id={id} tmdbType={tmdbType} seasons={seasons} details={details} />;
 }

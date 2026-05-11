@@ -3,15 +3,14 @@
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
+import Link from "next/link";
 import React, { useRef } from "react";
-import { Navigation } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import Slider from "react-slick";
 import MovieCard from "./MovieCard";
 
-// Import Swiper styles
-import Link from "next/link";
-import "swiper/css";
-import "swiper/css/navigation";
+// Import slick-carousel styles
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
 
 interface MediaSliderProps {
   movies: TMDBMovie[];
@@ -26,15 +25,68 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
   className,
   media_type,
 }) => {
-  const prevRef = useRef<HTMLButtonElement>(null);
-  const nextRef = useRef<HTMLButtonElement>(null);
+  const sliderRef = useRef<Slider>(null);
 
   if (!movies || movies.length === 0) return null;
 
+  const settings = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 8.2,
+    slidesToScroll: 2,
+    arrows: false,
+    swipeToSlide: true,
+    responsive: [
+      {
+        breakpoint: 1920,
+        settings: {
+          slidesToShow: 7.2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 1536,
+        settings: {
+          slidesToShow: 6.2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 1280,
+        settings: {
+          slidesToShow: 5.2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 4.2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 3.2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 2.2,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   return (
-    <section className={cn("px-8 lg:px-24 md:py-12 pb-12", className)}>
+    <section className={cn("ps-8! lg:ps-24! md:py-6 pb-6", className)}>
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 pe-8! lg:pe-24!">
         <div className="flex items-center gap-4">
           <div className="w-1.5 h-8 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(220,38,38,0.5)]" />
           <h2 className="text-2xl font-black tracking-tight text-white">
@@ -58,14 +110,14 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
           {/* Custom Navigation */}
           <div className="hidden md:flex items-center gap-2">
             <button
-              ref={prevRef}
-              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all active:scale-90 disabled:opacity-30"
+              onClick={() => sliderRef.current?.slickPrev()}
+              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all active:scale-90"
             >
               <ChevronLeft className="w-5 h-5 text-white" />
             </button>
             <button
-              ref={nextRef}
-              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all active:scale-90 disabled:opacity-30"
+              onClick={() => sliderRef.current?.slickNext()}
+              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all active:scale-90"
             >
               <ChevronRight className="w-5 h-5 text-white" />
             </button>
@@ -73,38 +125,15 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
         </div>
       </div>
 
-      {/* Swiper Slider */}
-      <div className="overflow-hidden md:overflow-visible">
-        <Swiper
-          modules={[Navigation]}
-          navigation={{
-            prevEl: null,
-            nextEl: null,
-          }}
-          onBeforeInit={(swiper) => {
-            // @ts-expect-error - Swiper types sometimes conflict with custom navigation elements
-            swiper.params.navigation.prevEl = prevRef.current;
-            // @ts-expect-error - Swiper types sometimes conflict with custom navigation elements
-            swiper.params.navigation.nextEl = nextRef.current;
-          }}
-          spaceBetween={24}
-          slidesPerView={2.2}
-          breakpoints={{
-            640: { slidesPerView: 2.2 },
-            768: { slidesPerView: 4.2 },
-            1024: { slidesPerView: 5.2 },
-            1280: { slidesPerView: 6.2 },
-            1536: { slidesPerView: 7.2 },
-            1920: { slidesPerView: 8.2 },
-          }}
-          className="movie-swiper !overflow-visible"
-        >
+      {/* Slider Container */}
+      <div className="movie-slider-container">
+        <Slider ref={sliderRef} {...settings}>
           {movies.map((movie) => (
-            <SwiperSlide key={movie.id} className="pb-4">
+            <div key={movie.id} className="px-3 pb-4">
               <MovieCard movie={movie} />
-            </SwiperSlide>
+            </div>
           ))}
-        </Swiper>
+        </Slider>
       </div>
     </section>
   );
