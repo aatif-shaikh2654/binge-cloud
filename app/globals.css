@@ -201,9 +201,26 @@ button {
     background-size: 1000px 100%;
   }
 
-  /* Slider Alignment Fix */
+  /* Slider Alignment and Hover Fix */
+  .movie-slider-container .slick-list {
+    overflow: visible !important;
+    padding: 100px 0 !important;
+    margin: -100px 0 !important;
+    z-index: 50;
+  }
+
   .movie-slider-container .slick-track {
     margin-left: 0 !important;
     margin-right: auto !important;
+    display: flex !important;
+  }
+
+  .movie-slider-container .slick-slide {
+    z-index: 1;
+    transition: z-index 0s;
+  }
+
+  .movie-slider-container .slick-slide:hover {
+    z-index: 100 !important;
   }
 }

@@ -190,8 +190,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Link href={watchUrl}>
-                  <Button variant="premium" size="sm" className="gap-2">
-                    <FaPlay className="text-xs" />
+                  <Button variant="premium" size="sm" className="gap-2 px-3">
+                    <FaPlay className="w-3! h-3!" />
                     Play Now
                   </Button>
                 </Link>
@@ -205,9 +205,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
                   onClick={handleWatchlistToggle}
                 >
                   {inWatchlist ? (
-                    <Bookmark className="w-4 h-4 fill-black" />
+                    <Bookmark className="w-3! h-3! fill-black" />
                   ) : (
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3! h-3!" />
                   )}
                 </Button>
               </div>
