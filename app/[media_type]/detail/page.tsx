@@ -1,7 +1,16 @@
+import { getAnimeDetails } from "@/app/services/anilist.service";
 import { getMediaCredits, getMediaDetails } from "@/app/services/all.service";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import AnimeDetail from "./AnimeDetail";
 import Detail from "./Detail";
+
+export const dynamic = "force-dynamic";
+
+interface PageProps {
+  params: Promise<{ media_type: string }>;
+  searchParams: Promise<{ id: string }>;
+}
 
 export async function generateMetadata({
   params,
@@ -10,20 +19,34 @@ export async function generateMetadata({
   const { media_type } = await params;
   const { id } = await searchParams;
 
-  const typeMap: Record<string, "movie" | "tv"> = {
-    movie: "movie",
-    tv: "tv",
-  };
+  if (media_type === "anime") {
+    try {
+      const details = await getAnimeDetails(id);
+      const title = details.title.english || details.title.romaji || "Anime";
+      return {
+        title,
+        description: details.description?.replace(/<[^>]*>/g, "") ?? undefined,
+        openGraph: {
+          images: details.bannerImage
+            ? [details.bannerImage]
+            : details.coverImage.extraLarge
+              ? [details.coverImage.extraLarge]
+              : [],
+        },
+      };
+    } catch {
+      return { title: "Anime Detail" };
+    }
+  }
 
+  const typeMap: Record<string, "movie" | "tv"> = { movie: "movie", tv: "tv" };
   const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
 
   try {
     const details = await getMediaDetails(id, tmdbType);
     if (!details) return { title: "Detail" };
-
-    const title = details.title || details.name;
     return {
-      title: title,
+      title: details.title || details.name,
       description: details.overview,
       openGraph: {
         images: [
@@ -36,28 +59,29 @@ export async function generateMetadata({
   }
 }
 
-export const dynamic = "force-dynamic";
-
-interface PageProps {
-  params: Promise<{ media_type: string }>;
-  searchParams: Promise<{ id: string }>;
-}
-
-export default async function WatchPage({ params, searchParams }: PageProps) {
+export default async function DetailPage({ params, searchParams }: PageProps) {
   const { media_type } = await params;
   const { id } = await searchParams;
 
-  if (!id) {
-    notFound();
+  if (!id) notFound();
+
+  // ── Anime branch ─────────────────────────────────────────────────────────────
+  if (media_type === "anime") {
+    try {
+      const details = await getAnimeDetails(id);
+      return <AnimeDetail details={details} />;
+    } catch (error) {
+      console.error("Error loading anime detail:", error);
+      notFound();
+    }
   }
 
-  // Map route names to TMDB types
+  // ── TMDB branch ──────────────────────────────────────────────────────────────
   const typeMap: Record<string, "movie" | "tv"> = {
     movie: "movie",
     tv: "tv",
-    trending: "movie", // Default to movie for trending if not specified
+    trending: "movie",
   };
-
   const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
 
   let details, credits;
@@ -67,7 +91,7 @@ export default async function WatchPage({ params, searchParams }: PageProps) {
       getMediaCredits(id, tmdbType),
     ]);
   } catch (error) {
-    console.error("Error loading watch page:", error);
+    console.error("Error loading detail page:", error);
     notFound();
   }
 

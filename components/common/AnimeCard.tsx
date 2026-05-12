@@ -1,0 +1,160 @@
+"use client";
+
+import { FORMAT_LABEL, STATUS_LABEL } from "@/app/constants/anilist";
+import { type AniListMedia } from "@/app/types/anilist";
+import { cn } from "@/lib/utils";
+import { Star } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState } from "react";
+import { FaPlay } from "react-icons/fa";
+
+interface AnimeCardProps {
+  anime: AniListMedia;
+}
+
+const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const title = anime.title.english || anime.title.romaji || anime.title.native || "Unknown";
+  const score = anime.averageScore != null ? `${anime.averageScore}%` : "N/A";
+  const format = anime.format ? (FORMAT_LABEL[anime.format] ?? anime.format) : null;
+  const status = anime.status ? (STATUS_LABEL[anime.status] ?? anime.status) : null;
+  const year = anime.seasonYear;
+  const coverSrc = anime.coverImage.extraLarge || anime.coverImage.large;
+
+  return (
+    <div
+      className={cn(
+        "relative w-full transition-all duration-300",
+        isHovered ? "z-[150]" : "z-10",
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Link
+        href={`/anime/detail?id=${anime.id}`}
+        className="group flex flex-col gap-3 cursor-pointer"
+      >
+        <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20">
+          {coverSrc ? (
+            <Image
+              src={coverSrc}
+              alt={title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-white/5 flex items-center justify-center">
+              <span className="text-white/20 text-xs">No Image</span>
+            </div>
+          )}
+
+          {/* Play overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/40 backdrop-blur-[2px] z-20">
+            <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out">
+              <FaPlay className="text-white text-xl ml-1" />
+            </div>
+          </div>
+
+          {/* Format badge */}
+          {format && (
+            <div className="absolute top-3 left-3">
+              <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
+                {format}
+              </span>
+            </div>
+          )}
+
+          {/* Score badge */}
+          <div className="absolute top-3 right-3">
+            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-md px-2 py-1 flex items-center gap-1">
+              <Star className="w-3 h-3 text-green-500 fill-green-500" />
+              <span className="text-[10px] font-black text-green-500">{score}</span>
+            </div>
+          </div>
+
+          {/* Status badge (airing indicator) */}
+          {anime.status === "RELEASING" && (
+            <div className="absolute bottom-3 left-3">
+              <span className="bg-green-500/20 border border-green-500/40 text-green-400 text-[9px] font-black px-2 py-0.5 rounded-full tracking-wider uppercase">
+                Airing
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-0.5 px-1">
+          <h3 className="text-sm font-bold text-white line-clamp-1">{title}</h3>
+          <p className="text-[11px] font-medium text-white/40 tracking-tight">
+            {[year, status].filter(Boolean).join(" • ")}
+          </p>
+        </div>
+      </Link>
+
+      {/* Hover detail card */}
+      {isHovered && (
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] bg-card rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-[200] animate-in zoom-in-95 duration-200"
+          style={{ transformOrigin: "center" }}
+        >
+          {/* Banner / cover preview */}
+          <div className="relative h-[160px] overflow-hidden">
+            <Image
+              src={anime.bannerImage || coverSrc || ""}
+              alt={title}
+              fill
+              sizes="320px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+          </div>
+
+          <div className="p-4 space-y-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              {anime.averageScore != null && (
+                <span className="text-green-500 font-black text-xs uppercase tracking-wider">
+                  {anime.averageScore}% Score
+                </span>
+              )}
+              {year && (
+                <span className="text-white/40 text-[10px] font-bold border border-white/10 px-1.5 py-0.5 rounded uppercase">
+                  {year}
+                </span>
+              )}
+              {format && (
+                <span className="text-white/40 text-[10px] font-bold border border-white/10 px-1.5 py-0.5 rounded uppercase">
+                  {format}
+                </span>
+              )}
+            </div>
+
+            <h3 className="text-base font-black text-white leading-tight line-clamp-2">{title}</h3>
+
+            {anime.genres.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {anime.genres.slice(0, 3).map((g) => (
+                  <span
+                    key={g}
+                    className="text-[10px] font-medium text-white/50 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full"
+                  >
+                    {g}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {anime.description && (
+              <p className="text-white/60 text-xs line-clamp-3 leading-relaxed font-medium">
+                {anime.description.replace(/<[^>]*>/g, "")}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AnimeCard;
