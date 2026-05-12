@@ -1,12 +1,12 @@
 "use client";
 
+import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
 import { useHistoryStore } from "@/lib/store/useHistoryStore";
 import { Clock, Play, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import PageHeader from "@/components/common/PageHeader";
 
 const HistoryGrid = () => {
   const { history, removeFromHistory, clearHistory } = useHistoryStore();
@@ -63,7 +63,7 @@ const HistoryGrid = () => {
             className="group relative bg-white/5 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all duration-500"
           >
             <Link
-              href={`/${item.media_type === "tv" ? "series" : "movie"}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`}
+              href={`/${item.media_type}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`}
               className="block"
             >
               <div className="relative aspect-video overflow-hidden">
@@ -92,7 +92,7 @@ const HistoryGrid = () => {
                 </h3>
                 <div className="flex items-center gap-3 mt-2">
                   <span className="text-[10px] font-black uppercase tracking-widest text-white/40 bg-white/5 px-2 py-1 rounded">
-                    {item.media_type === "tv" ? "Series" : "Movie"}
+                    {item.media_type === "tv" ? "TV" : "Movie"}
                   </span>
                   <span className="text-[10px] font-medium text-white/20">
                     Watched {new Date(item.watchedAt).toLocaleDateString()}

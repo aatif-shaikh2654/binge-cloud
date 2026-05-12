@@ -3,11 +3,11 @@ import {
   getMediaList,
   getSimilarMedia,
 } from "@/app/services/all.service";
+import { type MediaType } from "@/app/types/common";
+import PageHeader from "@/components/common/PageHeader";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MediaList from "./MediaList";
-import type { Metadata } from "next";
-import PageHeader from "@/components/common/PageHeader";
-import { type MediaType } from "@/app/types/common";
 
 export async function generateMetadata({
   params,
@@ -64,7 +64,7 @@ export default async function MediaPage({ params, searchParams }: PageProps) {
 
   let initialData;
   let title = media_type === "movie" ? "Popular Movies" : "Popular TV Series";
-  let description = `Discover our curated selection of top-rated ${media_type === "movie" ? "movies" : "TV series"}. From blockbusters to hidden gems, find everything you love here.`;
+  let description = `Discover our curated selection of top-rated ${media_type === "movie" ? "movies" : "TV Series"}. From blockbusters to hidden gems, find everything you love here.`;
 
   if (related_to) {
     try {
