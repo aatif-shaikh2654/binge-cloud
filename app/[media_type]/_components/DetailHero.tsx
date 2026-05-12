@@ -1,20 +1,21 @@
 "use client";
 
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
+import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { Bookmark, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { FaPlay } from "react-icons/fa";
+import { toast } from "sonner";
 
 interface DetailHeroProps {
   details: TMDBMovie;
-  tmdbType: "movie" | "tv";
+  tmdbType: MediaType;
 }
 
 const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
@@ -80,7 +81,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
 
         {/* Info Content - staggered feel with slide-up */}
         <div className="flex-1 max-w-3xl space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200 fill-mode-backwards">
-          <div className="space-y-3 md:space-y-5">
+          <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-start gap-3">
               <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-black uppercase tracking-wider">
                 <Star className="w-3 h-3 fill-green-500" />

@@ -6,6 +6,7 @@ import {
   getTrendingMovies,
   searchMedia,
 } from "@/app/services/all.service";
+import { type MediaType } from "@/app/types/common";
 import { TMDBMovie } from "@/app/types/tmdb";
 import MovieCard from "@/components/common/MovieCard";
 import PageHeader from "@/components/common/PageHeader";
@@ -44,7 +45,7 @@ const RATING_PRESETS = [
 const YEARS = Array.from({ length: 126 }, (_, i) => (2025 - i).toString());
 
 export interface SearchFilters {
-  contentType: "all" | "movie" | "tv";
+  contentType: "all" | MediaType;
   selectedGenres: number[];
   fromYear: string;
   toYear: string;

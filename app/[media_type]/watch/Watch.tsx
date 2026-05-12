@@ -2,6 +2,7 @@
 
 import { PLAYER_SERVERS, type PlayerServer } from "@/app/constants/player";
 import { type TMDBMovie, type TMDBSeason } from "@/app/types/tmdb";
+import { type MediaType } from "@/app/types/common";
 import { useHistoryStore } from "@/lib/store/useHistoryStore";
 import { ArrowLeft } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -11,7 +12,7 @@ import ServerSwitcher from "../_components/ServerSwitcher";
 
 interface WatchProps {
   id: string;
-  tmdbType: "movie" | "tv";
+  tmdbType: MediaType;
   seasons?: TMDBSeason[];
   details: TMDBMovie;
 }

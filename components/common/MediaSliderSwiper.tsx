@@ -19,6 +19,7 @@ interface MediaSliderProps {
   title: string;
   className?: string;
   media_type?: string;
+  seeAllHref?: string;
 }
 
 const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
@@ -26,6 +27,7 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
   title,
   className,
   media_type,
+  seeAllHref,
 }) => {
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
@@ -51,7 +53,7 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
         <div className="flex items-center gap-6">
           {media_type && (
             <Link
-              href={`/${media_type}`}
+              href={seeAllHref || `/${media_type}`}
               className="flex items-center gap-2 text-white/40 hover:text-white transition-colors group"
             >
               <span className="text-xs font-black uppercase tracking-widest">

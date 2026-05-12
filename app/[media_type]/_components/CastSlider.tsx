@@ -3,68 +3,24 @@
 import { type TMDBCast } from "@/app/types/tmdb";
 import CastCard from "@/components/common/CastCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useRef } from "react";
-import Slider from "react-slick";
+import React, { useState } from "react";
+import { FreeMode, Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 
-// Import Slick styles
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/navigation";
 
 interface CastSliderProps {
   cast: TMDBCast[];
 }
 
 const CastSlider: React.FC<CastSliderProps> = ({ cast }) => {
-  const sliderRef = useRef<Slider>(null);
+  const [prevEl, setPrevEl] = useState<HTMLButtonElement | null>(null);
+  const [nextEl, setNextEl] = useState<HTMLButtonElement | null>(null);
 
   if (!cast || cast.length === 0) return null;
-
-  const settings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 6.2,
-    slidesToScroll: 2,
-    arrows: false,
-    swipeToSlide: true,
-    responsive: [
-      {
-        breakpoint: 1280,
-        settings: {
-          slidesToShow: 6.2,
-          slidesToScroll: 2,
-        },
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 5.2,
-          slidesToScroll: 2,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 4.2,
-          slidesToScroll: 2,
-        },
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 3.2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 2.2,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
 
   return (
     <div className="space-y-8 md:space-y-12">
@@ -81,14 +37,14 @@ const CastSlider: React.FC<CastSliderProps> = ({ cast }) => {
         {/* Custom Navigation */}
         <div className="hidden md:flex items-center gap-2">
           <button
-            onClick={() => sliderRef.current?.slickPrev()}
-            className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all active:scale-90"
+            ref={setPrevEl}
+            className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
           <button
-            onClick={() => sliderRef.current?.slickNext()}
-            className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all active:scale-90"
+            ref={setNextEl}
+            className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
@@ -96,13 +52,51 @@ const CastSlider: React.FC<CastSliderProps> = ({ cast }) => {
       </div>
 
       <div className="movie-slider-container">
-        <Slider ref={sliderRef} {...settings}>
+        <Swiper
+          modules={[Navigation, FreeMode]}
+          navigation={{
+            prevEl,
+            nextEl,
+          }}
+          onBeforeInit={(swiper) => {
+            // @ts-expect-error - swiper navigation params
+            swiper.params.navigation.prevEl = prevEl;
+            // @ts-expect-error - swiper navigation params
+            swiper.params.navigation.nextEl = nextEl;
+          }}
+          spaceBetween={16}
+          slidesPerView={2.2}
+          freeMode={true}
+          breakpoints={{
+            480: {
+              slidesPerView: 2.2,
+              spaceBetween: 16,
+            },
+            640: {
+              slidesPerView: 3.2,
+              spaceBetween: 16,
+            },
+            768: {
+              slidesPerView: 4.2,
+              spaceBetween: 24,
+            },
+            1024: {
+              slidesPerView: 5.2,
+              spaceBetween: 24,
+            },
+            1280: {
+              slidesPerView: 6.2,
+              spaceBetween: 24,
+            },
+          }}
+          className="!overflow-visible"
+        >
           {cast.map((person, index) => (
-            <div key={person.id} className="px-4 pb-10">
+            <SwiperSlide key={person.id} className="pb-10">
               <CastCard person={person} index={index} />
-            </div>
+            </SwiperSlide>
           ))}
-        </Slider>
+        </Swiper>
       </div>
     </div>
   );
