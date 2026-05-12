@@ -6,11 +6,12 @@ import { MediaType } from "@/app/types/common";
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
 import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
+import { usePlayerStore } from "@/lib/store/usePlayerStore";
 import { cn } from "@/lib/utils";
 import { Bookmark, Plus, Star, Volume2, VolumeX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
 
@@ -23,10 +24,24 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showHoverCard, setShowHoverCard] = useState(false);
   const [videoKey, setVideoKey] = useState<string | null>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const { isMuted, setIsMuted } = usePlayerStore();
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+
+  useEffect(() => {
+    if (iframeRef.current && isVideoLoaded) {
+      iframeRef.current.contentWindow?.postMessage(
+        JSON.stringify({
+          event: "command",
+          func: isMuted ? "mute" : "unMute",
+          args: [],
+        }),
+        "*",
+      );
+    }
+  }, [isMuted, isVideoLoaded]);
 
   const inWatchlist = isInWatchlist(movie.id, movie.media_type);
 
@@ -151,7 +166,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
                   />
                 )}
                 <iframe
-                  src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}`}
+                  ref={iframeRef}
+                  src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}&enablejsapi=1`}
                   className={cn(
                     "w-full h-full scale-[1.35] transition-opacity duration-500",
                     isVideoLoaded ? "opacity-100" : "opacity-0",
