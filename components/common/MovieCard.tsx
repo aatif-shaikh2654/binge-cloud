@@ -213,7 +213,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
               </div>
             </div>
 
-            <div>
+            <Link href={detailUrl}>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-green-500 font-black text-xs uppercase tracking-wider">
                   {rating}% Match
@@ -228,7 +228,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
               <p className="text-white/60 text-xs line-clamp-3 leading-relaxed font-medium">
                 {movie.overview}
               </p>
-            </div>
+            </Link>
           </div>
         </div>
       )}
