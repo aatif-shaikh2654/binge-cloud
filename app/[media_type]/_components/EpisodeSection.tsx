@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useHistoryStore } from "@/lib/store/useHistoryStore";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import React, { useState } from "react";
 
 interface EpisodeSectionProps {
@@ -52,8 +53,8 @@ const EpisodeSkeleton = () => (
 
 const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
   const params = useParams();
-  const mediaType = params.media_type as string;
   const { history } = useHistoryStore();
+  const { handleWatchClick } = useWatchNavigation();
 
   const historyItem = history.find(
     (h) => h.id === tvId && h.media_type === "tv",
@@ -82,6 +83,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
     enabled: !!tvId,
   });
 
+  const mediaType = params.media_type as string;
   const episodes = data?.episodes || [];
   const watchUrl = (episode: TMDBEpisode) => {
     return `/${mediaType}/watch?id=${tvId}&season=${selectedSeason}&episode=${episode.episode_number}`;
@@ -165,6 +167,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
               <Link
                 key={episode.id}
                 href={watchUrl(episode)}
+                onClick={handleWatchClick}
                 className={cn(
                   "group relative rounded-xl md:rounded-2xl overflow-hidden border transition-all duration-500 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col",
                   isCurrentlyWatching

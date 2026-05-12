@@ -6,10 +6,12 @@ import { useHistoryStore } from "@/lib/store/useHistoryStore";
 import { Clock, Play, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { useEffect, useState } from "react";
 
 const HistoryGrid = () => {
   const { history, removeFromHistory, clearHistory } = useHistoryStore();
+  const { handleWatchClick } = useWatchNavigation();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -57,15 +59,17 @@ const HistoryGrid = () => {
       </PageHeader>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {history.map((item) => (
-          <div
-            key={`${item.media_type}-${item.id}`}
-            className="group relative bg-white/5 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all duration-500"
-          >
-            <Link
-              href={`/${item.media_type}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`}
-              className="block"
+        {history.map((item) => {
+          return (
+            <div
+              key={`${item.media_type}-${item.id}`}
+              className="group relative bg-white/5 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all duration-500"
             >
+              <Link
+                href={`/${item.media_type}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`}
+                onClick={handleWatchClick}
+                className="block"
+              >
               <div className="relative aspect-video overflow-hidden">
                 <Image
                   src={`https://image.tmdb.org/t/p/w500${item.backdrop_path || item.poster_path}`}
@@ -111,7 +115,8 @@ const HistoryGrid = () => {
               <X className="w-4 h-4" />
             </button>
           </div>
-        ))}
+            );
+        })}
       </div>
     </div>
   );

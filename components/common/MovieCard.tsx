@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Bookmark, Plus, Star, Volume2, VolumeX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+  const { handleWatchClick } = useWatchNavigation();
 
   useEffect(() => {
     if (iframeRef.current && isVideoLoaded) {
@@ -205,7 +207,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
           <div className="p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Link href={watchUrl}>
+                <Link href={watchUrl} onClick={handleWatchClick}>
                   <Button variant="premium" size="sm" className="gap-2 px-3">
                     <FaPlay className="w-3! h-3!" />
                     Play Now
