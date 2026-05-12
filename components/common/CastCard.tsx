@@ -34,9 +34,9 @@ const CastCard: React.FC<CastCardProps> = ({ person, index }) => {
             <Users className="w-10 h-10 text-white/10" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
-        <div className="absolute bottom-4 left-4 right-4">
-          <p className="text-[10px] text-blue-400 font-black tracking-tighter truncate leading-none mb-1">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-90" />
+        <div className="absolute bottom-3 left-3 right-3 z-10">
+          <p className="text-[10px] md:text-[11px] text-blue-400 font-black uppercase tracking-wider truncate drop-shadow-lg">
             {person.character}
           </p>
         </div>

@@ -39,42 +39,28 @@ export const PLAYER_SERVERS: PlayerServer[] = [
     tvUrl: (tmdbId: string, season: number, episode: number) =>
       `https://player.videasy.net/tv/${tmdbId}/${season}/${episode}`,
   },
-  // {
-  //   name: "VidSrc Embed",
-  //   id: "vidsrc-xyz",
-  //   movieUrl: (tmdbId: string) => `https://vidsrc.xyz/embed/movie/${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://vidsrc.xyz/embed/tv/${tmdbId}/${season}-${episode}`,
-  // },
-  // {
-  //   name: "111Movies",
-  //   id: "111movies",
-  //   movieUrl: (tmdbId: string) => `https://111movies.com/embed/movie/${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://111movies.com/embed/tv/${tmdbId}/${season}/${episode}`,
-  // },
-  // {
-  //   name: "VidZee",
-  //   id: "vidzee",
-  //   movieUrl: (tmdbId: string) => `https://vidzee.to/embed/movie/${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://vidzee.to/embed/tv/${tmdbId}/${season}/${episode}`,
-  // },
-  // {
-  //   name: "VidSrc",
-  //   id: "vidsrc-me",
-  //   movieUrl: (tmdbId: string) =>
-  //     `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&s=${season}&e=${episode}`,
-  // },
-  // {
-  //   name: "2Embed",
-  //   id: "2embed",
-  //   movieUrl: (tmdbId: string) => `https://www.2embed.cc/embed/${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://www.2embed.cc/embed/${tmdbId}/${season}/${episode}`,
-  // },
+  {
+    name: "111Movies",
+    id: "111movies",
+    movieUrl: (tmdbId: string) => `https://111movies.com/movie/${tmdbId}`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://111movies.com/tv/${tmdbId}/${season}/${episode}`,
+  },
+  {
+    name: "VidZee",
+    id: "vidzee",
+    movieUrl: (tmdbId: string) =>
+      `https://player.vidzee.wtf/embed/movie/${tmdbId}`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://player.vidzee.wtf/embed/tv/${tmdbId}/${season}/${episode}`,
+  },
+  {
+    name: "2Embed",
+    id: "2embed",
+    movieUrl: (tmdbId: string) => `https://www.2embed.cc/embed/${tmdbId}`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://www.2embed.cc/embed/${tmdbId}/${season}/${episode}`,
+  },
   // {
   //   name: "Maple",
   //   id: "maple",

@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Bookmark, Clock, Home, Layers, Search, Tv } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -28,12 +29,36 @@ const Sidebar = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "fixed left-0 top-0 hidden h-full flex-col py-10 lg:flex z-[100] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+          "fixed left-0 top-0 hidden h-full flex-col py-8 lg:flex z-[100] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           isHovered
             ? "w-72 bg-sidebar/95 backdrop-blur-3xl"
             : "w-20 bg-sidebar items-center",
         )}
       >
+        {/* Logo Section */}
+        <div className="px-5 mb-10 w-full">
+          <Link href="/" className="flex items-center gap-3 group/logo">
+            <div className="relative w-9 h-9 shrink-0 transition-transform duration-500 group-hover/logo:scale-110">
+              <Image
+                src="/favicon/apple-touch-icon.png"
+                alt="Logo"
+                fill
+                className="object-contain brightness-110 drop-shadow-[0_0_10px_rgba(37,99,235,0.4)]"
+              />
+            </div>
+            <div
+              className={cn(
+                "overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                isHovered ? "w-auto opacity-100 ml-0" : "w-0 opacity-0 -ml-4",
+              )}
+            >
+              <span className="font-black text-xl tracking-tighter text-white whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
+                BINGE<span className="text-blue-500">CLOUD</span>
+              </span>
+            </div>
+          </Link>
+        </div>
+
         <div className="flex flex-col items-start justify-center gap-2 flex-1 w-full px-3">
           {sidebarItems.map((item) => {
             const isActive = pathname === item.href;
