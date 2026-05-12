@@ -10,8 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Clock, Loader2, Play, Star, Tv2 } from "lucide-react";
+import { Calendar, Clock, Play, Star, Tv2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useHistoryStore } from "@/lib/store/useHistoryStore";
@@ -23,6 +24,31 @@ interface EpisodeSectionProps {
   tvId: number;
   seasons: TMDBSeason[];
 }
+
+const EpisodeSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    {[...Array(8)].map((_, i) => (
+      <div
+        key={i}
+        className="group relative rounded-xl md:rounded-2xl overflow-hidden border border-white/5 bg-white/5 flex flex-row md:flex-col animate-pulse"
+      >
+        <Skeleton className="aspect-video w-32 sm:w-40 md:w-full shrink-0" />
+        <div className="p-3 md:p-5 flex-1 flex flex-col justify-center gap-2">
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-3 w-10" />
+          </div>
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-3/4" />
+          <div className="flex gap-4 mt-2">
+            <Skeleton className="h-3 w-12" />
+            <Skeleton className="h-3 w-12" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
 
 const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
   const params = useParams();
@@ -105,9 +131,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
-        </div>
+        <EpisodeSkeleton />
       ) : episodes.length === 0 ? (
         <div className="relative group overflow-hidden border border-white/5 bg-zinc-950/50 rounded-[2rem] p-12 md:p-24 text-center space-y-6 animate-in fade-in zoom-in-95 duration-700">
           <div className="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-transparent pointer-events-none" />

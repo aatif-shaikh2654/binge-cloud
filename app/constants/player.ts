@@ -32,19 +32,19 @@ export const PLAYER_SERVERS: PlayerServer[] = [
     tvUrl: (tmdbId: string, season: number, episode: number) =>
       `https://moviesapi.club/tv/${tmdbId}/${season}/${episode}`,
   },
+  {
+    name: "VidEasy",
+    id: "videasy",
+    movieUrl: (tmdbId: string) => `https://player.videasy.net/movie/${tmdbId}`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://player.videasy.net/tv/${tmdbId}/${season}/${episode}`,
+  },
   // {
   //   name: "VidSrc Embed",
   //   id: "vidsrc-xyz",
   //   movieUrl: (tmdbId: string) => `https://vidsrc.xyz/embed/movie/${tmdbId}`,
   //   tvUrl: (tmdbId: string, season: number, episode: number) =>
   //     `https://vidsrc.xyz/embed/tv/${tmdbId}/${season}-${episode}`,
-  // },
-  // {
-  //   name: "VidEasy",
-  //   id: "videasy",
-  //   movieUrl: (tmdbId: string) => `https://videasy.net/embed/movie/${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://videasy.net/embed/tv/${tmdbId}/${season}/${episode}`,
   // },
   // {
   //   name: "111Movies",

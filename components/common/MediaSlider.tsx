@@ -10,9 +10,10 @@ interface MediaSliderProps {
   title: string;
   className?: string;
   media_type?: string;
+  seeAllHref?: string;
 }
 
-const MediaSliderSkeleton = ({
+export const MediaSliderSkeleton = ({
   title,
   className,
 }: {
@@ -37,7 +38,7 @@ const MediaSliderSkeleton = ({
       {[...Array(8)].map((_, i) => (
         <div
           key={i}
-          className="w-[140px] sm:w-[180px] md:w-[200px] lg:w-[240px] flex-shrink-0 flex flex-col gap-3"
+          className="w-[140px] sm:w-[140px] md:w-[160px] lg:w-[200px] flex-shrink-0 flex flex-col gap-3"
         >
           <Skeleton className="aspect-[2/3] w-full rounded-xl" />
           <div className="space-y-2 px-1">

@@ -2,14 +2,23 @@
 
 import React from "react";
 import { type TMDBMovie, type TMDBCreditsResponse } from "@/app/types/tmdb";
-import CastSlider from "../_components/CastSlider";
+import { type MediaType } from "@/app/types/common";
 import EpisodeSection from "../_components/EpisodeSection";
 import DetailHero from "../_components/DetailHero";
+import dynamic from "next/dynamic";
+
+const CastSlider = dynamic(() => import("../_components/CastSlider"), {
+  ssr: false,
+});
+
+const RelatedMedia = dynamic(() => import("../_components/RelatedMedia"), {
+  ssr: false,
+});
 
 interface DetailProps {
   details: TMDBMovie;
   credits: TMDBCreditsResponse;
-  tmdbType: "movie" | "tv";
+  tmdbType: MediaType;
 }
 
 const Detail: React.FC<DetailProps> = ({ details, credits, tmdbType }) => {
@@ -34,6 +43,11 @@ const Detail: React.FC<DetailProps> = ({ details, credits, tmdbType }) => {
           </div>
         </div>
       )}
+
+      {/* Related Media Section */}
+      <div className="relative z-10">
+        <RelatedMedia id={details.id} tmdbType={tmdbType} />
+      </div>
     </div>
   );
 };

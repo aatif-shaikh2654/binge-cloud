@@ -1,5 +1,6 @@
-import { getAnimeDetails } from "@/app/services/anilist.service";
 import { getMediaCredits, getMediaDetails } from "@/app/services/all.service";
+import { getAnimeDetails } from "@/app/services/anilist.service";
+import { type MediaType } from "@/app/types/common";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import AnimeDetail from "./AnimeDetail";
@@ -76,13 +77,14 @@ export default async function DetailPage({ params, searchParams }: PageProps) {
     }
   }
 
-  // ── TMDB branch ──────────────────────────────────────────────────────────────
-  const typeMap: Record<string, "movie" | "tv"> = {
+  // Map route names to TMDB types
+  const typeMap: Record<string, MediaType> = {
     movie: "movie",
     tv: "tv",
     trending: "movie",
   };
-  const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
+
+  const tmdbType = typeMap[media_type] || (media_type as MediaType);
 
   let details, credits;
   try {

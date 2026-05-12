@@ -2,6 +2,7 @@ import { getMediaDetails } from "@/app/services/all.service";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Watch from "./Watch";
+import { type MediaType } from "@/app/types/common";
 
 export async function generateMetadata({
   params,
@@ -10,12 +11,12 @@ export async function generateMetadata({
   const { media_type } = await params;
   const { id } = await searchParams;
 
-  const typeMap: Record<string, "movie" | "tv"> = {
+  const typeMap: Record<string, MediaType> = {
     movie: "movie",
     tv: "tv",
   };
 
-  const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
+  const tmdbType = typeMap[media_type] || (media_type as MediaType);
 
   try {
     const details = await getMediaDetails(id, tmdbType);
@@ -47,12 +48,12 @@ export default async function WatchPage({ params, searchParams }: PageProps) {
   }
 
   // Map route names to TMDB types
-  const typeMap: Record<string, "movie" | "tv"> = {
+  const typeMap: Record<string, MediaType> = {
     movie: "movie",
     tv: "tv",
   };
 
-  const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
+  const tmdbType = typeMap[media_type] || (media_type as MediaType);
 
   // Fetch details to get seasons for TV shows and media info for history
   const details = await getMediaDetails(id, tmdbType);

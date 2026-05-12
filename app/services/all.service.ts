@@ -1,11 +1,12 @@
-import { ApiService } from "./api.service";
 import {
+  type TMDBCreditsResponse,
+  type TMDBImageResponse,
   type TMDBMovie,
   type TMDBResponse,
-  type TMDBImageResponse,
-  type TMDBCreditsResponse,
   type TMDBSeasonDetails,
 } from "@/app/types/tmdb";
+import { type MediaType } from "@/app/types/common";
+import { ApiService } from "./api.service";
 import { tmdbInstance } from "./axios";
 
 /**
@@ -13,7 +14,7 @@ import { tmdbInstance } from "./axios";
  */
 const fetchMovieLogo = async (
   id: number,
-  type: "movie" | "tv",
+  type: MediaType,
 ): Promise<string | undefined> => {
   try {
     const data = (await tmdbInstance.get<TMDBImageResponse>(
@@ -86,9 +87,25 @@ export const getPopularMovies = async (
  */
 export const getMovieVideos = async (
   id: number,
-  type: "movie" | "tv",
-): Promise<TMDBResponse<{ id: string; key: string; name: string; type: string; site: string }>> => {
-  return ApiService<TMDBResponse<{ id: string; key: string; name: string; type: string; site: string }>>({
+  type: MediaType,
+): Promise<
+  TMDBResponse<{
+    id: string;
+    key: string;
+    name: string;
+    type: string;
+    site: string;
+  }>
+> => {
+  return ApiService<
+    TMDBResponse<{
+      id: string;
+      key: string;
+      name: string;
+      type: string;
+      site: string;
+    }>
+  >({
     method: "GET",
     url: `3/${type}/${id}/videos`,
   });
@@ -98,7 +115,7 @@ export const getMovieVideos = async (
  * Service to fetch a list of movies or TV shows
  */
 export const getMediaList = async (
-  type: "movie" | "tv",
+  type: MediaType,
   category: string = "popular",
   page: number = 1,
 ): Promise<TMDBResponse<TMDBMovie>> => {
@@ -114,7 +131,7 @@ export const getMediaList = async (
  */
 export const getMediaDetails = async (
   id: string | number,
-  type: "movie" | "tv",
+  type: MediaType,
 ): Promise<TMDBMovie> => {
   return ApiService<TMDBMovie>({
     method: "GET",
@@ -127,7 +144,7 @@ export const getMediaDetails = async (
  */
 export const getMediaCredits = async (
   id: string | number,
-  type: "movie" | "tv",
+  type: MediaType,
 ): Promise<TMDBCreditsResponse> => {
   return ApiService<TMDBCreditsResponse>({
     method: "GET",
@@ -166,7 +183,7 @@ export const searchMedia = async (
  * Service to discover media with advanced filters
  */
 export const discoverMedia = async (
-  type: "movie" | "tv",
+  type: MediaType,
   params: {
     page?: number;
     with_genres?: string;
@@ -181,5 +198,19 @@ export const discoverMedia = async (
     method: "GET",
     url: `3/discover/${type}`,
     params: { ...params, include_adult: false },
+  });
+};
+/**
+ * Service to fetch similar media (recommendations)
+ */
+export const getSimilarMedia = async (
+  id: string | number,
+  type: MediaType,
+  page: number = 1,
+): Promise<TMDBResponse<TMDBMovie>> => {
+  return ApiService<TMDBResponse<TMDBMovie>>({
+    method: "GET",
+    url: `3/${type}/${id}/recommendations`,
+    params: { page },
   });
 };

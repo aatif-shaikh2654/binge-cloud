@@ -2,6 +2,8 @@
  * Type definitions for TMDB API entities
  */
 
+import { type MediaType } from "./common";
+
 export interface TMDBMovie {
   id: number;
   title?: string;
@@ -13,7 +15,7 @@ export interface TMDBMovie {
   release_date?: string;
   first_air_date?: string;
   overview: string;
-  media_type?: "movie" | "tv";
+  media_type?: MediaType;
   genre_ids?: number[];
   genres?: TMDBGenre[];
   runtime?: number;

@@ -1,6 +1,7 @@
 "use client";
 
-import { getMediaList } from "@/app/services/all.service";
+import { getMediaList, getSimilarMedia } from "@/app/services/all.service";
+import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
 import MovieCard from "@/components/common/MovieCard";
 import { Loader2 } from "lucide-react";
@@ -8,10 +9,15 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface MediaListProps {
   initialData: TMDBResponse<TMDBMovie>;
-  mediaType: "movie" | "tv";
+  mediaType: MediaType;
+  relatedTo?: string | number;
 }
 
-const MediaList: React.FC<MediaListProps> = ({ initialData, mediaType }) => {
+const MediaList: React.FC<MediaListProps> = ({
+  initialData,
+  mediaType,
+  relatedTo,
+}) => {
   const [items, setItems] = useState<TMDBMovie[]>(initialData.results || []);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(page < initialData.total_pages);
@@ -47,7 +53,9 @@ const MediaList: React.FC<MediaListProps> = ({ initialData, mediaType }) => {
     const loadMore = async () => {
       setIsLoading(true);
       try {
-        const newData = await getMediaList(mediaType, "popular", page);
+        const newData = relatedTo
+          ? await getSimilarMedia(relatedTo, mediaType, page)
+          : await getMediaList(mediaType, "popular", page);
         setItems((prev) => {
           // Filter out potential duplicates just in case
           const newItems = newData.results || [];
@@ -66,7 +74,7 @@ const MediaList: React.FC<MediaListProps> = ({ initialData, mediaType }) => {
     };
 
     loadMore();
-  }, [page, mediaType]);
+  }, [page, mediaType, relatedTo]);
 
   return (
     <div className="px-4 lg:px-24 flex flex-col gap-10">
