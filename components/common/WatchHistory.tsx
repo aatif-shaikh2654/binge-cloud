@@ -1,9 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHistoryStore } from "@/lib/store/useHistoryStore";
-import React from "react";
+import dynamic from "next/dynamic";
 
 const WatchHistorySkeleton = () => (
   <section className="ps-8! lg:ps-24! md:py-8 pb-12 overflow-hidden">
@@ -17,20 +16,17 @@ const WatchHistorySkeleton = () => (
       {[...Array(4)].map((_, i) => (
         <Skeleton
           key={i}
-          className="w-[240px] md:w-[300px] lg:w-[400px] flex-shrink-0 aspect-video rounded-2xl"
+          className="w-[240px] md:w-[300px] lg:w-[400px] shrink-0 aspect-video rounded-2xl"
         />
       ))}
     </div>
   </section>
 );
 
-const WatchHistorySwiper = dynamic(
-  () => import("./WatchHistorySwiper"),
-  {
-    ssr: false,
-    loading: () => <WatchHistorySkeleton />,
-  }
-);
+const WatchHistorySwiper = dynamic(() => import("./WatchHistorySwiper"), {
+  ssr: false,
+  loading: () => <WatchHistorySkeleton />,
+});
 
 const WatchHistory = () => {
   const { history } = useHistoryStore();
