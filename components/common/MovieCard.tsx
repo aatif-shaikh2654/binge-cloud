@@ -1,17 +1,17 @@
 "use client";
 
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { getMovieVideos } from "@/app/services/all.service";
 import { MediaType } from "@/app/types/common";
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
-import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
 import { usePlayerStore } from "@/lib/store/usePlayerStore";
+import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
 import { cn } from "@/lib/utils";
 import { Bookmark, Plus, Star, Volume2, VolumeX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
@@ -240,7 +240,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
                   {releaseYear}
                 </span>
               </div>
-              <h3 className="text-lg font-black text-white leading-tight mb-2">
+              <h3 className="text-lg font-black text-white leading-tight truncate mb-2">
                 {movie.title || movie.name}
               </h3>
               <p className="text-white/60 text-xs line-clamp-3 leading-relaxed font-medium">
