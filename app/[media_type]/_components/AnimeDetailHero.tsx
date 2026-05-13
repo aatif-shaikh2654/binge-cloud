@@ -158,7 +158,7 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
 
           {/* Actions */}
           <div className="flex flex-wrap items-center justify-start gap-3">
-            <Link href={`/anime/watch?id=${details.id}`}>
+            <Link href={`/anime/watch?id=${details.id}&ep=1`}>
               <Button
                 variant="premium"
                 size="xl"

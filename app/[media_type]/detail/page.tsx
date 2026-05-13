@@ -68,13 +68,14 @@ export default async function DetailPage({ params, searchParams }: PageProps) {
 
   // ── Anime branch ─────────────────────────────────────────────────────────────
   if (media_type === "anime") {
+    let details;
     try {
-      const details = await getAnimeDetails(id);
-      return <AnimeDetail details={details} />;
+      details = await getAnimeDetails(id);
     } catch (error) {
       console.error("Error loading anime detail:", error);
       notFound();
     }
+    return <AnimeDetail details={details} />;
   }
 
   // Map route names to TMDB types

@@ -16,10 +16,18 @@ interface AnimeCardProps {
 const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const title = anime.title.english || anime.title.romaji || anime.title.native || "Unknown";
+  const title =
+    anime.title.english ||
+    anime.title.romaji ||
+    anime.title.native ||
+    "Unknown";
   const score = anime.averageScore != null ? `${anime.averageScore}%` : "N/A";
-  const format = anime.format ? (FORMAT_LABEL[anime.format] ?? anime.format) : null;
-  const status = anime.status ? (STATUS_LABEL[anime.status] ?? anime.status) : null;
+  const format = anime.format
+    ? (FORMAT_LABEL[anime.format] ?? anime.format)
+    : null;
+  const status = anime.status
+    ? (STATUS_LABEL[anime.status] ?? anime.status)
+    : null;
   const year = anime.seasonYear;
   const coverSrc = anime.coverImage.extraLarge || anime.coverImage.large;
 
@@ -71,7 +79,9 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
           <div className="absolute top-3 right-3">
             <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-md px-2 py-1 flex items-center gap-1">
               <Star className="w-3 h-3 text-green-500 fill-green-500" />
-              <span className="text-[10px] font-black text-green-500">{score}</span>
+              <span className="text-[10px] font-black text-green-500">
+                {score}
+              </span>
             </div>
           </div>
 
@@ -95,7 +105,8 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
 
       {/* Hover detail card */}
       {isHovered && (
-        <div
+        <Link
+          href={`/anime/detail?id=${anime.id}`}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] bg-card rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-[200] animate-in zoom-in-95 duration-200"
           style={{ transformOrigin: "center" }}
         >
@@ -130,7 +141,9 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
               )}
             </div>
 
-            <h3 className="text-base font-black text-white leading-tight line-clamp-2">{title}</h3>
+            <h3 className="text-base font-black text-white leading-tight line-clamp-2">
+              {title}
+            </h3>
 
             {anime.genres.length > 0 && (
               <div className="flex flex-wrap gap-1">
@@ -151,7 +164,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
               </p>
             )}
           </div>
-        </div>
+        </Link>
       )}
     </div>
   );

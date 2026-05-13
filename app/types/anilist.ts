@@ -134,6 +134,18 @@ export interface AniListRelations {
   edges: AniListRelationEdge[];
 }
 
+export interface AniListStreamingEpisode {
+  title: string | null;
+  thumbnail: string | null;
+  url: string | null;
+  site: string | null;
+}
+
+export interface AniListNextAiringEpisode {
+  episode: number;
+  airingAt: number;
+}
+
 export interface AniListMediaDetail extends AniListMedia {
   duration: number | null;
   source: string | null;
@@ -145,6 +157,8 @@ export interface AniListMediaDetail extends AniListMedia {
   trailer: AniListTrailer | null;
   characters: AniListCharacters | null;
   relations: AniListRelations | null;
+  streamingEpisodes: AniListStreamingEpisode[];
+  nextAiringEpisode: AniListNextAiringEpisode | null;
 }
 
 // ─── Response wrappers ────────────────────────────────────────────────────────

@@ -100,6 +100,16 @@ export const ANIME_DETAIL_QUERY = `
           }
         }
       }
+      streamingEpisodes {
+        title
+        thumbnail
+        url
+        site
+      }
+      nextAiringEpisode {
+        episode
+        airingAt
+      }
     }
   }
 `;
