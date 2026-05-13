@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
@@ -28,6 +29,7 @@ const HerosectionSwiper: React.FC<HerosectionProps> = ({ movies }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+  const { handleWatchClick } = useWatchNavigation();
 
   if (!movies || movies.length === 0) return null;
 
@@ -122,7 +124,7 @@ const HerosectionSwiper: React.FC<HerosectionProps> = ({ movies }) => {
                   </p>
 
                   <div className="flex items-center gap-3">
-                    <Link href={watchUrl(movie)}>
+                    <Link href={watchUrl(movie)} onClick={handleWatchClick}>
                       <Button variant="premium" size="xl" className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6">
                         <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" /> Watch Now
                       </Button>

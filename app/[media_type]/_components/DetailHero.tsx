@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Bookmark, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import React from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ interface DetailHeroProps {
 
 const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+  const { handleWatchClick } = useWatchNavigation();
 
   const inWatchlist = isInWatchlist(details.id, tmdbType);
 
@@ -127,7 +129,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
 
           {/* Action Buttons - Slightly smaller */}
           <div className="flex flex-wrap items-center justify-start gap-3">
-            <Link href={watchUrl}>
+            <Link href={watchUrl} onClick={handleWatchClick}>
               <Button
                 variant="premium"
                 size="xl"

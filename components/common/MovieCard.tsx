@@ -6,11 +6,13 @@ import { MediaType } from "@/app/types/common";
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
 import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
+import { usePlayerStore } from "@/lib/store/usePlayerStore";
 import { cn } from "@/lib/utils";
 import { Bookmark, Plus, Star, Volume2, VolumeX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useMemo, useRef, useState } from "react";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
 
@@ -23,10 +25,25 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showHoverCard, setShowHoverCard] = useState(false);
   const [videoKey, setVideoKey] = useState<string | null>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const { isMuted, setIsMuted } = usePlayerStore();
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+  const { handleWatchClick } = useWatchNavigation();
+
+  useEffect(() => {
+    if (iframeRef.current && isVideoLoaded) {
+      iframeRef.current.contentWindow?.postMessage(
+        JSON.stringify({
+          event: "command",
+          func: isMuted ? "mute" : "unMute",
+          args: [],
+        }),
+        "*",
+      );
+    }
+  }, [isMuted, isVideoLoaded]);
 
   const inWatchlist = isInWatchlist(movie.id, movie.media_type);
 
@@ -151,7 +168,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
                   />
                 )}
                 <iframe
-                  src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}`}
+                  ref={iframeRef}
+                  src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}&enablejsapi=1`}
                   className={cn(
                     "w-full h-full scale-[1.35] transition-opacity duration-500",
                     isVideoLoaded ? "opacity-100" : "opacity-0",
@@ -189,7 +207,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
           <div className="p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Link href={watchUrl}>
+                <Link href={watchUrl} onClick={handleWatchClick}>
                   <Button variant="premium" size="sm" className="gap-2 px-3">
                     <FaPlay className="w-3! h-3!" />
                     Play Now
@@ -213,7 +231,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
               </div>
             </div>
 
-            <div>
+            <Link href={detailUrl}>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-green-500 font-black text-xs uppercase tracking-wider">
                   {rating}% Match
@@ -228,7 +246,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
               <p className="text-white/60 text-xs line-clamp-3 leading-relaxed font-medium">
                 {movie.overview}
               </p>
-            </div>
+            </Link>
           </div>
         </div>
       )}

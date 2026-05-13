@@ -38,9 +38,7 @@ const Detail: React.FC<DetailProps> = ({ details, credits, tmdbType }) => {
       {/* Dedicated Cast Section: Spans Full Width */}
       {credits?.cast && credits.cast.length > 0 && (
         <div className="relative z-10 mt-12 md:mt-24">
-          <div className="container mx-auto px-6 lg:px-20">
-            <CastSlider cast={credits.cast} />
-          </div>
+          <CastSlider cast={credits.cast} />
         </div>
       )}
 

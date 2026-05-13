@@ -117,6 +117,7 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
                         src={`https://image.tmdb.org/t/p/w300${episode.still_path}`}
                         alt={episode.name}
                         fill
+                        sizes="100px"
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (

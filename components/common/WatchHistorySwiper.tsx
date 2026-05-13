@@ -4,6 +4,7 @@ import { useHistoryStore } from "@/lib/store/useHistoryStore";
 import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import React from "react";
 import { FreeMode, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,6 +16,7 @@ import "swiper/css/navigation";
 
 const WatchHistorySwiper = () => {
   const { history, removeFromHistory } = useHistoryStore();
+  const { handleWatchClick } = useWatchNavigation();
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
 
@@ -75,13 +77,15 @@ const WatchHistorySwiper = () => {
           }}
           className="!overflow-visible"
         >
-          {history.map((item) => (
-            <SwiperSlide key={item.id} className="pb-4">
-              <div className="group relative w-full aspect-video rounded-2xl overflow-hidden border border-white/5 bg-white/5 hover:border-blue-500/30 transition-all duration-500">
-                <Link
-                  href={`/${item.media_type === "tv" ? "series" : "movie"}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`}
-                  className="block w-full h-full"
-                >
+          {history.map((item) => {
+            return (
+              <SwiperSlide key={item.id} className="pb-4">
+                <div className="group relative w-full aspect-video rounded-2xl overflow-hidden border border-white/5 bg-white/5 hover:border-blue-500/30 transition-all duration-500">
+                  <Link
+                    href={`/${item.media_type}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`}
+                    onClick={handleWatchClick}
+                    className="block w-full h-full"
+                  >
                   <Image
                     src={`https://image.tmdb.org/t/p/w500${item.backdrop_path || item.poster_path}`}
                     alt={item.title}
@@ -104,7 +108,7 @@ const WatchHistorySwiper = () => {
                     </h3>
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1.5 flex items-center gap-2">
                       <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/60">
-                        {item.media_type === "tv" ? "Series" : "Movie"}
+                        {item.media_type === "tv" ? "TV" : "Movie"}
                       </span>
                       {item.media_type === "tv" && (
                         <span>
@@ -120,13 +124,14 @@ const WatchHistorySwiper = () => {
                     e.preventDefault();
                     removeFromHistory(item.id);
                   }}
-                  className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-white hover:bg-red-500/80 transition-all opacity-0 group-hover:opacity-100 z-10 border border-white/10 shadow-lg"
+                  className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-white hover:bg-red-500/80 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10 border border-white/10 shadow-lg"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             </SwiperSlide>
-          ))}
+              );
+          })}
         </Swiper>
       </div>
     </section>
