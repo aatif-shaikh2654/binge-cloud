@@ -1,6 +1,7 @@
 "use client";
 
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { getSeasonDetails } from "@/app/services/all.service";
 import { TMDBEpisode, type TMDBSeason } from "@/app/types/tmdb";
 import {
@@ -11,14 +12,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useHistoryStore } from "@/lib/store/useHistoryStore";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, Play, Star, Tv2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useHistoryStore } from "@/lib/store/useHistoryStore";
-import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import React, { useState } from "react";
 
 interface EpisodeSectionProps {
@@ -69,7 +69,9 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
       : seasons[0]?.season_number || 1;
   });
 
-  const [prevHistorySeason, setPrevHistorySeason] = useState(historyItem?.season);
+  const [prevHistorySeason, setPrevHistorySeason] = useState(
+    historyItem?.season,
+  );
   if (historyItem?.season !== prevHistorySeason) {
     setPrevHistorySeason(historyItem?.season);
     if (historyItem?.season) {
@@ -146,7 +148,9 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                 Episodes Incoming
               </h3>
               <p className="text-white/40 text-xs md:text-base max-w-md mx-auto font-medium leading-relaxed">
-                We couldn&apos;t find any episodes for Season {selectedSeason} yet. Our servers are syncing with TMDB to bring you the latest content.
+                We couldn&apos;t find any episodes for Season {selectedSeason}{" "}
+                yet. Our servers are syncing with TMDB to bring you the latest
+                content.
               </p>
             </div>
             <div className="flex justify-center pt-4">
@@ -169,7 +173,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                 href={watchUrl(episode)}
                 onClick={handleWatchClick}
                 className={cn(
-                  "group relative rounded-xl md:rounded-2xl overflow-hidden border transition-all duration-500 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col",
+                  "group relative rounded-lg md:rounded-2xl overflow-hidden border transition-all duration-500 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col",
                   isCurrentlyWatching
                     ? "bg-blue-600/10 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.15)]"
                     : "bg-white/5 border-white/5 hover:border-white/20",
@@ -223,7 +227,9 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                     <h4
                       className={cn(
                         "text-xs md:text-sm font-black transition-colors line-clamp-1",
-                        isCurrentlyWatching ? "text-blue-400" : "text-white group-hover:text-blue-500",
+                        isCurrentlyWatching
+                          ? "text-blue-400"
+                          : "text-white group-hover:text-blue-500",
                       )}
                     >
                       {episode.name}
@@ -254,7 +260,6 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
             );
           })}
         </div>
-
       )}
     </div>
   );

@@ -1,13 +1,13 @@
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export const useWatchNavigation = () => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
 
   const handleWatchClick = () => {
     if (typeof window === "undefined") return;
-    const currentPath = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+    const search = window.location.search;
+    const currentPath = `${pathname}${search}`;
     sessionStorage.setItem("lastPage", currentPath);
   };
 
@@ -18,8 +18,7 @@ export const useWatchNavigation = () => {
     }
 
     const sessionLastPage = sessionStorage.getItem("lastPage");
-    const urlLastPage = searchParams.get("lastPage");
-    const lastPage = sessionLastPage || urlLastPage;
+    const lastPage = sessionLastPage;
 
     if (lastPage) {
       sessionStorage.removeItem("lastPage");
