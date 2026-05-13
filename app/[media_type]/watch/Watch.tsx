@@ -149,7 +149,7 @@ const Watch: React.FC<WatchProps> = ({ id, tmdbType, seasons, details }) => {
 
         <iframe
           ref={iframeRef}
-          src={"https://megaplay.buzz/stream/s-2/2142/sub?autostart=true"}
+          src={videoUrl}
           className={cn(
             "w-full h-full border-none transition-opacity duration-1000",
             isVideoLoaded
