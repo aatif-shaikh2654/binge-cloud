@@ -20,6 +20,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         premium:
           "bg-white text-black font-black hover:bg-white/90 shadow-[0_0_25px_rgba(255,255,255,0.3)] border-none hover:-translate-y-1 hover:shadow-[0_0_35px_rgba(255,255,255,0.45)] active:scale-95 play-button-premium",
+        premiumBlue:
+          "bg-blue-600 text-white font-black hover:bg-blue-700 shadow-[0_0_25px_rgba(37,99,235,0.4)] border-none hover:-translate-y-1 hover:shadow-[0_0_35px_rgba(37,99,235,0.55)] active:scale-95",
         glass:
           "bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/5 text-white hover:-translate-y-1 hover:border-white/20 active:scale-95",
       },

@@ -1,21 +1,18 @@
 "use client";
 
 import { PLAYER_SERVERS, type PlayerServer } from "@/app/constants/player";
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie, type TMDBSeason } from "@/app/types/tmdb";
-import { useHistoryStore } from "@/lib/store/useHistoryStore";
-import { cn } from "@/lib/utils";
-import { ArrowLeft, Loader2 } from "lucide-react";
-import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 import {
   useParams,
   usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
+import Player from "../_components/Player";
 import EpisodeSwitcher from "../_components/EpisodeSwitcher";
 import ServerSwitcher from "../_components/ServerSwitcher";
 
@@ -32,9 +29,6 @@ const Watch: React.FC<WatchProps> = ({ id, tmdbType, seasons, details }) => {
   const searchParams = useSearchParams();
   const params = useParams();
   const mediaType = params.media_type as string;
-  const addToHistory = useHistoryStore((state) => state.addToHistory);
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Single Source of Truth: Get current server, season, and episode from URL
   const serverId = searchParams.get("server");
@@ -43,23 +37,6 @@ const Watch: React.FC<WatchProps> = ({ id, tmdbType, seasons, details }) => {
 
   const season = Number(searchParams.get("season")) || 1;
   const episode = Number(searchParams.get("episode")) || 1;
-
-  // Add to history effect
-  useEffect(() => {
-    if (!details) return;
-
-    addToHistory({
-      id: Number(id),
-      media_type: tmdbType,
-      title: details.title || details.name || "Unknown",
-      poster_path: details.poster_path,
-      backdrop_path: details.backdrop_path,
-      server: currentServer.id,
-      season: tmdbType === "tv" ? season : undefined,
-      episode: tmdbType === "tv" ? episode : undefined,
-      watchedAt: Date.now(),
-    });
-  }, [id, tmdbType, details, currentServer.id, season, episode, addToHistory]);
 
   const handleServerChange = (server: PlayerServer) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -84,24 +61,12 @@ const Watch: React.FC<WatchProps> = ({ id, tmdbType, seasons, details }) => {
     navigateBack(`/${mediaType}/detail?id=${id}`);
   };
 
-  const videoUrl =
-    tmdbType === "tv"
-      ? currentServer.tvUrl(id, season, episode)
-      : currentServer.movieUrl(id);
-
-  // Reset video loaded state when URL changes (Sync state with URL)
-  const [prevUrl, setPrevUrl] = useState(videoUrl);
-  if (videoUrl !== prevUrl) {
-    setPrevUrl(videoUrl);
-    setIsVideoLoaded(false);
-  }
-
   return (
     <div className="fixed inset-0 z-1000 bg-background">
       {/* Back Button */}
       <button
         onClick={handleBack}
-        className="absolute top-6 left-6 z-100 p-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-white/20 transition-all group"
+        className="absolute top-6 left-6 z-100 p-3 bg-zinc-900 border border-white/10 rounded-full text-white hover:bg-zinc-800 transition-all group shadow-2xl"
       >
         <ArrowLeft className="w-6 h-6 transition-transform group-hover:-translate-x-1" />
       </button>
@@ -125,43 +90,16 @@ const Watch: React.FC<WatchProps> = ({ id, tmdbType, seasons, details }) => {
         </div>
       </div>
 
-      {/* Video Player Iframe - Background layer */}
-      <div className="absolute inset-0 z-0 bg-background overflow-hidden">
-        {/* Backdrop / Loader Layer */}
-        {!isVideoLoaded && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
-            <Image
-              src={`${TMDB_IMAGE_BASE_URL}/original${details.backdrop_path || details.poster_path}`}
-              alt="Backdrop"
-              fill
-              sizes="100vw"
-              className="object-cover opacity-20 blur-sm scale-110"
-              priority
-            />
-            <div className="relative z-20 flex flex-col items-center gap-4">
-              <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-              <p className="text-white/60 font-medium animate-pulse">
-                Initializing Player...
-              </p>
-            </div>
-          </div>
-        )}
-
-        <iframe
-          ref={iframeRef}
-          src={videoUrl}
-          className={cn(
-            "w-full h-full border-none transition-opacity duration-1000",
-            isVideoLoaded
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none",
-          )}
-          allowFullScreen
-          allow="autoplay; encrypted-media; picture-in-picture"
-          onLoad={() => setIsVideoLoaded(true)}
-          title="BingeCloud Video Player"
-        />
-      </div>
+      <Player
+        id={id}
+        tmdbType={tmdbType}
+        currentServer={currentServer}
+        season={season}
+        episode={episode}
+        details={details}
+        seasons={seasons}
+        onEpisodeChange={handleEpisodeChange}
+      />
     </div>
   );
 };

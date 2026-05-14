@@ -8,13 +8,13 @@ export interface TMDBMovie {
   id: number;
   title?: string;
   name?: string;
-  poster_path: string;
-  backdrop_path: string;
+  poster_path?: string;
+  backdrop_path?: string;
   logo_path?: string;
   vote_average: number;
   release_date?: string;
   first_air_date?: string;
-  overview: string;
+  overview?: string;
   media_type?: MediaType;
   genre_ids?: number[];
   genres?: TMDBGenre[];

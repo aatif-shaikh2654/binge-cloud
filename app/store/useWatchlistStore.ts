@@ -1,14 +1,16 @@
+import { MediaType, UnifiedMediaItem } from "@/app/types/common";
+import { del, get, set } from "idb-keyval";
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { get, set, del } from "idb-keyval";
-import { TMDBMovie } from "@/app/types/tmdb";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+export type WatchlistItem = UnifiedMediaItem;
 
 interface WatchlistState {
-  watchlist: TMDBMovie[];
-  addToWatchlist: (movie: TMDBMovie) => void;
-  removeFromWatchlist: (id: number, media_type?: "movie" | "tv") => void;
-  toggleWatchlist: (movie: TMDBMovie) => void;
-  isInWatchlist: (id: number, media_type?: "movie" | "tv") => boolean;
+  watchlist: WatchlistItem[];
+  addToWatchlist: (item: WatchlistItem) => void;
+  removeFromWatchlist: (id: number, media_type: MediaType) => void;
+  toggleWatchlist: (item: WatchlistItem) => void;
+  isInWatchlist: (id: number, media_type: MediaType) => boolean;
 }
 
 // Custom storage for IndexedDB using idb-keyval
@@ -29,40 +31,36 @@ export const useWatchlistStore = create<WatchlistState>()(
   persist(
     (set, get) => ({
       watchlist: [],
-      addToWatchlist: (movie) =>
+      addToWatchlist: (item) =>
         set((state) => ({
-          watchlist: [movie, ...state.watchlist],
+          watchlist: [item, ...state.watchlist],
         })),
       removeFromWatchlist: (id, media_type) =>
         set((state) => ({
           watchlist: state.watchlist.filter(
-            (m) => !(m.id === id && (m.media_type || media_type) === (media_type || m.media_type))
+            (m) => !(m.id === id && m.media_type === media_type),
           ),
         })),
-      toggleWatchlist: (movie) => {
+      toggleWatchlist: (item) => {
         const { watchlist, addToWatchlist, removeFromWatchlist } = get();
         const isIn = watchlist.some(
-          (m) =>
-            m.id === movie.id &&
-            (m.media_type || movie.media_type) === (movie.media_type || m.media_type)
+          (m) => m.id === item.id && m.media_type === item.media_type,
         );
         if (isIn) {
-          removeFromWatchlist(movie.id, movie.media_type);
+          removeFromWatchlist(item.id, item.media_type);
         } else {
-          addToWatchlist(movie);
+          addToWatchlist(item);
         }
       },
       isInWatchlist: (id, media_type) => {
         return get().watchlist.some(
-          (m) =>
-            m.id === id &&
-            (m.media_type || media_type) === (media_type || m.media_type)
+          (m) => m.id === id && m.media_type === media_type,
         );
       },
     }),
     {
       name: "binge-watchlist",
       storage: createJSONStorage(() => idbStorage),
-    }
-  )
+    },
+  ),
 );

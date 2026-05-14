@@ -1,107 +1,81 @@
 "use client";
 
-import AnimeEpisodeSwitcher from "@/app/[media_type]/_components/AnimeEpisodeSwitcher";
-import { cn } from "@/lib/utils";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import AnimePlayer from "@/app/anime/_components/AnimePlayer";
+import AnimeServerSwitcher from "@/app/anime/_components/AnimeServerSwitcher";
+import { ANIME_SERVERS } from "@/app/constants/anime";
+import { resolveEpisodeCount } from "@/app/anime/_components/AnimeEpisodeSectionContent";
+import AnimeEpisodeSwitcher from "@/app/anime/_components/AnimeEpisodeSwitcher";
+import { type AniListMediaDetail } from "@/app/types/anilist";
+import { ArrowLeft } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
-
-const MEGAPLAY_BASE = "https://megaplay.buzz/stream/ani";
-
-type Lang = "sub" | "dub";
+import React, { useCallback } from "react";
 
 interface AnimeWatchProps {
   id: string;
+  initialDetails: AniListMediaDetail;
 }
 
-const AnimeWatch: React.FC<AnimeWatchProps> = ({ id }) => {
+const AnimeWatch: React.FC<AnimeWatchProps> = ({ id, initialDetails }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const ep = Math.max(1, Number(searchParams.get("ep")) || 1);
-  const lang = (searchParams.get("lang") as Lang) || "sub";
+  const serverId = searchParams.get("server") || "megaplay-sub";
+  
+  const currentServer = ANIME_SERVERS.find(s => s.id === serverId) || ANIME_SERVERS[0];
 
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const totalCount = resolveEpisodeCount(
+    initialDetails.episodes,
+    initialDetails.nextAiringEpisode,
+    initialDetails.streamingEpisodes.length,
+  );
 
-  const videoUrl = `${MEGAPLAY_BASE}/${id}/${ep}/${lang}`;
-
-  const [prevUrl, setPrevUrl] = useState(videoUrl);
-  if (videoUrl !== prevUrl) {
-    setPrevUrl(videoUrl);
-    setIsVideoLoaded(false);
-  }
-
-  const navigate = (newEp?: number, newLang?: Lang) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (newEp !== undefined) params.set("ep", newEp.toString());
-    if (newLang !== undefined) params.set("lang", newLang);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
+  const navigate = useCallback(
+    (newEp?: number, newServer?: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (newEp !== undefined) params.set("ep", newEp.toString());
+      if (newServer !== undefined) params.set("server", newServer);
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
 
   return (
     <div className="fixed inset-0 z-[1000] bg-background">
       {/* Back */}
       <button
         onClick={() => router.push(`/anime/detail?id=${id}`)}
-        className="absolute top-6 left-6 z-[100] p-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-white/20 transition-all group"
+        className="absolute top-6 left-6 z-[100] p-3 bg-zinc-900 border border-white/10 rounded-full text-white hover:bg-zinc-800 transition-all group shadow-2xl"
       >
         <ArrowLeft className="w-6 h-6 transition-transform group-hover:-translate-x-1" />
       </button>
 
       {/* Controls — top right */}
       <div className="absolute top-6 right-6 z-[100] flex items-center gap-2">
-        {/* Sub / Dub toggle */}
-        <div className="flex items-center bg-black/40 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-          {(["sub", "dub"] as Lang[]).map((l) => (
-            <button
-              key={l}
-              onClick={() => navigate(undefined, l)}
-              className={cn(
-                "px-4 h-11 text-[10px] font-black uppercase tracking-widest transition-all",
-                lang === l
-                  ? "bg-blue-600 text-white"
-                  : "text-white/50 hover:text-white hover:bg-white/10",
-              )}
-            >
-              {l}
-            </button>
-          ))}
-        </div>
+        {/* Server switcher sheet */}
+        <AnimeServerSwitcher 
+          currentServer={currentServer}
+          onServerChange={(server) => navigate(undefined, server.id)}
+        />
 
         {/* Episode switcher sheet */}
         <AnimeEpisodeSwitcher
           animeId={id}
           currentEp={ep}
           onEpisodeChange={(newEp) => navigate(newEp)}
+          initialDetails={initialDetails}
         />
       </div>
 
-      {/* Loader overlay */}
-      {!isVideoLoaded && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-            <p className="text-white/60 font-medium animate-pulse">
-              Initializing Player...
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Player */}
-      <iframe
-        key={videoUrl}
-        src={videoUrl}
-        className={cn(
-          "absolute inset-0 w-full h-full border-none transition-opacity duration-1000",
-          isVideoLoaded ? "opacity-100" : "opacity-0 pointer-events-none",
-        )}
-        allowFullScreen
-        allow="autoplay; encrypted-media; picture-in-picture"
-        onLoad={() => setIsVideoLoaded(true)}
-        title={`Anime ${id} — Episode ${ep}`}
-        scrolling="no"
+      {/* Player Area */}
+      <AnimePlayer
+        id={id}
+        ep={ep}
+        currentServer={currentServer}
+        totalCount={totalCount}
+        navigate={navigate}
+        initialDetails={initialDetails}
       />
     </div>
   );

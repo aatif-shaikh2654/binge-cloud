@@ -91,11 +91,7 @@ export const ANIME_DETAIL_QUERY = `
         edges {
           relationType(version: 2)
           node {
-            id
-            title { romaji english }
-            coverImage { large extraLarge }
-            format
-            status
+            ${ANIME_MEDIA_FRAGMENT}
             type
           }
         }

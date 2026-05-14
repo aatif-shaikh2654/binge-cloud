@@ -1,6 +1,6 @@
 "use client";
 
-import { PLAYER_SERVERS, type PlayerServer } from "@/app/constants/player";
+import { ANIME_SERVERS, type AnimeServer } from "@/app/constants/anime";
 import { buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -14,27 +14,28 @@ import { cn } from "@/lib/utils";
 import { Server } from "lucide-react";
 import React, { useState } from "react";
 
-interface ServerSwitcherProps {
-  currentServer: PlayerServer;
-  onServerChange: (server: PlayerServer) => void;
+interface AnimeServerSwitcherProps {
+  currentServer: AnimeServer;
+  onServerChange: (server: AnimeServer) => void;
 }
 
-const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
+const AnimeServerSwitcher: React.FC<AnimeServerSwitcherProps> = ({
   currentServer,
   onServerChange,
 }) => {
   const [open, setOpen] = useState(false);
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         className={cn(
           buttonVariants({ variant: "outline" }),
-          "bg-black border-white/10 text-white hover:bg-zinc-900 h-12 px-3 rounded-lg gap-2 shadow-xl hover:border-blue-500/50 transition-all",
+          "bg-black border-white/10 text-white hover:bg-zinc-900 h-11 px-3 rounded-lg gap-2 shadow-xl hover:border-blue-500/50 transition-all",
         )}
       >
         <Server className="w-4 h-4 text-blue-400" />
         <span className="hidden sm:inline font-black uppercase tracking-widest text-[10px]">
-          {currentServer.name}
+          {currentServer.name} ({currentServer.lang})
         </span>
       </SheetTrigger>
       <SheetContent
@@ -47,17 +48,17 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
               <div className="p-1.5 bg-blue-600/10 rounded-lg border border-blue-500/20">
                 <Server className="w-4 h-4 text-blue-500" />
               </div>
-              Switch Server
+              Streaming Servers
             </SheetTitle>
           </div>
           <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.2em] mt-1.5">
-            Select a high-speed link
+            Select a server & language
           </p>
         </SheetHeader>
 
         <ScrollArea className="flex-1 min-h-0">
           <div className="flex flex-col gap-2 p-6">
-            {PLAYER_SERVERS.map((server) => {
+            {ANIME_SERVERS.map((server) => {
               const isActive = currentServer.id === server.id;
               return (
                 <button
@@ -88,16 +89,26 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
                       />
                     </div>
                     <div className="flex flex-col items-start">
-                      <p className="text-[13px] font-black tracking-tight uppercase">
-                        {server.name}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[13px] font-black tracking-tight uppercase">
+                          {server.name}
+                        </p>
+                        <span className={cn(
+                          "px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter border",
+                          isActive 
+                            ? "bg-white/20 border-white/20 text-white" 
+                            : "bg-blue-500/10 border-blue-500/20 text-blue-500"
+                        )}>
+                          {server.lang}
+                        </span>
+                      </div>
                       <p
                         className={cn(
                           "text-[9px] font-bold uppercase tracking-widest mt-0.5",
                           isActive ? "text-white/70" : "text-white/20",
                         )}
                       >
-                        {isActive ? "Connected" : "High Speed"}
+                        {isActive ? "Currently Streaming" : "High Speed Link"}
                       </p>
                     </div>
                   </div>
@@ -125,4 +136,4 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
   );
 };
 
-export default ServerSwitcher;
+export default AnimeServerSwitcher;

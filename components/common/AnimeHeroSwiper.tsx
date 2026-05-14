@@ -1,10 +1,13 @@
 "use client";
 
 import { FORMAT_LABEL, STATUS_LABEL } from "@/app/constants/anilist";
+import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { type AniListMedia } from "@/app/types/anilist";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calendar, Star } from "lucide-react";
+import { Calendar, Play, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -24,6 +27,8 @@ interface AnimeHeroSwiperProps {
 const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
+  const history = useHistoryStore((state) => state.history);
+  const { handleWatchClick } = useWatchNavigation();
 
   if (!anime || anime.length === 0) return null;
 
@@ -61,6 +66,22 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
             ? item.description.replace(/<[^>]*>/g, "")
             : null;
 
+          const historyItem = history.find(
+            (h) => h.id === Number(item.id) && h.media_type === "anime",
+          );
+
+          const isResumable = !!historyItem;
+
+          const watchUrl = isResumable
+            ? `/anime/watch?id=${item.id}${
+                historyItem.episode ? `&ep=${historyItem.episode}` : "&ep=1"
+              }${historyItem.server ? `&server=${historyItem.server}` : ""}`
+            : `/anime/watch?id=${item.id}&ep=1`;
+
+          const resumeText = isResumable
+            ? `Resume Ep ${historyItem.episode}`
+            : "Watch Now";
+
           return (
             <SwiperSlide key={item.id} className="relative w-full h-full">
               <div className="relative w-full h-full">
@@ -78,9 +99,20 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
 
                 <div className="absolute inset-0 flex flex-col justify-center px-6 lg:px-24 max-w-4xl z-10">
-                  {/* Title */}
-                  <div className="mb-6 min-h-[60px] lg:min-h-[80px] flex items-end">
-                    <h1 className="text-3xl lg:text-5xl font-black text-white tracking-tight leading-[0.95] drop-shadow-lg">
+                  {/* Title and Logo */}
+                  <div className="mb-6 flex flex-col gap-4">
+                    {item.logo_path && (
+                      <div className="relative w-[200px] lg:w-[320px] aspect-[3/1]">
+                        <Image
+                          src={`${TMDB_IMAGE_BASE_URL}/original${item.logo_path}`}
+                          alt={title}
+                          fill
+                          sizes="(max-width: 768px) 200px, 320px"
+                          className="object-contain object-left drop-shadow-2xl"
+                        />
+                      </div>
+                    )}
+                    <h1 className="text-3xl lg:text-5xl font-black text-white tracking-tight drop-shadow-lg line-clamp-1">
                       {title}
                     </h1>
                   </div>
@@ -139,16 +171,22 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
                     </p>
                   )}
 
-                  {/* Actions */}
                   <div className="flex items-center gap-3">
-                    <Link href={`/anime/watch?id=${item.id}`}>
+                    <Link onClick={handleWatchClick} href={watchUrl}>
                       <Button
-                        variant="premium"
+                        variant={isResumable ? "premiumBlue" : "premium"}
                         size="xl"
                         className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6"
                       >
-                        <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" />{" "}
-                        Watch Now
+                        {isResumable ? (
+                          <Play className="w-4 h-4 lg:w-5 lg:h-5 fill-current" />
+                        ) : (
+                          <FaPlay
+                            fill="#000"
+                            className="w-4 h-4 lg:w-5 lg:h-5"
+                          />
+                        )}
+                        {resumeText}
                       </Button>
                     </Link>
                     <Link href={`/anime/detail?id=${item.id}`}>

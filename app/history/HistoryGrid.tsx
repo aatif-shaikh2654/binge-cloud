@@ -1,12 +1,12 @@
 "use client";
 
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
-import { useHistoryStore } from "@/lib/store/useHistoryStore";
 import { Clock, Play, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { useEffect, useState } from "react";
 
 const HistoryGrid = () => {
@@ -66,56 +66,74 @@ const HistoryGrid = () => {
               className="group relative bg-white/5 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all duration-500"
             >
               <Link
-                href={`/${item.media_type}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`}
+                href={
+                  item.media_type === "anime"
+                    ? `/anime/watch?id=${item.id}${item.episode ? `&ep=${item.episode}` : ""}`
+                    : `/${item.media_type}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`
+                }
                 onClick={handleWatchClick}
                 className="block"
               >
-              <div className="relative aspect-video overflow-hidden">
-                <Image
-                  src={`https://image.tmdb.org/t/p/w500${item.backdrop_path || item.poster_path}`}
-                  alt={item.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)] transform scale-90 group-hover:scale-100 transition-transform">
-                    <Play className="w-5 h-5 fill-white text-white ml-1" />
+                <div className="relative aspect-video overflow-hidden">
+                  <Image
+                    src={
+                      item.backdrop_path?.startsWith("http") ||
+                      item.poster_path?.startsWith("http")
+                        ? item.backdrop_path || item.poster_path
+                        : `https://image.tmdb.org/t/p/w500${item.backdrop_path || item.poster_path}`
+                    }
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)] transform scale-90 group-hover:scale-100 transition-transform">
+                      <Play className="w-5 h-5 fill-white text-white ml-1" />
+                    </div>
+                  </div>
+                  {item.media_type === "tv" && (
+                    <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-[10px] font-black uppercase border border-white/10">
+                      S{item.season} • E{item.episode}
+                    </div>
+                  )}
+                  {item.media_type === "anime" && item.episode && (
+                    <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-[10px] font-black uppercase border border-white/10 text-blue-400">
+                      Episode {item.episode}
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-5">
+                  <h3 className="text-lg font-black text-white group-hover:text-blue-400 transition-colors line-clamp-1">
+                    {item.title}
+                  </h3>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40 bg-white/5 px-2 py-1 rounded">
+                      {item.media_type === "tv"
+                        ? "TV"
+                        : item.media_type === "anime"
+                          ? "Anime"
+                          : "Movie"}
+                    </span>
+                    <span className="text-[10px] font-medium text-white/20">
+                      Watched {new Date(item.watchedAt).toLocaleDateString()}
+                    </span>
                   </div>
                 </div>
-                {item.media_type === "tv" && (
-                  <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-[10px] font-black uppercase border border-white/10">
-                    S{item.season} • E{item.episode}
-                  </div>
-                )}
-              </div>
+              </Link>
 
-              <div className="p-5">
-                <h3 className="text-lg font-black text-white group-hover:text-blue-400 transition-colors line-clamp-1">
-                  {item.title}
-                </h3>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40 bg-white/5 px-2 py-1 rounded">
-                    {item.media_type === "tv" ? "TV" : "Movie"}
-                  </span>
-                  <span className="text-[10px] font-medium text-white/20">
-                    Watched {new Date(item.watchedAt).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                removeFromHistory(item.id);
-              }}
-              className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-white hover:bg-red-500/80 transition-all opacity-0 group-hover:opacity-100 z-10 border border-white/10"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-            );
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  removeFromHistory(item.id);
+                }}
+                className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-white hover:bg-red-500/80 transition-all opacity-0 group-hover:opacity-100 z-10 border border-white/10"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          );
         })}
       </div>
     </div>

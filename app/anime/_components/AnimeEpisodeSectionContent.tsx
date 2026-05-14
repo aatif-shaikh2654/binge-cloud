@@ -4,6 +4,7 @@ import {
   type AniListNextAiringEpisode,
   type AniListStreamingEpisode,
 } from "@/app/types/anilist";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import {
   Select,
   SelectContent,
@@ -62,6 +63,7 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
   streamingEpisodes,
   nextAiringEpisode,
 }) => {
+  const { handleWatchClick } = useWatchNavigation();
   const totalCount = resolveEpisodeCount(
     totalEpisodes,
     nextAiringEpisode,
@@ -105,7 +107,7 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
             value={String(activeChunk)}
             onValueChange={(v) => setActiveChunk(Number(v))}
           >
-            <SelectTrigger className="w-[160px] bg-white/5 border-white/10 text-white font-black uppercase tracking-[0.15em] text-[10px] h-10 rounded-full px-5">
+            <SelectTrigger className="w-[160px] bg-zinc-900 border-white/10 text-white font-black uppercase tracking-[0.15em] text-[10px] h-10 rounded-full px-5 hover:bg-zinc-800 transition-all shadow-lg">
               <SelectValue />
             </SelectTrigger>
             <SelectContent
@@ -120,7 +122,7 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
                   <SelectItem
                     key={i}
                     value={String(i)}
-                    className="text-[10px] font-black uppercase tracking-widest data-highlighted:bg-white data-highlighted:text-black! py-3 px-5 rounded-lg cursor-pointer"
+                    className="text-[10px] font-black uppercase tracking-widest data-[highlighted]:bg-white data-[highlighted]:text-black! data-[highlighted]:**:text-black! py-3 px-6 transition-all duration-300 rounded-lg cursor-pointer"
                   >
                     {start}–{end}
                   </SelectItem>
@@ -144,9 +146,10 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
             <Link
               key={epNum}
               href={`/anime/watch?id=${animeId}&ep=${epNum}`}
+              onClick={handleWatchClick}
               className={cn(
-                "group flex flex-col gap-2 p-4 rounded-xl border border-white/5 bg-white/2",
-                "hover:bg-blue-600/10 hover:border-blue-500/30 transition-all duration-300",
+                "group flex flex-col gap-2 p-3.5 rounded-lg border border-white/5 bg-black shadow-xl transition-all duration-300 active:scale-95",
+                "hover:bg-zinc-900 hover:border-blue-500/30",
               )}
             >
               <div className="flex items-center justify-between">

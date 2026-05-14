@@ -4,7 +4,7 @@ import { type AniListMediaDetail } from "@/app/types/anilist";
 import React from "react";
 import AnimeCharactersSlider from "../_components/AnimeCharactersSlider";
 import AnimeDetailHero from "../_components/AnimeDetailHero";
-import AnimeEpisodeSection from "../_components/AnimeEpisodeSection";
+import AnimeEpisodeSectionContent from "../_components/AnimeEpisodeSectionContent";
 import AnimeRelations from "../_components/AnimeRelations";
 
 interface AnimeDetailProps {
@@ -22,14 +22,13 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ details }) => {
     details.nextAiringEpisode != null ||
     streamingEpisodes.length > 0;
 
-  console.log(details);
   return (
     <div className="relative min-h-screen w-full bg-background text-white selection:bg-blue-600 selection:text-white pb-10 md:pb-20">
       <AnimeDetailHero details={details} />
 
       {hasEpisodes && (
         <div className="mt-12 md:mt-24">
-          <AnimeEpisodeSection
+          <AnimeEpisodeSectionContent
             animeId={details.id}
             totalEpisodes={details.episodes}
             streamingEpisodes={streamingEpisodes}

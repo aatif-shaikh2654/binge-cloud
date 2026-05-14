@@ -1,3 +1,4 @@
+import { getAnimeDetails } from "@/app/services/anilist.service";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import AnimeWatch from "./AnimeWatch";
@@ -13,9 +14,12 @@ export default async function AnimeWatchPage({ searchParams }: PageProps) {
 
   if (!id) notFound();
 
+  // Fetch details on server side
+  const animeDetails = await getAnimeDetails(id);
+
   return (
     <Suspense>
-      <AnimeWatch id={id} />
+      <AnimeWatch id={id} initialDetails={animeDetails} />
     </Suspense>
   );
 }

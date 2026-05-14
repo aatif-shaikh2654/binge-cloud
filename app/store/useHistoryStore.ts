@@ -4,7 +4,7 @@ import { get, set, del } from "idb-keyval";
 
 export interface HistoryItem {
   id: number;
-  media_type: "movie" | "tv";
+  media_type: "movie" | "tv" | "anime";
   title: string;
   poster_path: string;
   backdrop_path: string;
@@ -12,6 +12,8 @@ export interface HistoryItem {
   season?: number;
   episode?: number;
   watchedAt: number;
+  currentTime?: number;
+  duration?: number;
 }
 
 interface HistoryState {

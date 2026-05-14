@@ -61,6 +61,7 @@ export interface AniListMedia {
   seasonYear: number | null;
   format: AniListFormat | null;
   studios: AniListStudios | null;
+  logo_path?: string | null;
 }
 
 // ─── Detail types ─────────────────────────────────────────────────────────────
@@ -116,12 +117,7 @@ export interface AniListCharacters {
   edges: AniListCharacterEdge[];
 }
 
-export interface AniListRelationNode {
-  id: number;
-  title: AniListTitle;
-  coverImage: AniListCoverImage;
-  format: AniListFormat | null;
-  status: AniListStatus | null;
+export interface AniListRelationNode extends AniListMedia {
   type: "ANIME" | "MANGA";
 }
 

@@ -3,6 +3,7 @@
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { getSeasonDetails } from "@/app/services/all.service";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { TMDBEpisode, type TMDBSeason } from "@/app/types/tmdb";
 import {
   Select,
@@ -12,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useHistoryStore } from "@/lib/store/useHistoryStore";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, Play, Star, Tv2 } from "lucide-react";
@@ -31,9 +31,9 @@ const EpisodeSkeleton = () => (
     {[...Array(8)].map((_, i) => (
       <div
         key={i}
-        className="group relative rounded-xl md:rounded-2xl overflow-hidden border border-white/5 bg-white/5 flex flex-row md:flex-col animate-pulse"
+        className="group relative rounded-lg overflow-hidden border border-white/5 bg-zinc-900 flex flex-row md:flex-col animate-pulse"
       >
-        <Skeleton className="aspect-video w-32 sm:w-40 md:w-full shrink-0" />
+        <Skeleton className="aspect-video w-32 sm:w-40 md:w-full shrink-0 bg-white/5" />
         <div className="p-3 md:p-5 flex-1 flex flex-col justify-center gap-2">
           <div className="flex justify-between items-center">
             <Skeleton className="h-4 w-1/2" />
@@ -111,7 +111,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
               setSelectedSeason(parseInt(value as string))
             }
           >
-            <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] h-11 rounded-full px-6 transition-all hover:bg-white/10">
+            <SelectTrigger className="w-[180px] bg-black border-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] h-11 rounded-full px-6 transition-all hover:bg-zinc-900 hover:border-blue-500/30 shadow-lg">
               <SelectValue placeholder="Select Season" />
             </SelectTrigger>
             <SelectContent
@@ -137,10 +137,10 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
       {isLoading ? (
         <EpisodeSkeleton />
       ) : episodes.length === 0 ? (
-        <div className="relative group overflow-hidden border border-white/5 bg-zinc-950/50 rounded-[2rem] p-12 md:p-24 text-center space-y-6 animate-in fade-in zoom-in-95 duration-700">
+        <div className="relative group overflow-hidden border border-white/5 bg-zinc-950 rounded-[2rem] p-12 md:p-24 text-center space-y-6 animate-in fade-in zoom-in-95 duration-700 shadow-2xl">
           <div className="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-transparent pointer-events-none" />
           <div className="relative space-y-6">
-            <div className="inline-flex p-5 md:p-8 bg-white/5 rounded-[2rem] border border-white/10 group-hover:border-blue-500/50 transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">
+            <div className="inline-flex p-5 md:p-8 bg-zinc-900 rounded-[2rem] border border-white/10 group-hover:border-blue-500/50 transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">
               <Tv2 className="w-10 h-10 md:w-16 md:h-16 text-blue-500" />
             </div>
             <div className="space-y-3">
@@ -173,10 +173,10 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                 href={watchUrl(episode)}
                 onClick={handleWatchClick}
                 className={cn(
-                  "group relative rounded-lg md:rounded-2xl overflow-hidden border transition-all duration-500 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col",
+                  "group relative rounded-xl overflow-hidden border transition-all duration-300 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col shadow-xl hover:shadow-blue-600/5",
                   isCurrentlyWatching
-                    ? "bg-blue-600/10 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.15)]"
-                    : "bg-white/5 border-white/5 hover:border-white/20",
+                    ? "bg-blue-600/80 border-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.2)] backdrop-blur-sm"
+                    : "bg-black border-white/5 hover:border-blue-500/50 hover:bg-zinc-900",
                 )}
                 style={{
                   animationDelay: `${index * 50}ms`,
@@ -194,8 +194,8 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   ) : (
-                    <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                      <Play className="w-8 h-8 md:w-12 md:h-12 text-white/10" />
+                    <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                      <Play className="w-8 h-8 md:w-12 md:h-12 text-white/5" />
                     </div>
                   )}
                   <div
@@ -210,12 +210,12 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                       <Play className="w-3 h-3 md:w-5 md:h-5 fill-white text-white ml-0.5 md:ml-1" />
                     </div>
                   </div>
-                  <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-1.5 py-0.5 md:px-2 md:py-1 bg-black/60 backdrop-blur-md rounded text-[8px] md:text-[10px] font-black uppercase">
+                  <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 px-1.5 py-0.5 md:px-2 md:py-1 bg-black/80 backdrop-blur-md rounded text-[8px] md:text-[10px] font-black uppercase border border-white/10">
                     EP {episode.episode_number}
                   </div>
 
                   {isCurrentlyWatching && (
-                    <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-1 bg-blue-600 rounded text-[8px] font-black uppercase tracking-widest shadow-lg">
+                    <div className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-1 bg-white text-blue-600 rounded text-[8px] font-black uppercase tracking-widest shadow-lg">
                       Watching
                     </div>
                   )}
@@ -228,7 +228,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                       className={cn(
                         "text-xs md:text-sm font-black transition-colors line-clamp-1",
                         isCurrentlyWatching
-                          ? "text-blue-400"
+                          ? "text-white"
                           : "text-white group-hover:text-blue-500",
                       )}
                     >
@@ -244,11 +244,21 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                       "No description available for this episode."}
                   </p>
                   <div className="flex items-center gap-3 md:gap-4 mt-2 md:mt-3">
-                    <div className="flex items-center gap-1 md:gap-1.5 text-white/30 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">
+                    <div
+                      className={cn(
+                        "flex items-center gap-1 md:gap-1.5 text-[8px] md:text-[10px] font-bold uppercase tracking-widest",
+                        isCurrentlyWatching ? "text-white/70" : "text-white/30",
+                      )}
+                    >
                       <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" />
                       {episode.runtime || 0}m
                     </div>
-                    <div className="flex items-center gap-1 md:gap-1.5 text-white/30 text-[8px] md:text-[10px] font-bold uppercase tracking-widest">
+                    <div
+                      className={cn(
+                        "flex items-center gap-1 md:gap-1.5 text-[8px] md:text-[10px] font-bold uppercase tracking-widest",
+                        isCurrentlyWatching ? "text-white/70" : "text-white/30",
+                      )}
+                    >
                       <Calendar className="w-2.5 h-2.5 md:w-3 md:h-3" />
                       {episode.air_date
                         ? new Date(episode.air_date).getFullYear()

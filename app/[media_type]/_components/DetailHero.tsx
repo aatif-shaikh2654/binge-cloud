@@ -1,15 +1,16 @@
 "use client";
 
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
-import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
 import { cn } from "@/lib/utils";
-import { Bookmark, Plus, Star } from "lucide-react";
+import { Bookmark, Play, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import React from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
@@ -22,11 +23,22 @@ interface DetailHeroProps {
 const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
   const { handleWatchClick } = useWatchNavigation();
+  const history = useHistoryStore((state) => state.history);
 
   const inWatchlist = isInWatchlist(details.id, tmdbType);
 
+  const historyItem = history.find(
+    (h) => h.id === details.id && h.media_type === tmdbType,
+  );
+
+  const isResumable = !!historyItem;
+
   const handleWatchlistToggle = () => {
-    toggleWatchlist({ ...details, media_type: tmdbType });
+    toggleWatchlist({
+      ...details,
+      media_type: tmdbType,
+      title: details.title || details.name,
+    });
     if (inWatchlist) {
       toast.error(`Removed from Watchlist`);
     } else {
@@ -41,7 +53,19 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
     : "0";
   const runtime = details?.runtime || details?.episode_run_time?.[0] || 0;
 
-  const watchUrl = `/${tmdbType}/watch?id=${details.id}`;
+  const watchUrl = isResumable
+    ? `/${tmdbType}/watch?id=${details.id}${
+        historyItem.server ? `&server=${historyItem.server}` : ""
+      }${historyItem.season ? `&season=${historyItem.season}` : ""}${
+        historyItem.episode ? `&episode=${historyItem.episode}` : ""
+      }`
+    : `/${tmdbType}/watch?id=${details.id}`;
+
+  const resumeText = isResumable
+    ? tmdbType === "tv"
+      ? `Resume S${historyItem.season} E${historyItem.episode}`
+      : "Resume Watching"
+    : "Watch Now";
 
   return (
     <>
@@ -131,12 +155,16 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
           <div className="flex flex-wrap items-center justify-start gap-3">
             <Link href={watchUrl} onClick={handleWatchClick}>
               <Button
-                variant="premium"
+                variant={isResumable ? "premiumBlue" : "premium"}
                 size="xl"
                 className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6"
               >
-                <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" /> Watch
-                Now
+                {isResumable ? (
+                  <Play className="w-4 h-4 lg:w-5 lg:h-5 fill-current" />
+                ) : (
+                  <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" />
+                )}
+                {resumeText}
               </Button>
             </Link>
             <Button

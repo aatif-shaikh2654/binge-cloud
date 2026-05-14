@@ -1,23 +1,25 @@
 "use client";
 
-import { FiAlertCircle } from "react-icons/fi";
 import { TMDB_GENRES, TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { type TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
-import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
 import { cn } from "@/lib/utils";
-import { Bookmark, Calendar, Plus, Star } from "lucide-react";
+import { Bookmark, Calendar, Play, Plus, Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
+import { FiAlertCircle } from "react-icons/fi";
 import { toast } from "sonner";
-import Link from "next/link";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectFade } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
+import { Autoplay, EffectFade } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
+import { MediaType } from "@/app/types/common";
 import "swiper/css";
 import "swiper/css/effect-fade";
 
@@ -30,17 +32,18 @@ const HerosectionSwiper: React.FC<HerosectionProps> = ({ movies }) => {
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
   const { handleWatchClick } = useWatchNavigation();
+  const history = useHistoryStore((state) => state.history);
 
   if (!movies || movies.length === 0) return null;
 
   const displayMovies = movies.slice(0, 6);
 
-  const watchUrl = (movie: TMDBMovie) => `/${movie.media_type}/watch/?id=${movie.id}`;
-  const detailUrl = (movie: TMDBMovie) => `/${movie.media_type}/detail/?id=${movie.id}`;
+  const detailUrl = (movie: TMDBMovie) =>
+    `/${movie.media_type}/detail/?id=${movie.id}`;
 
   const handleWatchlistToggle = (movie: TMDBMovie) => {
-    const isAdded = isInWatchlist(movie.id, movie.media_type);
-    toggleWatchlist(movie);
+    const isAdded = isInWatchlist(movie.id, movie.media_type as MediaType);
+    toggleWatchlist({ ...movie, media_type: movie.media_type as MediaType });
     if (isAdded) {
       toast.error(`Removed from Watchlist`);
     } else {
@@ -63,7 +66,31 @@ const HerosectionSwiper: React.FC<HerosectionProps> = ({ movies }) => {
         className="h-full w-full hero-slider"
       >
         {displayMovies.map((movie) => {
-          const inWatchlist = isInWatchlist(movie.id, movie.media_type);
+          const inWatchlist = isInWatchlist(
+            movie.id,
+            movie.media_type as MediaType,
+          );
+
+          const historyItem = history.find(
+            (h) => h.id === movie.id && h.media_type === movie.media_type,
+          );
+
+          const isResumable = !!historyItem;
+
+          const movieWatchUrl = isResumable
+            ? `/${movie.media_type}/watch?id=${movie.id}${
+                historyItem.server ? `&server=${historyItem.server}` : ""
+              }${historyItem.season ? `&season=${historyItem.season}` : ""}${
+                historyItem.episode ? `&episode=${historyItem.episode}` : ""
+              }`
+            : `/${movie.media_type}/watch?id=${movie.id}`;
+
+          const resumeText = isResumable
+            ? movie.media_type === "movie"
+              ? "Resume Watching"
+              : `Resume S${historyItem.season} E${historyItem.episode}`
+            : "Watch Now";
+
           return (
             <SwiperSlide key={movie.id} className="relative w-full h-full">
               <div className="relative w-full h-full">
@@ -107,12 +134,17 @@ const HerosectionSwiper: React.FC<HerosectionProps> = ({ movies }) => {
                     <div className="flex items-center gap-2 text-white/80">
                       <Calendar className="w-3.5 h-3.5 text-white/40" />
                       <span className="text-xs lg:text-sm font-bold tracking-tight">
-                        {new Date(movie.release_date || movie.first_air_date || "").getFullYear() || "2024"}
+                        {new Date(
+                          movie.release_date || movie.first_air_date || "",
+                        ).getFullYear() || "2024"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       {movie.genre_ids?.slice(0, 2).map((id) => (
-                        <span key={id} className="px-3 py-1 rounded-full border border-white/20 bg-white/5 text-[9px] lg:text-[10px] font-black text-white/90 tracking-tight">
+                        <span
+                          key={id}
+                          className="px-3 py-1 rounded-full border border-white/20 bg-white/5 text-[9px] lg:text-[10px] font-black text-white/90 tracking-tight"
+                        >
                           {TMDB_GENRES[id]}
                         </span>
                       ))}
@@ -124,21 +156,44 @@ const HerosectionSwiper: React.FC<HerosectionProps> = ({ movies }) => {
                   </p>
 
                   <div className="flex items-center gap-3">
-                    <Link href={watchUrl(movie)} onClick={handleWatchClick}>
-                      <Button variant="premium" size="xl" className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6">
-                        <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" /> Watch Now
+                    <Link href={movieWatchUrl} onClick={handleWatchClick}>
+                      <Button
+                        variant={isResumable ? "premiumBlue" : "premium"}
+                        size="xl"
+                        className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6"
+                      >
+                        {isResumable ? (
+                          <Play className="w-4 h-4 lg:w-5 lg:h-5 fill-current" />
+                        ) : (
+                          <FaPlay
+                            fill="#000"
+                            className="w-4 h-4 lg:w-5 lg:h-5"
+                          />
+                        )}
+                        {resumeText}
                       </Button>
                     </Link>
                     <Button
                       variant={inWatchlist ? "premium" : "glass"}
                       size="icon-xl"
-                      className={cn("size-11 lg:size-12 transition-all duration-300", inWatchlist && "bg-white text-black hover:bg-white/90")}
+                      className={cn(
+                        "size-11 lg:size-12 transition-all duration-300",
+                        inWatchlist && "bg-white text-black hover:bg-white/90",
+                      )}
                       onClick={() => handleWatchlistToggle(movie)}
                     >
-                      {inWatchlist ? <Bookmark className="w-4 h-4 lg:w-5 lg:h-5 fill-black" /> : <Plus className="w-4 h-4 lg:w-5 lg:h-5" />}
+                      {inWatchlist ? (
+                        <Bookmark className="w-4 h-4 lg:w-5 lg:h-5 fill-black" />
+                      ) : (
+                        <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
+                      )}
                     </Button>
                     <Link href={detailUrl(movie)}>
-                      <Button variant="glass" size="icon-xl" className="size-11 lg:size-12">
+                      <Button
+                        variant="glass"
+                        size="icon-xl"
+                        className="size-11 lg:size-12"
+                      >
                         <FiAlertCircle className="w-4 h-4 lg:w-5 lg:h-5" />
                       </Button>
                     </Link>
@@ -179,7 +234,9 @@ const HerosectionSwiper: React.FC<HerosectionProps> = ({ movies }) => {
             onClick={() => swiperInstance?.slideTo(index)}
             className={cn(
               "relative w-20 aspect-video rounded-md overflow-hidden cursor-pointer transition-all duration-300 border",
-              activeIndex === index ? "border-white! scale-110 z-10" : "border-white/10 opacity-50 hover:opacity-100",
+              activeIndex === index
+                ? "border-white! scale-110 z-10"
+                : "border-white/10 opacity-50 hover:opacity-100",
             )}
           >
             <Image

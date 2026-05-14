@@ -1,9 +1,9 @@
 "use client";
 
+import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import MovieCard from "@/components/common/MovieCard";
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
-import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
 import { Bookmark } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";

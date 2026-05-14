@@ -11,6 +11,13 @@ export interface PlayerServer {
 
 export const PLAYER_SERVERS: PlayerServer[] = [
   {
+    name: "Vidnest",
+    id: "vidnest",
+    movieUrl: (tmdbId: string) => `https://vidnest.fun/movie/${tmdbId}`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://vidnest.fun/tv/${tmdbId}/${season}/${episode}`,
+  },
+  {
     name: "XPass",
     id: "xpass",
     movieUrl: (tmdbId: string) =>
@@ -61,6 +68,7 @@ export const PLAYER_SERVERS: PlayerServer[] = [
     tvUrl: (tmdbId: string, season: number, episode: number) =>
       `https://www.2embed.cc/embed/${tmdbId}/${season}/${episode}`,
   },
+
   // {
   //   name: "Maple",
   //   id: "maple",

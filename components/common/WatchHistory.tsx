@@ -1,7 +1,7 @@
 "use client";
 
+import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useHistoryStore } from "@/lib/store/useHistoryStore";
 import dynamic from "next/dynamic";
 
 const WatchHistorySkeleton = () => (

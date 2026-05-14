@@ -1,20 +1,51 @@
 "use client";
 
 import { FORMAT_LABEL, STATUS_LABEL } from "@/app/constants/anilist";
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { type AniListMediaDetail } from "@/app/types/anilist";
+import { type MediaType } from "@/app/types/common";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Star } from "lucide-react";
+import { Bookmark, Play, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { FaPlay } from "react-icons/fa";
+import { toast } from "sonner";
 
 interface AnimeDetailHeroProps {
   details: AniListMediaDetail;
 }
 
 const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
+  const { handleWatchClick } = useWatchNavigation();
+  const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+  const history = useHistoryStore((state) => state.history);
+
+  const tmdbType: MediaType = "anime";
+  const inWatchlist = isInWatchlist(details.id, tmdbType);
+
+  const historyItem = history.find(
+    (h) => h.id === Number(details.id) && h.media_type === "anime",
+  );
+
+  const isResumable = !!historyItem;
+
+  const handleWatchlistToggle = () => {
+    toggleWatchlist({
+      ...details,
+      media_type: tmdbType,
+      title: title,
+    });
+    if (inWatchlist) {
+      toast.error(`Removed from Watchlist`);
+    } else {
+      toast.success(`Added to Watchlist`);
+    }
+  };
+
   const title =
     details.title.english ||
     details.title.romaji ||
@@ -47,6 +78,16 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
     const parts = [s.year, s.month, s.day].filter(Boolean);
     return parts.join("-");
   })();
+
+  const watchUrl = isResumable
+    ? `/anime/watch?id=${details.id}${
+        historyItem.episode ? `&ep=${historyItem.episode}` : "&ep=1"
+      }${historyItem.server ? `&server=${historyItem.server}` : ""}`
+    : `/anime/watch?id=${details.id}&ep=1`;
+
+  const resumeText = isResumable
+    ? `Resume Ep ${historyItem.episode}`
+    : "Watch Now";
 
   return (
     <>
@@ -158,16 +199,35 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
 
           {/* Actions */}
           <div className="flex flex-wrap items-center justify-start gap-3">
-            <Link href={`/anime/watch?id=${details.id}&ep=1`}>
+            <Link onClick={handleWatchClick} href={watchUrl}>
               <Button
-                variant="premium"
+                variant={isResumable ? "premiumBlue" : "premium"}
                 size="xl"
                 className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6"
               >
-                <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" /> Watch
-                Now
+                {isResumable ? (
+                  <Play className="w-4 h-4 lg:w-5 lg:h-5 fill-current" />
+                ) : (
+                  <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" />
+                )}
+                {resumeText}
               </Button>
             </Link>
+            <Button
+              variant={inWatchlist ? "premium" : "glass"}
+              size="icon-xl"
+              className={cn(
+                "size-11 lg:size-12 transition-all duration-300",
+                inWatchlist && "bg-white text-black hover:bg-white/90",
+              )}
+              onClick={handleWatchlistToggle}
+            >
+              {inWatchlist ? (
+                <Bookmark className="w-4 h-4 lg:w-5 lg:h-5 fill-black" />
+              ) : (
+                <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
+              )}
+            </Button>
           </div>
 
           {/* Storyline */}

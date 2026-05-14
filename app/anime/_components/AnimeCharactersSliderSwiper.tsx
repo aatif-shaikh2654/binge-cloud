@@ -87,14 +87,17 @@ const AnimeCharactersSliderSwiper: React.FC<AnimeCharactersSliderSwiperProps> = 
                 `${va.name.first ?? ""} ${va.name.last ?? ""}`.trim()
               : null;
 
+            const mainImage = va?.image.large || char.image.large;
+            const insetImage = va?.image.large ? char.image.large : null;
+
             return (
               <SwiperSlide key={char.id} className="pb-4">
-                <div className="flex flex-col gap-3">
-                  <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 group">
-                    {char.image.large ? (
+                <div className="flex flex-col gap-3 group">
+                  <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-300 group-hover:border-white/20">
+                    {mainImage ? (
                       <Image
-                        src={char.image.large}
-                        alt={charName}
+                        src={mainImage}
+                        alt={vaName || charName}
                         fill
                         sizes="(max-width: 768px) 100vw, 200px"
                         className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
@@ -104,10 +107,24 @@ const AnimeCharactersSliderSwiper: React.FC<AnimeCharactersSliderSwiperProps> = 
                         No Image
                       </div>
                     )}
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                    
+                    {/* Inset Character Image */}
+                    {insetImage && (
+                      <div className="absolute top-2 right-2 w-12 h-12 rounded-lg overflow-hidden border border-white/20 shadow-xl z-10 transition-transform duration-300 group-hover:scale-110">
+                        <Image
+                          src={insetImage}
+                          alt={charName}
+                          fill
+                          sizes="48px"
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-8">
                       <span
                         className={cn(
-                          "text-[9px] font-black uppercase tracking-wider",
+                          "text-[9px] font-black uppercase tracking-widest",
                           role === "MAIN" ? "text-blue-400" : "text-white/50",
                         )}
                       >
@@ -117,28 +134,15 @@ const AnimeCharactersSliderSwiper: React.FC<AnimeCharactersSliderSwiperProps> = 
                   </div>
 
                   <div className="px-1 space-y-0.5">
-                    <p className="text-xs font-bold text-white line-clamp-1">{charName}</p>
+                    <p className="text-xs font-bold text-white line-clamp-1 group-hover:text-blue-400 transition-colors">
+                      {charName}
+                    </p>
                     {vaName && (
                       <p className="text-[10px] font-medium text-white/40 line-clamp-1">
                         CV: {vaName}
                       </p>
                     )}
                   </div>
-
-                  {va?.image.large && (
-                    <div className="flex items-center gap-2 px-1">
-                      <div className="relative w-7 h-7 rounded-full overflow-hidden border border-white/10 shrink-0">
-                        <Image
-                          src={va.image.large}
-                          alt={vaName ?? ""}
-                          fill
-                          sizes="28px"
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="text-[10px] font-medium text-white/50 line-clamp-1">{vaName}</p>
-                    </div>
-                  )}
                 </div>
               </SwiperSlide>
             );

@@ -3,13 +3,14 @@
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { getMovieVideos } from "@/app/services/all.service";
-import { MediaType } from "@/app/types/common";
-import { type TMDBMovie } from "@/app/types/tmdb";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { usePlayerStore } from "@/app/store/usePlayerStore";
+import { useWatchlistStore } from "@/app/store/useWatchlistStore";
+import { MediaType, UnifiedMediaItem } from "@/app/types/common";
+import { TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
-import { usePlayerStore } from "@/lib/store/usePlayerStore";
-import { useWatchlistStore } from "@/lib/store/useWatchlistStore";
 import { cn } from "@/lib/utils";
-import { Bookmark, Plus, Star, Volume2, VolumeX } from "lucide-react";
+import { Bookmark, Play, Plus, Star, Volume2, VolumeX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -17,7 +18,8 @@ import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
 
 interface MovieCardProps {
-  movie: TMDBMovie;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  movie: TMDBMovie | UnifiedMediaItem | any;
   mediaType?: MediaType;
 }
 
@@ -31,6 +33,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
   const { handleWatchClick } = useWatchNavigation();
+  const history = useHistoryStore((state) => state.history);
 
   useEffect(() => {
     if (iframeRef.current && isVideoLoaded) {
@@ -45,12 +48,18 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
     }
   }, [isMuted, isVideoLoaded]);
 
-  const inWatchlist = isInWatchlist(movie.id, movie.media_type);
+  const currentMediaType = useMemo(() => {
+    if (mediaType) return mediaType;
+    if (movie.media_type) return movie.media_type;
+    return "movie";
+  }, [mediaType, movie.media_type]);
+
+  const inWatchlist = isInWatchlist(movie.id, currentMediaType);
 
   const handleWatchlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleWatchlist(movie);
+    toggleWatchlist({ ...movie, media_type: currentMediaType });
     if (inWatchlist) {
       toast.error(`Removed from Watchlist`);
     } else {
@@ -58,10 +67,32 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
     }
   };
 
-  const rating = (movie.vote_average * 10).toFixed(0);
-  const releaseYear = new Date(
-    movie.release_date || movie.first_air_date || "",
-  ).getFullYear();
+  const rating = useMemo(() => {
+    if (movie.vote_average !== undefined) {
+      return (movie.vote_average * 10).toFixed(0);
+    }
+    const score = movie.averageScore as number | undefined;
+    if (score !== undefined && score !== null) {
+      return score.toFixed(0);
+    }
+    return "0";
+  }, [movie]);
+
+  const releaseYear = useMemo(() => {
+    if (currentMediaType === "anime") {
+      return (
+        (movie.seasonYear as number) ||
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (movie.startDate as any)?.year ||
+        "N/A"
+      ).toString();
+    }
+    const date =
+      (movie.release_date as string) || (movie.first_air_date as string);
+    if (!date) return "N/A";
+    const year = new Date(date).getFullYear();
+    return isNaN(year) ? "N/A" : year.toString();
+  }, [movie, currentMediaType]);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -87,13 +118,42 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
   };
 
-  const currentMediaType = useMemo(() => {
-    if (mediaType) return mediaType;
-    if (movie.media_type) return movie.media_type;
-    return "movie";
-  }, [mediaType, movie.media_type]);
+  const historyItem = history.find(
+    (h) => h.id === movie.id && h.media_type === currentMediaType,
+  );
 
-  const watchUrl = `/${currentMediaType}/watch?id=${movie.id}`;
+  const isResumable = !!historyItem;
+
+  const watchUrl = useMemo(() => {
+    if (!isResumable) {
+      return currentMediaType === "anime"
+        ? `/${currentMediaType}/watch?id=${movie.id}&ep=1`
+        : `/${currentMediaType}/watch?id=${movie.id}`;
+    }
+
+    if (currentMediaType === "anime") {
+      return `/anime/watch?id=${movie.id}${
+        historyItem.episode ? `&ep=${historyItem.episode}` : "&ep=1"
+      }${historyItem.server ? `&server=${historyItem.server}` : ""}`;
+    }
+
+    // Movies/TV
+    return `/${currentMediaType}/watch?id=${movie.id}${
+      historyItem.server ? `&server=${historyItem.server}` : ""
+    }${historyItem.season ? `&season=${historyItem.season}` : ""}${
+      historyItem.episode ? `&episode=${historyItem.episode}` : ""
+    }`;
+  }, [isResumable, historyItem, movie.id, currentMediaType]);
+
+  const resumeText = useMemo(() => {
+    if (!isResumable) return "Play Now";
+    if (currentMediaType === "movie") return "Resume Watching";
+    if (currentMediaType === "tv")
+      return `Resume S${historyItem.season} E${historyItem.episode}`;
+    if (currentMediaType === "anime") return `Resume Ep ${historyItem.episode}`;
+    return "Resume";
+  }, [isResumable, historyItem, currentMediaType]);
+
   const detailUrl = `/${currentMediaType}/detail?id=${movie.id}`;
 
   return (
@@ -112,7 +172,16 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
       >
         <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20">
           <Image
-            src={`${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`}
+            src={
+              currentMediaType === "anime"
+                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (movie.coverImage as any)?.extraLarge ||
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (movie.coverImage as any)?.large ||
+                  movie.poster_path ||
+                  ""
+                : `${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`
+            }
             alt={movie.title || movie.name || "Movie Poster"}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -126,7 +195,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
           </div>
           <div className="absolute top-3 left-3 flex items-center">
             <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
-              {currentMediaType === "tv" ? "TV" : "Movie"}
+              {currentMediaType}
             </span>
           </div>
           <div className="absolute top-3 right-3 flex items-center">
@@ -143,7 +212,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
             {movie.title || movie.name}
           </h3>
           <p className="text-[11px] font-medium text-white/40 tracking-tight">
-            {releaseYear} • {currentMediaType === "tv" ? "TV Series" : "Movie"}
+            {releaseYear} • {currentMediaType}
           </p>
         </div>
       </Link>
@@ -160,7 +229,16 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
               <>
                 {!isVideoLoaded && (
                   <Image
-                    src={`${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`}
+                    src={
+                      currentMediaType === "anime"
+                        ? movie.bannerImage ||
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          (movie.coverImage as any)?.extraLarge ||
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          (movie.coverImage as any)?.large ||
+                          ""
+                        : `${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`
+                    }
                     alt="Preview"
                     fill
                     sizes="380px"
@@ -193,7 +271,16 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
               </>
             ) : (
               <Image
-                src={`${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`}
+                src={
+                  currentMediaType === "anime"
+                    ? movie.bannerImage ||
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (movie.coverImage as any)?.extraLarge ||
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (movie.coverImage as any)?.large ||
+                      ""
+                    : `${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`
+                }
                 alt="Preview"
                 fill
                 sizes="380px"
@@ -208,9 +295,17 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Link href={watchUrl} onClick={handleWatchClick}>
-                  <Button variant="premium" size="sm" className="gap-2 px-3">
-                    <FaPlay className="w-3! h-3!" />
-                    Play Now
+                  <Button
+                    variant={isResumable ? "premiumBlue" : "premium"}
+                    size="sm"
+                    className="gap-2 px-3"
+                  >
+                    {isResumable ? (
+                      <Play className="w-3! h-3! fill-current" />
+                    ) : (
+                      <FaPlay className="w-3! h-3!" />
+                    )}
+                    {resumeText}
                   </Button>
                 </Link>
                 <Button
@@ -243,9 +338,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
               <h3 className="text-lg font-black text-white leading-tight truncate mb-2">
                 {movie.title || movie.name}
               </h3>
-              <p className="text-white/60 text-xs line-clamp-3 leading-relaxed font-medium">
-                {movie.overview}
-              </p>
+              {movie?.overview && (
+                <p className="text-white/60 text-xs line-clamp-2 leading-relaxed font-medium">
+                  {movie?.overview}
+                </p>
+              )}
             </Link>
           </div>
         </div>

@@ -1,10 +1,8 @@
 "use client";
 
-import { FORMAT_LABEL, STATUS_LABEL } from "@/app/constants/anilist";
-import { type AniListRelationEdge } from "@/app/types/anilist";
+import { AniListMedia, type AniListRelationEdge } from "@/app/types/anilist";
+import AnimeCard from "@/components/common/AnimeCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import { FreeMode, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -46,7 +44,9 @@ const AnimeRelationsSwiper: React.FC<AnimeRelationsSwiperProps> = ({
           <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-blue-500">
             More Like This
           </h3>
-          <h2 className="text-2xl md:text-5xl font-black tracking-tighter">Related Anime</h2>
+          <h2 className="text-2xl md:text-5xl font-black tracking-tighter">
+            Related Anime
+          </h2>
         </div>
         <div className="hidden md:flex items-center gap-2">
           <button
@@ -87,41 +87,11 @@ const AnimeRelationsSwiper: React.FC<AnimeRelationsSwiperProps> = ({
           className="!overflow-visible"
         >
           {animeRelations.map(({ relationType, node }) => {
-            const title = node.title.english || node.title.romaji || "Unknown";
-            const cover = node.coverImage.extraLarge || node.coverImage.large;
-            const format = node.format ? (FORMAT_LABEL[node.format] ?? node.format) : null;
-            const status = node.status ? (STATUS_LABEL[node.status] ?? node.status) : null;
             const relation = RELATION_LABEL[relationType] ?? relationType;
 
             return (
               <SwiperSlide key={node.id} className="pb-4">
-                <Link
-                  href={`/anime/detail?id=${node.id}`}
-                  className="group flex flex-col gap-2"
-                >
-                  <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-300 group-hover:border-white/20">
-                    {cover && (
-                      <Image
-                        src={cover}
-                        alt={title}
-                        fill
-                        sizes="(max-width: 640px) 50vw, 200px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    )}
-                    <div className="absolute top-2 left-2">
-                      <span className="bg-blue-600/80 backdrop-blur-sm text-white text-[9px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
-                        {relation}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="px-1 space-y-0.5">
-                    <p className="text-xs font-bold text-white line-clamp-2 leading-tight">{title}</p>
-                    <p className="text-[10px] font-medium text-white/40">
-                      {[format, status].filter(Boolean).join(" · ")}
-                    </p>
-                  </div>
-                </Link>
+                <AnimeCard anime={node as AniListMedia} badge={relation} />
               </SwiperSlide>
             );
           })}
