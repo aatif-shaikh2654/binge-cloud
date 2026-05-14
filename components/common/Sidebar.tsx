@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Bookmark, Clock, Home, Layers, Search, Tv } from "lucide-react";
+import { Bookmark, Clock, Home, Sparkles, Search, Tv } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,7 +13,7 @@ const sidebarItems = [
   { icon: Home, label: "Home", href: "/" },
   { icon: MdOutlineMovie, label: "Movies", href: "/movie" },
   { icon: Tv, label: "Web Series", href: "/tv" },
-  { icon: Layers, label: "Anime", href: "/anime" },
+  { icon: Sparkles, label: "Anime", href: "/anime" },
   { icon: Clock, label: "History", href: "/history" },
   { icon: Bookmark, label: "Watch Later", href: "/watch-later" },
 ];

@@ -38,7 +38,8 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
       return Math.floor(savedItem.currentTime);
     }
     return 0;
-  }, [id, ep, history]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, ep, currentServer.id]); // history removed to stabilize videoUrl during playback
 
   let videoUrl = `${currentServer.baseUrl}/${id}/${ep}/${currentServer.lang}`;
 
@@ -78,11 +79,11 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
       title,
       poster_path: poster,
       backdrop_path: backdrop,
-      server: currentServer.name,
+      server: currentServer.id,
       episode: ep,
       watchedAt: Date.now(),
     });
-  }, [id, ep, currentServer.name, addToHistory, initialDetails]);
+  }, [id, ep, currentServer.id, addToHistory, initialDetails]);
 
   // Player Events Listener
   useEffect(() => {
@@ -104,7 +105,7 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
         title,
         poster_path: poster,
         backdrop_path: backdrop,
-        server: currentServer.name,
+        server: currentServer.id,
         episode: ep,
         watchedAt: Date.now(),
         currentTime,
@@ -204,7 +205,7 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
     navigate,
     addToHistory,
     initialDetails,
-    currentServer.name,
+    currentServer.id,
   ]);
 
   return (

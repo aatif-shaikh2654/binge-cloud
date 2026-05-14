@@ -5,6 +5,7 @@ import {
   type AniListStreamingEpisode,
 } from "@/app/types/anilist";
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
 import {
   Select,
   SelectContent,
@@ -64,6 +65,12 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
   nextAiringEpisode,
 }) => {
   const { handleWatchClick } = useWatchNavigation();
+  const { history } = useHistoryStore();
+
+  const historyItem = history.find(
+    (h) => h.id === animeId && h.media_type === "anime",
+  );
+
   const totalCount = resolveEpisodeCount(
     totalEpisodes,
     nextAiringEpisode,
@@ -142,21 +149,39 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
             ? rawTitle.replace(/^Episode\s+\d+\s*[-–—]\s*/i, "").trim() || null
             : null;
 
+          const isCurrentlyWatching = historyItem?.episode === epNum;
+
           return (
             <Link
               key={epNum}
               href={`/anime/watch?id=${animeId}&ep=${epNum}`}
               onClick={handleWatchClick}
               className={cn(
-                "group flex flex-col gap-2 p-3.5 rounded-lg border border-white/5 bg-black shadow-xl transition-all duration-300 active:scale-95",
-                "hover:bg-zinc-900 hover:border-blue-500/30",
+                "group flex flex-col gap-2 p-3.5 rounded-lg border transition-all duration-300 active:scale-95",
+                isCurrentlyWatching
+                  ? "bg-blue-600/80 border-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.2)] backdrop-blur-sm"
+                  : "bg-black border-white/5 hover:bg-zinc-900 hover:border-blue-500/30",
               )}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-blue-400 transition-colors">
+                <span
+                  className={cn(
+                    "text-[10px] font-black uppercase tracking-widest transition-colors",
+                    isCurrentlyWatching
+                      ? "text-white"
+                      : "text-white/40 group-hover:text-blue-400",
+                  )}
+                >
                   EP {epNum}
                 </span>
-                <Play className="w-3 h-3 text-white/20 group-hover:text-blue-400 transition-colors fill-current opacity-0 group-hover:opacity-100" />
+                <Play
+                  className={cn(
+                    "w-3 h-3 transition-all fill-current",
+                    isCurrentlyWatching
+                      ? "text-white opacity-100"
+                      : "text-white/20 group-hover:text-blue-400 opacity-0 group-hover:opacity-100",
+                  )}
+                />
               </div>
               {cleanTitle ? (
                 <p className="text-xs font-bold text-white/80 line-clamp-2 leading-tight group-hover:text-white transition-colors">

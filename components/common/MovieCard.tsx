@@ -21,9 +21,10 @@ interface MovieCardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   movie: TMDBMovie | UnifiedMediaItem | any;
   mediaType?: MediaType;
+  rank?: number;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType, rank }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showHoverCard, setShowHoverCard] = useState(false);
   const [videoKey, setVideoKey] = useState<string | null>(null);
@@ -207,6 +208,22 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType }) => {
             </div>
           </div>
         </div>
+
+        {/* Rank Number Overlay - Moved outside overflow-hidden */}
+        {rank && (
+          <div className="absolute -top-6 -left-4 z-40 pointer-events-none drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]">
+            <span
+              className="text-8xl font-black text-transparent select-none leading-none inline-block transform"
+              style={{
+                WebkitTextStroke: "2.5px rgba(255, 255, 255, 0.8)",
+                filter: "drop-shadow(0 0 10px rgba(255,255,255,0.2))",
+              }}
+            >
+              {rank}
+            </span>
+          </div>
+        )}
+
         <div className="flex flex-col gap-0.5 px-1">
           <h3 className="text-sm font-bold text-white line-clamp-1">
             {movie.title || movie.name}

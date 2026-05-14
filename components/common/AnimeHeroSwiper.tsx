@@ -2,8 +2,8 @@
 
 import { FORMAT_LABEL, STATUS_LABEL } from "@/app/constants/anilist";
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { type AniListMedia } from "@/app/types/anilist";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -45,7 +45,7 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
         onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
         className="h-full w-full hero-slider"
       >
-        {displayAnime.map((item) => {
+        {displayAnime.map((item, index) => {
           const title =
             item.title.english ||
             item.title.romaji ||
@@ -99,6 +99,13 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
 
                 <div className="absolute inset-0 flex flex-col justify-center px-6 lg:px-24 max-w-4xl z-10">
+                  {/* Spotlight Rank */}
+                  <div className="flex items-center gap-1.5 mb-2 animate-in fade-in slide-in-from-left-4 duration-1000 delay-300">
+                    <span className="text-primary font-black text-xs lg:text-sm uppercase tracking-[0.2em]">
+                      # {index + 1} Spotlight
+                    </span>
+                  </div>
+
                   {/* Title and Logo */}
                   <div className="mb-6 flex flex-col gap-4">
                     {item.logo_path && (

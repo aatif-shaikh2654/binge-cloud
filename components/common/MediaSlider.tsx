@@ -11,6 +11,7 @@ interface MediaSliderProps {
   className?: string;
   media_type?: string;
   seeAllHref?: string;
+  showRank?: boolean;
 }
 
 export const MediaSliderSkeleton = ({

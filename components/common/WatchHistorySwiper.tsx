@@ -1,13 +1,11 @@
 "use client";
 
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import React from "react";
 import { FreeMode, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import HistoryCard from "./HistoryCard";
 
 // Import Swiper styles
 import "swiper/css";
@@ -15,8 +13,7 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 
 const WatchHistorySwiper = () => {
-  const { history, removeFromHistory } = useHistoryStore();
-  const { handleWatchClick } = useWatchNavigation();
+  const { history } = useHistoryStore();
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
 
@@ -77,77 +74,11 @@ const WatchHistorySwiper = () => {
           }}
           className="!overflow-visible"
         >
-          {history.map((item) => {
-            return (
-              <SwiperSlide key={item.id} className="pb-4">
-                <div className="group relative w-full aspect-video rounded-2xl overflow-hidden border border-white/5 bg-white/5 hover:border-blue-500/30 transition-all duration-500">
-                  <Link
-                    href={
-                      item.media_type === "anime"
-                        ? `/anime/watch?id=${item.id}${item.episode ? `&ep=${item.episode}` : ""}`
-                        : `/${item.media_type}/watch?id=${item.id}&server=${item.server}${item.season ? `&season=${item.season}&episode=${item.episode}` : ""}`
-                    }
-                    onClick={handleWatchClick}
-                    className="block w-full h-full"
-                  >
-                    <Image
-                      src={
-                        item.backdrop_path?.startsWith("http") ||
-                        item.poster_path?.startsWith("http")
-                          ? item.backdrop_path || item.poster_path
-                          : `https://image.tmdb.org/t/p/w500${item.backdrop_path || item.poster_path}`
-                      }
-                      alt={item.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
-
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)] transform scale-75 group-hover:scale-100 transition-transform duration-500">
-                        <Play className="w-6 h-6 text-white fill-white ml-1" />
-                      </div>
-                    </div>
-
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <h3 className="text-[15px] font-bold text-white line-clamp-1 group-hover:text-blue-400 transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1.5 flex items-center gap-2">
-                        <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/60">
-                          {item.media_type === "tv"
-                            ? "TV"
-                            : item.media_type === "anime"
-                              ? "Anime"
-                              : "Movie"}
-                        </span>
-                        {item.media_type === "tv" && (
-                          <span>
-                            S{item.season} • E{item.episode}
-                          </span>
-                        )}
-                        {item.media_type === "anime" && item.episode && (
-                          <span>EP {item.episode}</span>
-                        )}
-                      </p>
-                    </div>
-                  </Link>
-
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      removeFromHistory(item.id);
-                    }}
-                    className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-white hover:bg-red-500/80 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10 border border-white/10 shadow-lg"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </SwiperSlide>
-            );
-          })}
+          {history.map((item) => (
+            <SwiperSlide key={item.id} className="pb-4">
+              <HistoryCard item={item} />
+            </SwiperSlide>
+          ))}
         </Swiper>
       </div>
     </section>

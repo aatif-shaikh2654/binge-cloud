@@ -70,6 +70,21 @@ export const getTrendingMovies = async (
 };
 
 /**
+ * Service to fetch trending media by type and time window
+ */
+export const getTrendingMedia = async (
+  type: "movie" | "tv" | "all",
+  timeWindow: "day" | "week" = "day",
+  page: number = 1,
+): Promise<TMDBResponse<TMDBMovie>> => {
+  return ApiService<TMDBResponse<TMDBMovie>>({
+    method: "GET",
+    url: `3/trending/${type}/${timeWindow}`,
+    params: { page },
+  });
+};
+
+/**
  * Service to fetch popular movies
  */
 export const getPopularMovies = async (

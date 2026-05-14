@@ -20,6 +20,7 @@ interface MediaSliderProps {
   className?: string;
   media_type?: string;
   seeAllHref?: string;
+  showRank?: boolean;
 }
 
 const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
@@ -28,6 +29,7 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
   className,
   media_type,
   seeAllHref,
+  showRank,
 }) => {
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
@@ -126,9 +128,9 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
           }}
           className="!overflow-visible"
         >
-          {movies.map((movie) => (
+          {movies.map((movie, index) => (
             <SwiperSlide key={movie.id} className="pb-4">
-              <MovieCard movie={movie} />
+              <MovieCard movie={movie} rank={showRank ? index + 1 : undefined} />
             </SwiperSlide>
           ))}
         </Swiper>

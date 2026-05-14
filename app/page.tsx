@@ -1,7 +1,7 @@
 import Herosection from "@/components/common/Herosection";
 import MediaSlider from "@/components/common/MediaSlider";
 import WatchHistory from "@/components/common/WatchHistory";
-import { getTrendingMovies, getMediaList } from "./services/all.service";
+import { getTrendingMovies, getMediaList, getTrendingMedia } from "./services/all.service";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
@@ -13,8 +13,14 @@ export default async function Home() {
   const popularMoviesData = await getMediaList("movie", "popular");
   const popularSeriesData = await getMediaList("tv", "popular");
 
+  // Fetch Top 10 Movies and Series of the week
+  const top10MoviesData = await getTrendingMedia("movie", "week");
+  const top10SeriesData = await getTrendingMedia("tv", "week");
+
   const popularMovies = popularMoviesData?.results?.slice(0, 20) || [];
   const popularSeries = popularSeriesData?.results?.slice(0, 20) || [];
+  const top10Movies = top10MoviesData?.results?.slice(0, 10) || [];
+  const top10Series = top10SeriesData?.results?.slice(0, 10) || [];
 
   return (
     <div className="flex flex-col w-full min-h-screen">
@@ -27,6 +33,12 @@ export default async function Home() {
       />
       <MediaSlider
         media_type="movie"
+        title="Top 10 Movies This Week"
+        movies={top10Movies}
+        showRank={true}
+      />
+      <MediaSlider
+        media_type="movie"
         title="Popular Movies"
         movies={popularMovies}
       />
@@ -34,6 +46,12 @@ export default async function Home() {
         media_type="tv"
         title="Popular TV Series"
         movies={popularSeries}
+      />
+      <MediaSlider
+        media_type="tv"
+        title="Top 10 Series This Week"
+        movies={top10Series}
+        showRank={true}
       />
     </div>
   );
