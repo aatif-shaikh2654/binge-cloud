@@ -23,7 +23,7 @@ const AnimeWatch: React.FC<AnimeWatchProps> = ({ id, initialDetails }) => {
   const { handleBack } = useWatchNavigation();
 
   const ep = Math.max(1, Number(searchParams.get("ep")) || 1);
-  const serverId = searchParams.get("server") || "megaplay-sub";
+  const serverId = searchParams.get("server") || ANIME_SERVERS[0];
 
   const currentServer =
     ANIME_SERVERS.find((s) => s.id === serverId) || ANIME_SERVERS[0];

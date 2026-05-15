@@ -79,3 +79,17 @@ export const getAnimeDetails = async (
   });
   return data.data.Media;
 };
+
+export const searchAnime = async (
+  query: string,
+  page: number = 1,
+  perPage: number = 20,
+): Promise<AniListPageResponse> => {
+  const data = await fetchAniList<AniListResponse>(ANIME_PAGE_QUERY, {
+    search: query,
+    page,
+    perPage,
+    sort: ["SEARCH_MATCH", "TRENDING_DESC"],
+  });
+  return data.data.Page;
+};

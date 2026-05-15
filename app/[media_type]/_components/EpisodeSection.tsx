@@ -173,7 +173,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({ tvId, seasons }) => {
                 href={watchUrl(episode)}
                 onClick={handleWatchClick}
                 className={cn(
-                  "group relative rounded-xl overflow-hidden border transition-all duration-300 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col shadow-xl hover:shadow-blue-600/5",
+                  "group relative rounded-lg md:rounded-xl overflow-hidden border transition-all duration-300 animate-in fade-in slide-in-from-bottom-10 flex flex-row md:flex-col shadow-xl hover:shadow-blue-600/5",
                   isCurrentlyWatching
                     ? "bg-blue-600/80 border-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.2)] backdrop-blur-sm"
                     : "bg-black border-white/5 hover:border-blue-500/50 hover:bg-zinc-900",

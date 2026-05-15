@@ -5,6 +5,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 import { toast } from "sonner";
+import { TMDB_BASE_URL } from "../constants/tmdb";
 import { ApiError } from "../types/common";
 
 const axiosInstance: AxiosInstance = axios.create({
@@ -16,7 +17,7 @@ const axiosInstance: AxiosInstance = axios.create({
  * Dedicated instance for direct TMDB API calls (Server-side)
  */
 export const tmdbInstance: AxiosInstance = axios.create({
-  baseURL: "https://api.themoviedb.org/3",
+  baseURL: TMDB_BASE_URL,
   timeout: 15000,
 });
 
@@ -52,14 +53,14 @@ axiosInstance.interceptors.request.use(
 const responseInterceptor = (response: AxiosResponse) => response.data;
 const errorInterceptor = async (error: AxiosError<ApiError>) => {
   const normalizedError = normalizeError(error);
-  
+
   // Only show toasts on the client
   if (typeof window !== "undefined") {
     toast.error(normalizedError.message);
   } else {
     console.error(`[API Error] ${error.config?.url}:`, normalizedError.message);
   }
-  
+
   return Promise.reject(normalizedError);
 };
 

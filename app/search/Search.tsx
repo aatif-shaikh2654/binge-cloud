@@ -184,14 +184,14 @@ const Search = () => {
         <div className="flex gap-3 items-center px-4 lg:px-24">
           <div className="relative flex-1 group">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <SearchIcon className="w-4 h-4 text-white/40" />
+              <SearchIcon className="w-4 h-4 text-white/60 group-focus-within:text-blue-500 transition-colors" />
             </div>
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search movies, TV shows, genres..."
-              className="w-full bg-card border border-white/5 text-white pl-12 pr-12 py-3 rounded-lg text-sm placeholder:text-white/20 focus:outline-none focus:border-blue-500/50 transition-all"
+              className="w-full bg-card/50 border font-bold border-white/20 text-white pl-12 pr-12 py-3 rounded-lg text-sm placeholder:text-white/40 focus:outline-none focus:border-blue-600 shadow-xl transition-all"
               autoFocus
             />
             {query && (
@@ -207,10 +207,10 @@ const Search = () => {
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "h-11 px-6 rounded-lg transition-all duration-300 flex items-center gap-2 font-bold text-xs",
+              "h-12 px-6 rounded-lg transition-all duration-300 flex items-center gap-2 font-bold text-xs",
               showFilters
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                : "bg-card border border-white/5 text-white/60 hover:text-white",
+                ? "bg-blue-600 text-white shadow-[0_0_25px_rgba(37,99,235,0.4)]"
+                : "bg-card/50 border border-white/20 text-white/60 hover:text-white hover:bg-card/80",
             )}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />

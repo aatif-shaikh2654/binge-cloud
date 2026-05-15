@@ -30,30 +30,6 @@ export const metadata: Metadata = {
     "Ultra-fast Streaming",
   ],
   authors: [{ name: "Binge Cloud Team" }],
-  openGraph: {
-    title: "Binge Cloud — Your Ultimate Cinematic Streaming Hub",
-    description:
-      "Experience ultra-fast streaming and a curated library of trending movies and TV shows.",
-    url: "",
-    siteName: "Binge Cloud",
-    images: [
-      {
-        url: "/bing-cloud.png",
-        width: 1200,
-        height: 630,
-        alt: "Binge Cloud Logo",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Binge Cloud — Your Ultimate Cinematic Streaming Hub",
-    description:
-      "Experience ultra-fast streaming and a curated library of trending movies and TV shows.",
-    images: ["/bing-cloud.png"],
-  },
   icons: {
     icon: [
       { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },

@@ -24,7 +24,7 @@ const WatchLater = () => {
         <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
           <Bookmark className="w-10 h-10 text-white/20" />
         </div>
-        <h2 className="text-3xl font-black text-white mb-2 uppercase italic tracking-tighter">
+        <h2 className="text-3xl font-black text-white mb-2 tracking-tighter">
           Watchlist Empty
         </h2>
         <p className="text-white/40 max-w-sm font-medium tracking-tight">

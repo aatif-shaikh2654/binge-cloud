@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Bookmark, Clock, Home, Sparkles, Search, Tv } from "lucide-react";
+import { Bookmark, Clock, Home, Search, Sparkles, Tv } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -36,14 +36,14 @@ const Sidebar = () => {
         )}
       >
         {/* Logo Section */}
-        <div className="px-5 mb-10 w-full">
+        <div className="px-3 mb-10 w-full">
           <Link href="/" className="flex items-center gap-3 group/logo">
-            <div className="relative w-9 h-9 shrink-0 transition-transform duration-500 group-hover/logo:scale-110">
+            <div className="relative w-14 h-14 shrink-0 transition-transform duration-500 group-hover/logo:scale-110">
               <Image
                 src="/favicon/apple-touch-icon.png"
                 alt="Logo"
                 fill
-                sizes="36px"
+                sizes="46px"
                 className="object-contain brightness-110 drop-shadow-[0_0_10px_rgba(37,99,235,0.4)]"
               />
             </div>
@@ -117,37 +117,39 @@ const Sidebar = () => {
           )
           .slice(0, 5)
           .map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={cn(
-                "flex flex-col items-center justify-center gap-1 transition-all duration-300 relative px-4 py-2",
-                isActive ? "text-white" : "text-[#8197a4] hover:text-white/80",
-              )}
-            >
-              <item.icon
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
                 className={cn(
-                  "w-5 h-5 transition-all duration-300",
-                  isActive ? "scale-110" : "scale-100",
-                )}
-              />
-              <span
-                className={cn(
-                  "text-[8px] font-bold uppercase tracking-wider font-sans transition-all duration-300",
-                  isActive ? "opacity-100" : "opacity-60",
+                  "flex flex-col items-center justify-center gap-1 transition-all duration-300 relative px-4 py-2",
+                  isActive
+                    ? "text-white"
+                    : "text-[#8197a4] hover:text-white/80",
                 )}
               >
-                {item.label}
-              </span>
+                <item.icon
+                  className={cn(
+                    "w-5 h-5 transition-all duration-300",
+                    isActive ? "scale-110" : "scale-100",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "text-[8px] font-bold uppercase tracking-wider font-sans transition-all duration-300",
+                    isActive ? "opacity-100" : "opacity-60",
+                  )}
+                >
+                  {item.label}
+                </span>
 
-              {isActive && (
-                <div className="absolute bottom-1 w-1 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
-              )}
-            </Link>
-          );
-        })}
+                {isActive && (
+                  <div className="absolute bottom-1 w-1 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
+                )}
+              </Link>
+            );
+          })}
       </nav>
     </>
   );

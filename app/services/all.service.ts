@@ -1,3 +1,4 @@
+import { type MediaType } from "@/app/types/common";
 import {
   type TMDBCreditsResponse,
   type TMDBImageResponse,
@@ -5,7 +6,6 @@ import {
   type TMDBResponse,
   type TMDBSeasonDetails,
 } from "@/app/types/tmdb";
-import { type MediaType } from "@/app/types/common";
 import { ApiService } from "./api.service";
 import { tmdbInstance } from "./axios";
 
@@ -44,7 +44,7 @@ export const getTrendingMovies = async (
 ): Promise<TMDBResponse<TMDBMovie>> => {
   const trending = await ApiService<TMDBResponse<TMDBMovie>>({
     method: "GET",
-    url: "3/trending/all/day",
+    url: "/trending/all/day",
     params: { page },
   });
 
@@ -79,7 +79,7 @@ export const getTrendingMedia = async (
 ): Promise<TMDBResponse<TMDBMovie>> => {
   return ApiService<TMDBResponse<TMDBMovie>>({
     method: "GET",
-    url: `3/trending/${type}/${timeWindow}`,
+    url: `/trending/${type}/${timeWindow}`,
     params: { page },
   });
 };
@@ -92,7 +92,7 @@ export const getPopularMovies = async (
 ): Promise<TMDBResponse<TMDBMovie>> => {
   return ApiService<TMDBResponse<TMDBMovie>>({
     method: "GET",
-    url: "3/movie/popular",
+    url: "/movie/popular",
     params: { page },
   });
 };
@@ -122,7 +122,7 @@ export const getMovieVideos = async (
     }>
   >({
     method: "GET",
-    url: `3/${type}/${id}/videos`,
+    url: `/${type}/${id}/videos`,
   });
 };
 
@@ -136,7 +136,7 @@ export const getMediaList = async (
 ): Promise<TMDBResponse<TMDBMovie>> => {
   return ApiService<TMDBResponse<TMDBMovie>>({
     method: "GET",
-    url: `3/${type}/${category}`,
+    url: `/${type}/${category}`,
     params: { page },
   });
 };
@@ -150,7 +150,7 @@ export const getMediaDetails = async (
 ): Promise<TMDBMovie> => {
   return ApiService<TMDBMovie>({
     method: "GET",
-    url: `3/${type}/${id}`,
+    url: `/${type}/${id}`,
   });
 };
 
@@ -163,7 +163,7 @@ export const getMediaCredits = async (
 ): Promise<TMDBCreditsResponse> => {
   return ApiService<TMDBCreditsResponse>({
     method: "GET",
-    url: `3/${type}/${id}/credits`,
+    url: `/${type}/${id}/credits`,
   });
 };
 
@@ -176,7 +176,7 @@ export const getSeasonDetails = async (
 ): Promise<TMDBSeasonDetails> => {
   return ApiService<TMDBSeasonDetails>({
     method: "GET",
-    url: `3/tv/${tvId}/season/${seasonNumber}`,
+    url: `/tv/${tvId}/season/${seasonNumber}`,
   });
 };
 
@@ -189,7 +189,7 @@ export const searchMedia = async (
 ): Promise<TMDBResponse<TMDBMovie>> => {
   return ApiService<TMDBResponse<TMDBMovie>>({
     method: "GET",
-    url: "3/search/multi",
+    url: "/search/multi",
     params: { query, page, include_adult: false },
   });
 };
@@ -211,7 +211,7 @@ export const discoverMedia = async (
 ): Promise<TMDBResponse<TMDBMovie>> => {
   return ApiService<TMDBResponse<TMDBMovie>>({
     method: "GET",
-    url: `3/discover/${type}`,
+    url: `/discover/${type}`,
     params: { ...params, include_adult: false },
   });
 };
@@ -225,7 +225,7 @@ export const getSimilarMedia = async (
 ): Promise<TMDBResponse<TMDBMovie>> => {
   return ApiService<TMDBResponse<TMDBMovie>>({
     method: "GET",
-    url: `3/${type}/${id}/recommendations`,
+    url: `/${type}/${id}/recommendations`,
     params: { page },
   });
 };

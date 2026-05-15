@@ -22,9 +22,9 @@ export const useWatchNavigation = () => {
 
     if (lastPage) {
       sessionStorage.removeItem("lastPage");
-      router.replace(lastPage);
+      window.location.replace(lastPage);
     } else {
-      router.replace(defaultFallback);
+      window.location.replace(defaultFallback);
     }
   };
 

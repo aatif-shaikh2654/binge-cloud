@@ -1,4 +1,3 @@
-import React from "react";
 import HistoryGrid from "./HistoryGrid";
 
 export const metadata = {

@@ -18,9 +18,14 @@ import { toast } from "sonner";
 interface AnimeCardProps {
   anime: AniListMedia;
   badge?: string;
+  disableHoverCard?: boolean;
 }
 
-const AnimeCard: React.FC<AnimeCardProps> = ({ anime, badge }) => {
+const AnimeCard: React.FC<AnimeCardProps> = ({
+  anime,
+  badge,
+  disableHoverCard,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
@@ -154,7 +159,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, badge }) => {
       </Link>
 
       {/* Hover detail card */}
-      {isHovered && (
+      {isHovered && !disableHoverCard && (
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] bg-card rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-[300] animate-in zoom-in-95 duration-200"
           style={{ transformOrigin: "center" }}

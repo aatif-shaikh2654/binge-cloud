@@ -31,14 +31,14 @@ export const ANIME_MEDIA_FRAGMENT = `
 `;
 
 export const ANIME_PAGE_QUERY = `
-  query AnimeList($page: Int, $perPage: Int, $sort: [MediaSort]) {
+  query AnimeList($page: Int, $perPage: Int, $sort: [MediaSort], $search: String) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         hasNextPage
         currentPage
         total
       }
-      media(type: ANIME, sort: $sort) {
+      media(type: ANIME, sort: $sort, search: $search, isAdult: false) {
         ${ANIME_MEDIA_FRAGMENT}
       }
     }
@@ -47,7 +47,7 @@ export const ANIME_PAGE_QUERY = `
 
 export const ANIME_DETAIL_QUERY = `
   query AnimeDetail($id: Int) {
-    Media(id: $id, type: ANIME) {
+    Media(id: $id, type: ANIME, isAdult: false) {
       id
       title { romaji english native }
       coverImage { large extraLarge color }

@@ -31,11 +31,10 @@ export const ApiService = async <TResponse, TPayload = unknown>(
     if (isServer) {
       // Direct call to TMDB on the server.
       // tmdbInstance has baseURL: ".../3", so we strip any leading "3/" or "/3/" from the url.
-      const cleanUrl = url.replace(/^\/?3\//, "");
 
       const response = await tmdbInstance.request<TResponse>({
         method,
-        url: cleanUrl,
+        url,
         params: {
           language: "en-US",
           ...params,

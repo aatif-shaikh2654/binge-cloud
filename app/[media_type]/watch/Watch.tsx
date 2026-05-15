@@ -12,8 +12,8 @@ import {
   useSearchParams,
 } from "next/navigation";
 import React from "react";
-import Player from "../_components/Player";
 import EpisodeSwitcher from "../_components/EpisodeSwitcher";
+import Player from "../_components/Player";
 import ServerSwitcher from "../_components/ServerSwitcher";
 
 interface WatchProps {

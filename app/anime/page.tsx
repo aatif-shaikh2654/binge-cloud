@@ -1,4 +1,5 @@
 import AnimeHero from "@/components/common/AnimeHero";
+import AnimeSearch from "@/components/common/AnimeSearch";
 import AnimeSlider from "@/components/common/AnimeSlider";
 import {
   getPopularAnime,
@@ -20,8 +21,12 @@ export default async function AnimePage() {
   const topRated = topRatedData.media ?? [];
 
   return (
-    <div className="flex flex-col w-full min-h-screen">
+    <div className="relative flex flex-col w-full min-h-screen">
+      {/* Top Right Search Bar */}
+      <AnimeSearch />
+
       <AnimeHero anime={trending} />
+
       <div className="mt-8 space-y-2">
         <AnimeSlider title="Trending Now" anime={trending} />
         <AnimeSlider title="Most Popular" anime={popular} />
