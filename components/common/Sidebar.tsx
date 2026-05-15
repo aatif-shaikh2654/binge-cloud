@@ -110,7 +110,7 @@ const Sidebar = () => {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 w-full h-[70px] bg-sidebar/95 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around lg:hidden z-100 px-2">
+      <nav className="fixed bottom-0 left-0 w-full h-[70px] bg-sidebar/95 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around lg:hidden z-[100] px-2">
         {sidebarItems
           .filter(
             (item) => item.label !== "Movies" && item.label !== "Web Series",

@@ -107,7 +107,7 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
                   </div>
 
                   {/* Title and Logo */}
-                  <div className="mb-6 flex flex-col gap-4">
+                  <div className="mb-4 flex flex-col gap-4">
                     {item.logo_path && (
                       <div className="relative w-[200px] lg:w-[320px] aspect-[3/1]">
                         <Image
@@ -119,7 +119,7 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
                         />
                       </div>
                     )}
-                    <h1 className="text-3xl lg:text-5xl font-black text-white tracking-tight drop-shadow-lg line-clamp-1">
+                    <h1 className="text-3xl lg:text-5xl font-black text-white tracking-tight drop-shadow-lg line-clamp-1 leading-[130%]">
                       {title}
                     </h1>
                   </div>

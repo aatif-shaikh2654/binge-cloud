@@ -1,11 +1,12 @@
 "use client";
 
+import { useDebounce } from "@/app/hooks/useDebounce";
 import { searchAnime } from "@/app/services/anilist.service";
 import { cn } from "@/lib/utils";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import AnimeCard from "./AnimeCard";
 import AnimeSearchCard from "./AnimeSearchCard";
 
@@ -13,27 +14,18 @@ const AnimeSearch = () => {
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 400);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
 
-  const closeSearch = () => {
+  const closeSearch = useCallback(() => {
     setIsExpanded(false);
     setQuery("");
-    setDebouncedQuery("");
     setSelectedIndex(-1);
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(query);
-      setSelectedIndex(-1);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [query]);
+  }, []);
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -48,18 +40,50 @@ const AnimeSearch = () => {
       initialPageParam: 1,
     });
 
-  useEffect(() => {
-    if (isExpanded) {
-      inputRef.current?.focus();
+  const results = data?.pages.flatMap((page) => page.media) ?? [];
+
+  const scrollToIndex = (index: number) => {
+    if (index >= 0 && scrollContainerRef.current) {
+      const selectedElement = scrollContainerRef.current.querySelector(
+        `[data-index="${index}"]`,
+      );
+      if (selectedElement) {
+        selectedElement.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }
+
+      // Load more if we're near the end of current results
+      if (index >= results.length - 4 && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
     }
-  }, [isExpanded]);
+  };
 
   useEffect(() => {
-    if (!isExpanded) return;
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "s") {
+        event.preventDefault();
+        if (isExpanded) {
+          closeSearch();
+        } else {
+          setIsExpanded(true);
+          setTimeout(() => inputRef.current?.focus(), 0);
+        }
+        return;
+      }
 
-    document.body.style.overflow = "hidden";
+      if (!isExpanded) return;
+
+      if (event.key === "Escape") {
+        closeSearch();
+        inputRef.current?.blur();
+      }
+    };
 
     const handleOutsideClick = (event: MouseEvent | TouchEvent) => {
+      if (!isExpanded) return;
       if (
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)
@@ -68,32 +92,29 @@ const AnimeSearch = () => {
       }
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        closeSearch();
-        inputRef.current?.blur();
-      }
-    };
+    if (isExpanded) {
+      document.body.style.overflow = "hidden";
+    }
 
+    document.addEventListener("keydown", handleGlobalKeyDown);
     document.addEventListener("mousedown", handleOutsideClick, {
       capture: true,
     });
     document.addEventListener("touchstart", handleOutsideClick, {
       capture: true,
     });
-    document.addEventListener("keydown", handleEscape);
 
     return () => {
+      document.removeEventListener("keydown", handleGlobalKeyDown);
       document.removeEventListener("mousedown", handleOutsideClick, {
         capture: true,
       });
       document.removeEventListener("touchstart", handleOutsideClick, {
         capture: true,
       });
-      document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "auto";
     };
-  }, [isExpanded]);
+  }, [isExpanded, closeSearch]);
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) return;
@@ -109,44 +130,22 @@ const AnimeSearch = () => {
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const results = data?.pages.flatMap((page) => page.media) ?? [];
-
-  useEffect(() => {
-    if (selectedIndex >= 0 && scrollContainerRef.current) {
-      const selectedElement = scrollContainerRef.current.querySelector(
-        `[data-index="${selectedIndex}"]`,
-      );
-      if (selectedElement) {
-        selectedElement.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-        });
-      }
-
-      // Load more if we're near the end of current results
-      if (
-        selectedIndex >= results.length - 4 &&
-        hasNextPage &&
-        !isFetchingNextPage
-      ) {
-        fetchNextPage();
-      }
-    }
-  }, [
-    selectedIndex,
-    results.length,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-  ]);
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    setSelectedIndex(-1);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
+      const nextIndex = Math.min(selectedIndex + 1, results.length - 1);
+      setSelectedIndex(nextIndex);
+      scrollToIndex(nextIndex);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setSelectedIndex((prev) => Math.max(prev - 1, -1));
+      const nextIndex = Math.max(selectedIndex - 1, -1);
+      setSelectedIndex(nextIndex);
+      scrollToIndex(nextIndex);
     } else if (e.key === "Enter") {
       if (selectedIndex >= 0 && results[selectedIndex]) {
         router.push(`/anime/detail?id=${results[selectedIndex].id}`);
@@ -174,7 +173,14 @@ const AnimeSearch = () => {
             )}
           >
             <button
-              onClick={() => (isExpanded ? closeSearch() : setIsExpanded(true))}
+              onClick={() => {
+                if (isExpanded) {
+                  closeSearch();
+                } else {
+                  setIsExpanded(true);
+                  setTimeout(() => inputRef.current?.focus(), 0);
+                }
+              }}
               className={cn(
                 "flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center transition-all duration-500 rounded-full",
                 !isExpanded ? "bg-blue-600 text-white" : "text-blue-500",
@@ -200,7 +206,7 @@ const AnimeSearch = () => {
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={handleQueryChange}
                 onKeyDown={handleKeyDown}
                 placeholder="Search anime..."
                 className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-sm text-white placeholder:text-white/20 px-3 py-2.5 font-bold"
@@ -210,7 +216,6 @@ const AnimeSearch = () => {
                 <button
                   onClick={() => {
                     setQuery("");
-                    setDebouncedQuery("");
                   }}
                   className="p-1 text-white/20 hover:text-white transition-colors"
                 >
