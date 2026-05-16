@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function HistoryPage() {
   return (
-    <main className="min-h-screen py-10 px-6 lg:px-24 bg-background">
+    <main className="min-h-screen py-10 px-6 lg:px-20 bg-background">
       <HistoryGrid />
     </main>
   );

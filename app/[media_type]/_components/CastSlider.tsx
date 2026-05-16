@@ -23,7 +23,7 @@ const CastSlider: React.FC<CastSliderProps> = ({ cast }) => {
   if (!cast || cast.length === 0) return null;
 
   return (
-    <section className="space-y-8 md:space-y-12 ps-8! lg:ps-24! overflow-hidden md:overflow-visible">
+    <section className="space-y-8 md:space-y-12 ps-8! lg:ps-24! overflow-hidden lg:overflow-visible">
       <div className="flex items-end justify-between border-b border-white/5 pb-4 md:pb-6 pe-8! lg:pe-24!">
         <div className="space-y-1 md:space-y-2 w-full md:w-auto">
           <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-blue-500">

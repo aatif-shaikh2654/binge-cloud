@@ -20,9 +20,9 @@ const WatchHistorySwiper = () => {
   if (history.length === 0) return null;
 
   return (
-    <section className="ps-6! lg:ps-24! md:py-8 pb-12 overflow-hidden md:overflow-visible">
+    <section className="ps-6! lg:ps-20! md:py-8 pb-12 overflow-hidden lg:overflow-visible">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-8 pe-8! lg:pe-24!">
+      <div className="flex items-center justify-between mb-8 pe-8! lg:pe-20!">
         <div className="flex items-center gap-4">
           <div className="w-1.5 h-8 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
           <h2 className="text-2xl font-black tracking-tight text-white flex items-center gap-3">
@@ -49,7 +49,7 @@ const WatchHistorySwiper = () => {
       </div>
 
       {/* Slider Container */}
-      <div className="movie-slider-container lg:pe-24 pe-6">
+      <div className="movie-slider-container lg:pe-20 pe-6">
         <Swiper
           modules={[Navigation, FreeMode]}
           navigation={{
@@ -71,6 +71,8 @@ const WatchHistorySwiper = () => {
             768: { slidesPerView: 2.8, spaceBetween: 24 },
             1024: { slidesPerView: 3.8, spaceBetween: 24 },
             1280: { slidesPerView: 3.8, spaceBetween: 24 },
+            1536: { slidesPerView: 3.8, spaceBetween: 24 },
+            1920: { slidesPerView: 4.8, spaceBetween: 24 },
           }}
           className="!overflow-visible"
         >

@@ -181,7 +181,7 @@ const Search = () => {
           className="mb-6"
         />
 
-        <div className="flex gap-3 items-center px-4 lg:px-24">
+        <div className="flex gap-3 items-center px-4 lg:px-20">
           <div className="relative flex-1 group">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
               <SearchIcon className="w-4 h-4 text-white/60 group-focus-within:text-blue-500 transition-colors" />
@@ -220,7 +220,7 @@ const Search = () => {
 
         <div
           className={cn(
-            "mt-4 overflow-hidden transition-all duration-500 ease-in-out px-4 lg:px-24",
+            "mt-4 overflow-hidden transition-all duration-500 ease-in-out px-4 lg:px-20",
             showFilters
               ? "max-h-[1000px] opacity-100 mb-10"
               : "max-h-0 opacity-0",
@@ -241,7 +241,7 @@ const Search = () => {
         </div>
       </div>
 
-      <div className="max-w-[1800px] mx-auto px-4 lg:px-24">
+      <div className="max-w-[1800px] mx-auto px-4 lg:px-20">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-40 gap-6">
             <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />

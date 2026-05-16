@@ -89,7 +89,7 @@ const AnimeList: React.FC<AnimeListProps> = ({ initialData, category }) => {
   }, [page, category, initialData]);
 
   return (
-    <div className="px-6 lg:px-24 flex flex-col gap-10">
+    <div className="px-6 lg:px-20 flex flex-col gap-10">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 md:gap-x-6 md:gap-y-10 gap-x-3 gap-y-6">
         {items.map((item, index) => (
           <div

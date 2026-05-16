@@ -98,7 +98,7 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
                 <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
 
-                <div className="absolute inset-0 flex flex-col justify-center px-6 lg:px-24 max-w-4xl z-10">
+                <div className="absolute inset-0 flex flex-col justify-center px-6 lg:px-20 max-w-4xl z-10">
                   {/* Spotlight Rank */}
                   <div className="flex items-center gap-1.5 mb-2 animate-in fade-in slide-in-from-left-4 duration-1000 delay-300">
                     <span className="text-primary font-black text-xs lg:text-sm uppercase tracking-[0.2em]">

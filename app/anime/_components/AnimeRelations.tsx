@@ -9,7 +9,7 @@ interface AnimeRelationsProps {
 }
 
 const AnimeRelationsSkeleton = () => (
-  <section className="ps-8! lg:ps-24! md:py-6 pb-6 relative z-10 overflow-hidden md:overflow-visible">
+  <section className="ps-8! lg:ps-24! md:py-6 pb-6 relative z-10 overflow-hidden lg:overflow-visible">
     <div className="pe-8! lg:pe-24! border-b border-white/5 pb-4 md:pb-6 mb-8 space-y-2">
       <div className="w-24 h-3 bg-white/10 rounded-full" />
       <div className="w-44 h-8 bg-white/10 rounded-full" />

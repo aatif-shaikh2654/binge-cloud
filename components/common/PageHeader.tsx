@@ -15,7 +15,7 @@ const PageHeader = ({
   className,
 }: PageHeaderProps) => {
   return (
-    <div className={cn("px-6 lg:px-24", className)}>
+    <div className={cn("px-6 lg:px-20", className)}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4 mb-2">
           <div className="w-1.5 h-8 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(37,99,235,0.5)] shrink-0" />

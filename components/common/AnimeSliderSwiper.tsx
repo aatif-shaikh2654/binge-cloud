@@ -34,11 +34,11 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
   return (
     <section
       className={cn(
-        "ps-6! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden md:overflow-visible",
+        "ps-6! lg:ps-20! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden lg:overflow-visible",
         className,
       )}
     >
-      <div className="flex items-center justify-between mb-8 pe-8! lg:pe-24!">
+      <div className="flex items-center justify-between mb-8 pe-8! lg:pe-20!">
         <div className="flex items-center gap-4">
           <div className="w-1.5 h-8 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
           <h2 className="text-2xl font-black tracking-tight text-white">
@@ -76,7 +76,7 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
         </div>
       </div>
 
-      <div className="movie-slider-container lg:pe-24 pe-6">
+      <div className="movie-slider-container lg:pe-20 pe-6">
         <Swiper
           modules={[Navigation, FreeMode]}
           navigation={{ prevEl, nextEl }}
@@ -95,6 +95,7 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
             1024: { slidesPerView: 5.2, spaceBetween: 24 },
             1280: { slidesPerView: 6.2, spaceBetween: 24 },
             1536: { slidesPerView: 7.2, spaceBetween: 24 },
+            1920: { slidesPerView: 8.2, spaceBetween: 24 },
           }}
           className="!overflow-visible"
         >

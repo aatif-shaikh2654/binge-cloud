@@ -38,7 +38,7 @@ const AnimeRelationsSwiper: React.FC<AnimeRelationsSwiperProps> = ({
   if (animeRelations.length === 0) return null;
 
   return (
-    <section className="ps-6! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden md:overflow-visible">
+    <section className="ps-6! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden lg:overflow-visible">
       <div className="flex items-end justify-between mb-8 pe-8! lg:pe-24! border-b border-white/5 pb-4 md:pb-6">
         <div className="space-y-1 md:space-y-2">
           <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-blue-500">
@@ -83,6 +83,8 @@ const AnimeRelationsSwiper: React.FC<AnimeRelationsSwiperProps> = ({
             768: { slidesPerView: 4.2, spaceBetween: 16 },
             1024: { slidesPerView: 5.2, spaceBetween: 16 },
             1280: { slidesPerView: 6.2, spaceBetween: 16 },
+            1536: { slidesPerView: 7.2, spaceBetween: 16 },
+            1920: { slidesPerView: 8.2, spaceBetween: 16 },
           }}
           className="!overflow-visible"
         >
