@@ -99,32 +99,16 @@ const DisableInspect: React.FC = () => {
 
     const debuggerCheckInterval = setInterval(runDebuggerCheck, 1000);
 
-    // 4. Window Resize Detection (for docked DevTools)
-    const handleResize = () => {
-      const threshold = 160;
-      const widthDiff = window.outerWidth - window.innerWidth > threshold;
-      const heightDiff = window.outerHeight - window.innerHeight > threshold;
-
-      if (widthDiff || heightDiff) {
-        setIsDevToolsOpen(true);
-      } else {
-        setIsDevToolsOpen(false);
-      }
-    };
-
     // Trigger immediate checks on mount
-    handleResize();
     runDebuggerCheck();
 
     // Add Listeners
     document.addEventListener("contextmenu", handleContextMenu);
     document.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("resize", handleResize);
 
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("resize", handleResize);
       clearInterval(debuggerCheckInterval);
     };
   }, [isDev]);
