@@ -21,7 +21,7 @@ const AnimeSliderSkeleton = ({
 }) => (
   <section
     className={cn(
-      "ps-8! lg:ps-24! md:py-6 pb-6 relative z-10 overflow-hidden lg:overflow-visible",
+      "ps-8! lg:ps-24! md:py-6 pb-6 relative z-10 overflow-hidden",
       className,
     )}
   >

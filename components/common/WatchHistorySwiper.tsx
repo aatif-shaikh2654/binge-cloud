@@ -20,7 +20,7 @@ const WatchHistorySwiper = () => {
   if (history.length === 0) return null;
 
   return (
-    <section className="ps-6! lg:ps-20! md:py-8 pb-12 overflow-hidden lg:overflow-visible">
+    <section className="ps-6! lg:ps-20! md:py-8 pb-12 overflow-hidden">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-8 pe-8! lg:pe-20!">
         <div className="flex items-center gap-4">

@@ -34,7 +34,7 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
   return (
     <section
       className={cn(
-        "ps-6! lg:ps-20! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden lg:overflow-visible",
+        "ps-6! lg:ps-20! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden",
         className,
       )}
     >

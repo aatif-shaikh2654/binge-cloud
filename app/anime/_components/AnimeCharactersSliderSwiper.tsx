@@ -31,7 +31,7 @@ const AnimeCharactersSliderSwiper: React.FC<
   if (!characters || characters.length === 0) return null;
 
   return (
-    <section className="ps-6! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden lg:overflow-visible">
+    <section className="ps-6! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden">
       <div className="flex items-end justify-between mb-8 pe-8! lg:pe-24! border-b border-white/5 pb-4 md:pb-6">
         <div className="space-y-1 md:space-y-2">
           <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-blue-500">
