@@ -1,4 +1,3 @@
-import DisableInspect from "@/components/common/DisableInspect";
 import BravePrompt from "@/components/common/BravePrompt";
 import Footer from "@/components/common/Footer";
 import Sidebar from "@/components/common/Sidebar";
@@ -63,7 +62,6 @@ export default function RootLayout({
           manrope.className,
         )}
       >
-        <DisableInspect />
         <BravePrompt />
         <NextTopLoader
           color="#2563eb"

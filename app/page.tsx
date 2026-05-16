@@ -1,7 +1,11 @@
 import Herosection from "@/components/common/Herosection";
 import MediaSlider from "@/components/common/MediaSlider";
 import WatchHistory from "@/components/common/WatchHistory";
-import { getTrendingMovies, getMediaList, getTrendingMedia } from "./services/all.service";
+import {
+  getMediaList,
+  getTrendingMedia,
+  getTrendingMovies,
+} from "./services/all.service";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
@@ -33,7 +37,7 @@ export default async function Home() {
       />
       <MediaSlider
         media_type="movie"
-        title="Top 10 Movies This Week"
+        title="Top 10 Movies"
         movies={top10Movies}
         showRank={true}
       />
@@ -49,7 +53,7 @@ export default async function Home() {
       />
       <MediaSlider
         media_type="tv"
-        title="Top 10 Series This Week"
+        title="Top 10 Series"
         movies={top10Series}
         showRank={true}
       />
