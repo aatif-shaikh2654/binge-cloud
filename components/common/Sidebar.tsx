@@ -100,7 +100,7 @@ const Sidebar = () => {
                 </div>
 
                 {/* Active Indicator Bar - Discrete version */}
-                {isActive && !isHovered && (
+                {isActive && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-white rounded-r-full z-20" />
                 )}
               </Link>

@@ -1,4 +1,3 @@
-import React from "react";
 import WatchLater from "./WatchLater";
 
 export const metadata = {
@@ -8,7 +7,7 @@ export const metadata = {
 
 export default function WatchLaterPage() {
   return (
-    <main className="min-h-screen pt-24 pb-20 px-6 lg:px-24 bg-background">
+    <main className="min-h-screen py-10 px-6 lg:px-24 bg-background">
       <WatchLater />
     </main>
   );

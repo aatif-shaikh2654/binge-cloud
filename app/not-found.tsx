@@ -11,7 +11,7 @@ const NotFound = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center max-w-sm text-center">
-        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <span className="text-[10px] font-black tracking-[0.5em] text-blue-500 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           Error 404
         </span>
 

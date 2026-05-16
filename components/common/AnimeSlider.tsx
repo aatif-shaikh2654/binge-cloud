@@ -28,7 +28,9 @@ const AnimeSliderSkeleton = ({
     <div className="flex items-center justify-between mb-8 pe-8! lg:pe-24!">
       <div className="flex items-center gap-4">
         <div className="w-1.5 h-8 bg-white/10 rounded-full" />
-        <h2 className="text-2xl font-black tracking-tight text-white/20">{title}</h2>
+        <h2 className="text-2xl font-black tracking-tight text-white/20">
+          {title}
+        </h2>
       </div>
     </div>
     <div className="flex gap-4 md:gap-6 overflow-hidden!">

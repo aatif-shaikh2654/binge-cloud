@@ -1,7 +1,7 @@
 import { getTrendingMovies } from "@/app/services/all.service";
-import TrendingList from "./TrendingList";
-import type { Metadata } from "next";
 import PageHeader from "@/components/common/PageHeader";
+import type { Metadata } from "next";
+import TrendingList from "./TrendingList";
 
 export const metadata: Metadata = {
   title: "Trending",
