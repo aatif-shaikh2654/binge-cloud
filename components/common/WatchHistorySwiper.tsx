@@ -20,7 +20,7 @@ const WatchHistorySwiper = () => {
   if (history.length === 0) return null;
 
   return (
-    <section className="ps-8! lg:ps-24! md:py-8 pb-12 overflow-hidden md:overflow-visible">
+    <section className="ps-6! lg:ps-24! md:py-8 pb-12 overflow-hidden md:overflow-visible">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-8 pe-8! lg:pe-24!">
         <div className="flex items-center gap-4">
@@ -49,7 +49,7 @@ const WatchHistorySwiper = () => {
       </div>
 
       {/* Slider Container */}
-      <div className="movie-slider-container">
+      <div className="movie-slider-container lg:pe-24 pe-6">
         <Swiper
           modules={[Navigation, FreeMode]}
           navigation={{
@@ -66,11 +66,11 @@ const WatchHistorySwiper = () => {
           slidesPerView={1.2}
           freeMode={true}
           breakpoints={{
-            480: { slidesPerView: 1.2, spaceBetween: 16 },
-            640: { slidesPerView: 1.5, spaceBetween: 16 },
-            768: { slidesPerView: 2.5, spaceBetween: 24 },
-            1024: { slidesPerView: 3.5, spaceBetween: 24 },
-            1280: { slidesPerView: 4.5, spaceBetween: 24 },
+            480: { slidesPerView: 1.5, spaceBetween: 16 },
+            640: { slidesPerView: 1.8, spaceBetween: 16 },
+            768: { slidesPerView: 2.8, spaceBetween: 24 },
+            1024: { slidesPerView: 3.8, spaceBetween: 24 },
+            1280: { slidesPerView: 3.8, spaceBetween: 24 },
           }}
           className="!overflow-visible"
         >

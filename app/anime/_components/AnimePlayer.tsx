@@ -5,6 +5,7 @@ import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { type AniListMediaDetail } from "@/app/types/anilist";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
 
 interface AnimePlayerProps {
@@ -26,6 +27,13 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 }) => {
   const { addToHistory, history } = useHistoryStore();
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  // Background Image for Loader
+  const backdropImage =
+    initialDetails.bannerImage ||
+    initialDetails.coverImage.extraLarge ||
+    initialDetails.coverImage.large ||
+    "";
 
   // Calculate Initial Start Time
   const initialStartTime = useMemo(() => {
@@ -213,7 +221,17 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
       {/* Loader overlay */}
       {!isVideoLoaded && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
-          <div className="flex flex-col items-center gap-4">
+          {backdropImage && (
+            <Image
+              src={backdropImage}
+              alt="Backdrop"
+              fill
+              sizes="100vw"
+              className="object-cover opacity-20 blur-sm scale-110"
+              priority
+            />
+          )}
+          <div className="relative z-20 flex flex-col items-center gap-4">
             <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
             <p className="text-white/60 font-medium animate-pulse">
               Initializing Player...

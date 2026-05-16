@@ -67,8 +67,24 @@ const HistoryCard: React.FC<HistoryCardProps> = ({ item }) => {
             {item.media_type === "anime" && item.episode && (
               <span>EP {item.episode}</span>
             )}
+            {item.currentTime && item.duration && (
+              <span className="text-blue-400/80 font-bold">
+                • {Math.round((item.currentTime / item.duration) * 100)}%
+              </span>
+            )}
           </p>
         </div>
+
+        {item.currentTime && item.duration && (
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 overflow-hidden">
+            <div
+              className="h-full bg-blue-600 transition-all duration-500"
+              style={{
+                width: `${Math.min(100, Math.max(0, (item.currentTime / item.duration) * 100))}%`,
+              }}
+            />
+          </div>
+        )}
       </Link>
 
       <button

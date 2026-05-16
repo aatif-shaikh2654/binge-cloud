@@ -76,9 +76,9 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
 
   const watchUrl = isResumable
     ? `/anime/watch?id=${anime.id}${
-        historyItem.episode ? `&ep=${historyItem.episode}` : "&ep=1"
+        historyItem.episode ? `&ep=${historyItem.episode}` : ""
       }${historyItem.server ? `&server=${historyItem.server}` : ""}`
-    : `/anime/watch?id=${anime.id}&ep=1`;
+    : `/anime/watch?id=${anime.id}`;
 
   const resumeText = isResumable
     ? `Resume Ep ${historyItem.episode}`

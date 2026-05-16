@@ -22,17 +22,18 @@ const AnimeWatch: React.FC<AnimeWatchProps> = ({ id, initialDetails }) => {
   const searchParams = useSearchParams();
   const { handleBack } = useWatchNavigation();
 
-  const ep = Math.max(1, Number(searchParams.get("ep")) || 1);
-  const serverId = searchParams.get("server") || ANIME_SERVERS[0];
-
-  const currentServer =
-    ANIME_SERVERS.find((s) => s.id === serverId) || ANIME_SERVERS[0];
-
   const totalCount = resolveEpisodeCount(
     initialDetails.episodes,
     initialDetails.nextAiringEpisode,
     initialDetails.streamingEpisodes.length,
   );
+
+  const epParam = searchParams.get("ep");
+  const ep = epParam ? Math.max(1, Number(epParam)) : totalCount;
+  const serverId = searchParams.get("server") || ANIME_SERVERS[0];
+
+  const currentServer =
+    ANIME_SERVERS.find((s) => s.id === serverId) || ANIME_SERVERS[0];
 
   const navigate = useCallback(
     (newEp?: number, newServer?: string) => {
@@ -56,18 +57,17 @@ const AnimeWatch: React.FC<AnimeWatchProps> = ({ id, initialDetails }) => {
 
       {/* Controls — top right */}
       <div className="absolute top-6 right-6 z-[100] flex items-center gap-2">
-        {/* Server switcher sheet */}
-        <AnimeServerSwitcher
-          currentServer={currentServer}
-          onServerChange={(server) => navigate(undefined, server.id)}
-        />
-
         {/* Episode switcher sheet */}
         <AnimeEpisodeSwitcher
           animeId={id}
           currentEp={ep}
           onEpisodeChange={(newEp) => navigate(newEp)}
           initialDetails={initialDetails}
+        />
+        {/* Server switcher sheet */}
+        <AnimeServerSwitcher
+          currentServer={currentServer}
+          onServerChange={(server) => navigate(undefined, server.id)}
         />
       </div>
 

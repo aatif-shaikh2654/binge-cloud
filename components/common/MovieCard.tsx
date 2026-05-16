@@ -128,13 +128,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType, rank }) => {
   const watchUrl = useMemo(() => {
     if (!isResumable) {
       return currentMediaType === "anime"
-        ? `/${currentMediaType}/watch?id=${movie.id}&ep=1`
+        ? `/${currentMediaType}/watch?id=${movie.id}`
         : `/${currentMediaType}/watch?id=${movie.id}`;
     }
 
     if (currentMediaType === "anime") {
       return `/anime/watch?id=${movie.id}${
-        historyItem.episode ? `&ep=${historyItem.episode}` : "&ep=1"
+        historyItem.episode ? `&ep=${historyItem.episode}` : ""
       }${historyItem.server ? `&server=${historyItem.server}` : ""}`;
     }
 
@@ -161,7 +161,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType, rank }) => {
     <div
       className={cn(
         "relative w-full transition-all duration-300",
-        isHovered || showHoverCard ? "z-[150]" : "z-10",
+        isHovered || showHoverCard ? "z-[500]" : "z-10",
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -211,9 +211,15 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType, rank }) => {
 
         {/* Rank Number Overlay - Moved outside overflow-hidden */}
         {rank && (
-          <div className="absolute -top-6 -left-4 z-40 pointer-events-none drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]">
+          <div
+            className={cn(
+              "absolute -top-5 -left-3 z-[540] pointer-events-none drop-shadow-[0_0_15px_rgba(0,0,0,0.8)] transition-transform duration-300",
+              (isHovered || showHoverCard) &&
+                "scale-110 -translate-x-2 -translate-y-2",
+            )}
+          >
             <span
-              className="text-8xl font-black text-transparent select-none leading-none inline-block transform"
+              className="text-7xl font-black text-transparent select-none leading-none inline-block transform"
               style={{
                 WebkitTextStroke: "2.5px rgba(255, 255, 255, 0.8)",
                 filter: "drop-shadow(0 0 10px rgba(255,255,255,0.2))",
@@ -237,7 +243,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType, rank }) => {
       {/* Hover Card Overlay */}
       {showHoverCard && (
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] bg-card rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-[200] animate-in zoom-in-95 duration-200"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] bg-card rounded-xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.9)] z-[550] animate-in zoom-in-95 duration-200 border border-white/10"
           style={{ transformOrigin: "center" }}
         >
           {/* Video Section */}

@@ -39,7 +39,7 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
   return (
     <section
       className={cn(
-        "ps-8! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden md:overflow-visible",
+        "ps-6! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden md:overflow-visible",
         className,
       )}
     >
@@ -84,7 +84,7 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
       </div>
 
       {/* Slider Container */}
-      <div className="movie-slider-container">
+      <div className="movie-slider-container lg:pe-24 pe-6">
         <Swiper
           modules={[Navigation, FreeMode]}
           navigation={{
@@ -129,8 +129,11 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
           className="!overflow-visible"
         >
           {movies.map((movie, index) => (
-            <SwiperSlide key={movie.id} className="pb-4">
-              <MovieCard movie={movie} rank={showRank ? index + 1 : undefined} />
+            <SwiperSlide key={movie.id} className="pb-4 !overflow-visible">
+              <MovieCard
+                movie={movie}
+                rank={showRank ? index + 1 : undefined}
+              />
             </SwiperSlide>
           ))}
         </Swiper>

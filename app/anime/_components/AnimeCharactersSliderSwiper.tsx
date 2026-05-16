@@ -22,22 +22,24 @@ const ROLE_LABEL: Record<string, string> = {
   BACKGROUND: "Background",
 };
 
-const AnimeCharactersSliderSwiper: React.FC<AnimeCharactersSliderSwiperProps> = ({
-  characters,
-}) => {
+const AnimeCharactersSliderSwiper: React.FC<
+  AnimeCharactersSliderSwiperProps
+> = ({ characters }) => {
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
 
   if (!characters || characters.length === 0) return null;
 
   return (
-    <section className="ps-8! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden md:overflow-visible">
+    <section className="ps-6! lg:ps-24! md:py-6 pb-6 relative z-10 hover:z-50 transition-all duration-300 overflow-hidden md:overflow-visible">
       <div className="flex items-end justify-between mb-8 pe-8! lg:pe-24! border-b border-white/5 pb-4 md:pb-6">
         <div className="space-y-1 md:space-y-2">
           <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-blue-500">
             Voice Cast
           </h3>
-          <h2 className="text-2xl md:text-5xl font-black tracking-tighter">Characters</h2>
+          <h2 className="text-2xl md:text-5xl font-black tracking-tighter">
+            Characters
+          </h2>
         </div>
         <div className="hidden md:flex items-center gap-2">
           <button
@@ -55,7 +57,7 @@ const AnimeCharactersSliderSwiper: React.FC<AnimeCharactersSliderSwiperProps> = 
         </div>
       </div>
 
-      <div className="movie-slider-container">
+      <div className="movie-slider-container lg:pe-24 pe-6">
         <Swiper
           modules={[Navigation, FreeMode]}
           navigation={{ prevEl, nextEl }}
@@ -107,7 +109,7 @@ const AnimeCharactersSliderSwiper: React.FC<AnimeCharactersSliderSwiperProps> = 
                         No Image
                       </div>
                     )}
-                    
+
                     {/* Inset Character Image */}
                     {insetImage && (
                       <div className="absolute top-2 right-2 w-12 h-12 rounded-lg overflow-hidden border border-white/20 shadow-xl z-10 transition-transform duration-300 group-hover:scale-110">

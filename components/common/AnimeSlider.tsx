@@ -9,6 +9,7 @@ interface AnimeSliderProps {
   anime: AniListMedia[];
   title: string;
   className?: string;
+  seeAllHref?: string;
 }
 
 const AnimeSliderSkeleton = ({

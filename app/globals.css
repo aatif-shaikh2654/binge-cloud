@@ -127,6 +127,7 @@
       radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
       radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.03) 0px, transparent 50%) !important;
     background-attachment: fixed !important;
+    overflow-x: hidden !important;
     @apply text-foreground;
   }
   html {
@@ -201,26 +202,24 @@ button {
     background-size: 1000px 100%;
   }
 
-  /* Slider Alignment and Hover Fix */
-  .movie-slider-container .slick-list {
+  /* Swiper Alignment and Hover Fix */
+  .movie-slider-container .swiper {
     overflow: visible !important;
-    padding: 100px 0 !important;
-    margin: -100px 0 !important;
-    z-index: 50;
+    padding: 40px 0 !important;
+    margin: -40px 0 !important;
   }
 
-  .movie-slider-container .slick-track {
-    margin-left: 0 !important;
-    margin-right: auto !important;
-    display: flex !important;
+  .movie-slider-container .swiper-wrapper {
+    overflow: visible !important;
   }
 
-  .movie-slider-container .slick-slide {
+  .movie-slider-container .swiper-slide {
+    overflow: visible !important;
     z-index: 1;
     transition: z-index 0s;
   }
 
-  .movie-slider-container .slick-slide:hover {
+  .movie-slider-container .swiper-slide:hover {
     z-index: 100 !important;
   }
 }

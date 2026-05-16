@@ -85,7 +85,7 @@ export default async function MediaPage({ params, searchParams }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-8 pt-8 pb-12">
+    <div className="flex flex-col gap-8 pt-10 pb-12">
       <PageHeader title={title} description={description} />
 
       <MediaList

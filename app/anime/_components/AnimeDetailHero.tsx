@@ -81,9 +81,9 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
 
   const watchUrl = isResumable
     ? `/anime/watch?id=${details.id}${
-        historyItem.episode ? `&ep=${historyItem.episode}` : "&ep=1"
+        historyItem.episode ? `&ep=${historyItem.episode}` : ""
       }${historyItem.server ? `&server=${historyItem.server}` : ""}`
-    : `/anime/watch?id=${details.id}&ep=1`;
+    : `/anime/watch?id=${details.id}`;
 
   const resumeText = isResumable
     ? `Resume Ep ${historyItem.episode}`

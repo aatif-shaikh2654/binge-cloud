@@ -74,9 +74,9 @@ const AnimeHeroSwiper: React.FC<AnimeHeroSwiperProps> = ({ anime }) => {
 
           const watchUrl = isResumable
             ? `/anime/watch?id=${item.id}${
-                historyItem.episode ? `&ep=${historyItem.episode}` : "&ep=1"
+                historyItem.episode ? `&ep=${historyItem.episode}` : ""
               }${historyItem.server ? `&server=${historyItem.server}` : ""}`
-            : `/anime/watch?id=${item.id}&ep=1`;
+            : `/anime/watch?id=${item.id}`;
 
           const resumeText = isResumable
             ? `Resume Ep ${historyItem.episode}`

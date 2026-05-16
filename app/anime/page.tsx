@@ -28,9 +28,21 @@ export default async function AnimePage() {
       <AnimeHero anime={trending} />
 
       <div className="mt-8 space-y-2">
-        <AnimeSlider title="Trending Now" anime={trending} />
-        <AnimeSlider title="Most Popular" anime={popular} />
-        <AnimeSlider title="Top Rated" anime={topRated} />
+        <AnimeSlider
+          title="Trending Now"
+          anime={trending}
+          seeAllHref="/anime/trending"
+        />
+        <AnimeSlider
+          title="Most Popular"
+          anime={popular}
+          seeAllHref="/anime/popular"
+        />
+        <AnimeSlider
+          title="Top Rated"
+          anime={topRated}
+          seeAllHref="/anime/top-rated"
+        />
       </div>
     </div>
   );
