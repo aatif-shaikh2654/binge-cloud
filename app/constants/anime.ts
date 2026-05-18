@@ -11,18 +11,6 @@ export interface AnimeServer {
 
 export const ANIME_SERVERS: AnimeServer[] = [
   {
-    id: "tryembed-sub",
-    name: "Tryembed",
-    lang: "sub",
-    baseUrl: "https://tryembed.us.cc/embed/anime",
-  },
-  {
-    id: "tryembed-dub",
-    name: "Tryembed",
-    lang: "dub",
-    baseUrl: "https://tryembed.us.cc/embed/anime",
-  },
-  {
     id: "megaplay-sub",
     name: "Megaplay",
     lang: "sub",
@@ -33,6 +21,18 @@ export const ANIME_SERVERS: AnimeServer[] = [
     name: "Megaplay",
     lang: "dub",
     baseUrl: "https://megaplay.buzz/stream/ani",
+  },
+  {
+    id: "tryembed-sub",
+    name: "Tryembed",
+    lang: "sub",
+    baseUrl: "https://tryembed.us.cc/embed/anime",
+  },
+  {
+    id: "tryembed-dub",
+    name: "Tryembed",
+    lang: "dub",
+    baseUrl: "https://tryembed.us.cc/embed/anime",
   },
   {
     id: "vidnest-sub",

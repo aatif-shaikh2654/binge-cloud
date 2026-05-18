@@ -77,7 +77,10 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
     streamingEpisodes.length,
   );
 
-  const [activeChunk, setActiveChunk] = useState(0);
+  const initialChunk = historyItem?.episode
+    ? Math.floor((Number(historyItem.episode) - 1) / CHUNK_SIZE)
+    : 0;
+  const [activeChunk, setActiveChunk] = useState(initialChunk);
 
   if (totalCount === 0) return null;
 
