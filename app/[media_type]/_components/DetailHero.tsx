@@ -1,17 +1,19 @@
 "use client";
-
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { getMovieVideos } from "@/app/services/all.service";
 import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie } from "@/app/types/tmdb";
+import ZoomableImage from "@/components/common/ZoomableImage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Bookmark, Play, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { CiVolumeHigh, CiVolumeMute } from "react-icons/ci";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
 
@@ -24,6 +26,49 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
   const { handleWatchClick } = useWatchNavigation();
   const history = useHistoryStore((state) => state.history);
+
+  const [videoKey, setVideoKey] = useState<string | null>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const toggleMute = () => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(
+        JSON.stringify({
+          event: "command",
+          func: isMuted ? "unMute" : "mute",
+          args: [],
+        }),
+        "*",
+      );
+      setIsMuted(!isMuted);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchVideo = async () => {
+      try {
+        const type = tmdbType === "tv" ? "tv" : "movie";
+        const videos = await getMovieVideos(details.id, type);
+        const trailer =
+          videos.results?.find(
+            (v: { type: string; site: string; key: string }) =>
+              v.type === "Trailer" && v.site === "YouTube",
+          ) || videos.results?.[0];
+        if (trailer && isMounted) {
+          setVideoKey(trailer.key);
+        }
+      } catch (error) {
+        console.error("Error fetching video:", error);
+      }
+    };
+    fetchVideo();
+    return () => {
+      isMounted = false;
+    };
+  }, [details.id, tmdbType]);
 
   const inWatchlist = isInWatchlist(details.id, tmdbType);
 
@@ -70,44 +115,79 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
   return (
     <>
       {/* Cinematic Background Backdrop */}
-      <div className="absolute inset-0 w-full h-[50vh] md:h-[50vh] overflow-hidden">
+      <div className="absolute inset-0 w-full h-[58vh] md:h-[80vh] lg:h-screen overflow-hidden bg-background">
+        {/* Base Image */}
         {details.backdrop_path || details.poster_path ? (
           <Image
             src={`${TMDB_IMAGE_BASE_URL}/original${details.backdrop_path || details.poster_path}`}
             alt={details.title || details.name || "Backdrop"}
             fill
             sizes="100vw"
-            className="object-cover opacity-60 md:opacity-60 blur-none md:blur-[1px] scale-105 animate-in fade-in duration-1000"
+            className="object-cover opacity-50 md:opacity-40 blur-none md:blur-[1px] scale-105 animate-in fade-in duration-1000"
             priority
           />
-        ) : (
-          <div className="absolute inset-0 bg-background" />
+        ) : null}
+
+        {/* Video Layer */}
+        {videoKey && (
+          <div className="absolute w-full h-full pointer-events-none">
+            <iframe
+              ref={iframeRef}
+              src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}&enablejsapi=1&disablekb=1&iv_load_policy=3&playsinline=1&fs=0`}
+              className={cn(
+                "w-full h-full scale-[2.5] md:scale-[1.8] lg:scale-[1.5] transition-opacity duration-1000",
+                isVideoLoaded ? "opacity-100" : "opacity-0",
+              )}
+              onLoad={() => setIsVideoLoaded(true)}
+              allow="autoplay; encrypted-media"
+            />
+          </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 md:via-background/50 to-transparent hidden md:block" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 md:via-background/50 to-transparent" />
+
+        {/* Dark Overlays - Reduced layer on video */}
+        <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-background via-background/30 md:via-background/50 to-transparent" />
       </div>
 
       {/* Hero Section: Poster & Main Info */}
-      <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-32 lg:pt-48 flex flex-col items-start text-left lg:flex-row gap-8 lg:gap-20">
+      <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-[45vh] md:pt-[60vh] lg:pt-[642px] flex flex-col items-start text-left lg:flex-row gap-8 lg:gap-20 min-h-[75vh] md:min-h-[90vh] lg:min-h-[95vh] pb-10">
+        {/* Mute Button (Top Right) */}
+        {videoKey && (
+          <div className="absolute md:top-10 md:right-8 top-7 right-6 z-50">
+            <Button
+              variant="glass"
+              size="icon-xl"
+              className="size-12 lg:size-16 transition-all duration-300 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border-white/20"
+              onClick={toggleMute}
+            >
+              {isMuted ? (
+                <CiVolumeMute className="w-5! h-5! lg:w-8! lg:h-8! text-white" />
+              ) : (
+                <CiVolumeHigh className="w-5! h-5! lg:w-8! lg:h-8! text-white" />
+              )}
+            </Button>
+          </div>
+        )}
+
         {/* Poster - More subtle animation */}
-        <div className="w-42 md:w-58 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
+        <div className="w-32 md:w-48 lg:w-64 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
           <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-white/20 group">
             {details.poster_path && (
-              <Image
+              <ZoomableImage
                 src={`${TMDB_IMAGE_BASE_URL}/w500${details.poster_path}`}
+                originalImageSrc={`${TMDB_IMAGE_BASE_URL}/original${details.poster_path}`}
                 alt={details.title || details.name || "Poster"}
                 fill
                 sizes="256px"
-                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                imageClassName="object-cover group-hover:scale-105"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
 
         {/* Info Content - staggered feel with slide-up */}
-        <div className="flex-1 max-w-3xl space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200 fill-mode-backwards">
-          <div className="space-y-3">
+        <div className="flex-1 max-w-3xl space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200 fill-mode-backwards w-full">
+          <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-start gap-3">
               <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-black uppercase tracking-wider">
                 <Star className="w-3 h-3 fill-green-500" />
@@ -139,7 +219,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
               </p>
             )}
 
-            <div className="flex flex-wrap items-center justify-start gap-x-2">
+            <div className="flex flex-wrap items-center justify-start gap-2">
               {details.genres?.map((genre) => (
                 <span
                   key={genre.id}

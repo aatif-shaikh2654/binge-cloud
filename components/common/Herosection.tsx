@@ -118,7 +118,7 @@ const Herosection: React.FC<HerosectionProps> = ({ movies }) => {
                         />
                       </div>
                     ) : (
-                      <h1 className="text-3xl lg:text-5xl font-black text-white uppercase tracking-tight leading-[0.95] drop-shadow-lg">
+                      <h1 className="text-3xl lg:text-5xl font-black text-white tracking-tight leading-[0.95] drop-shadow-lg">
                         {movie.title || movie.name}
                       </h1>
                     )}

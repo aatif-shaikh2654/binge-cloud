@@ -6,6 +6,7 @@ import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { type AniListMediaDetail } from "@/app/types/anilist";
 import { type MediaType } from "@/app/types/common";
+import ZoomableImage from "@/components/common/ZoomableImage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Bookmark, Play, Plus, Star } from "lucide-react";
@@ -115,15 +116,15 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
         <div className="w-42 md:w-58 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
           <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-white/20 group">
             {posterImage && (
-              <Image
+              <ZoomableImage
                 src={posterImage}
                 alt={title}
                 fill
                 sizes="256px"
-                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                imageClassName="object-cover group-hover:scale-105"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
 
