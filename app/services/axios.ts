@@ -27,7 +27,11 @@ const normalizeError = (error: AxiosError<ApiError>) => {
   return {
     success: data?.success ?? false,
     statusCode: data?.statusCode ?? error.response?.status ?? 500,
-    message: data?.message || error.message || "An unexpected error occurred",
+    message:
+      data?.message ||
+      (data as any)?.error ||
+      error.message ||
+      "An unexpected error occurred",
   };
 };
 

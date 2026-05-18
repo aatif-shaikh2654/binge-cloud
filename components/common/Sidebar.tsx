@@ -1,12 +1,13 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Bookmark, Clock, Home, Search, Sparkles, Tv } from "lucide-react";
+import { Bookmark, Clock, Home, Search, Sparkles, Tv, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
+import SignupForm from "./SignupForm";
 
 const sidebarItems = [
   { icon: Search, label: "Search", href: "/search" },
@@ -16,11 +17,21 @@ const sidebarItems = [
   { icon: Sparkles, label: "Anime", href: "/anime" },
   { icon: Clock, label: "History", href: "/history" },
   { icon: Bookmark, label: "Watch Later", href: "/watch-later" },
+  { icon: User, label: "Account", onClick: true },
+];
+
+const mobileItems = [
+  { icon: Home, label: "Home", href: "/" },
+  { icon: Search, label: "Search", href: "/search" },
+  { icon: Sparkles, label: "Anime", href: "/anime" },
+  { icon: Clock, label: "History", href: "/history" },
+  { icon: User, label: "Account", onClick: true },
 ];
 
 const Sidebar = () => {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
 
   return (
     <>
@@ -62,14 +73,50 @@ const Sidebar = () => {
 
         <div className="flex flex-col items-start justify-center gap-2 flex-1 w-full px-3">
           {sidebarItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = item.href ? pathname === item.href : false;
+            const isAccount = item.onClick;
+
+            const triggerAction = () => {
+              setIsHovered(false);
+              if (isAccount) {
+                setIsSignupOpen(true);
+              }
+            };
+
+            if (isAccount) {
+              return (
+                <button
+                  key={item.label}
+                  onClick={triggerAction}
+                  className={cn(
+                    "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group text-[#8197a4] hover:text-white hover:bg-white/5 cursor-pointer w-full text-left outline-none border border-transparent",
+                    isHovered ? "gap-5" : "justify-center",
+                  )}
+                >
+                  <item.icon className="w-5 h-5 transition-all duration-300 shrink-0 z-10" />
+
+                  {/* Text Label - Improved Animation */}
+                  <div
+                    className={cn(
+                      "overflow-hidden transition-all duration-300 ease-in-out",
+                      isHovered
+                        ? "w-auto opacity-100 ml-0"
+                        : "w-0 opacity-0 ml-0",
+                    )}
+                  >
+                    <span className="font-bold text-[13px] tracking-wide whitespace-nowrap font-sans">
+                      {item.label}
+                    </span>
+                  </div>
+                </button>
+              );
+            }
+
             return (
               <Link
                 key={item.label}
-                href={item.href}
-                onClick={() => {
-                  setIsHovered(false);
-                }}
+                href={item.href || "/"}
+                onClick={triggerAction}
                 className={cn(
                   "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group",
                   isActive
@@ -78,12 +125,7 @@ const Sidebar = () => {
                   isHovered ? "w-full gap-5" : "justify-center",
                 )}
               >
-                <item.icon
-                  className={cn(
-                    "transition-all duration-300 shrink-0 z-10",
-                    isActive ? "w-5 h-5" : "w-5 h-5",
-                  )}
-                />
+                <item.icon className="w-5 h-5 transition-all duration-300 shrink-0 z-10" />
 
                 {/* Text Label - Improved Animation */}
                 <div
@@ -111,46 +153,79 @@ const Sidebar = () => {
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 w-full h-[70px] bg-sidebar/95 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around lg:hidden z-[100] px-2">
-        {sidebarItems
-          .filter(
-            (item) => item.label !== "Movies" && item.label !== "Web Series",
-          )
-          .slice(0, 5)
-          .map((item) => {
-            const isActive = pathname === item.href;
+        {mobileItems.map((item) => {
+          const isActive = item.href ? pathname === item.href : false;
+          const isAccount = item.onClick;
+
+          const triggerAction = () => {
+            if (isAccount) {
+              setIsSignupOpen(true);
+            }
+          };
+
+          if (isAccount) {
             return (
-              <Link
+              <button
                 key={item.label}
-                href={item.href}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-1 transition-all duration-300 relative px-4 py-2",
-                  isActive
-                    ? "text-white"
-                    : "text-[#8197a4] hover:text-white/80",
-                )}
+                onClick={triggerAction}
+                className="flex flex-col items-center justify-center gap-1 transition-all duration-300 relative px-4 py-2 text-[#8197a4] hover:text-white/80 cursor-pointer outline-none border border-transparent"
               >
-                <item.icon
-                  className={cn(
-                    "w-5 h-5 transition-all duration-300",
-                    isActive ? "scale-110" : "scale-100",
-                  )}
-                />
-                <span
-                  className={cn(
-                    "text-[8px] font-bold uppercase tracking-wider font-sans transition-all duration-300",
-                    isActive ? "opacity-100" : "opacity-60",
-                  )}
-                >
+                <item.icon className="w-5 h-5 transition-all duration-300 scale-100" />
+                <span className="text-[8px] font-bold uppercase tracking-wider font-sans opacity-60">
                   {item.label}
                 </span>
-
-                {isActive && (
-                  <div className="absolute bottom-1 w-1 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
-                )}
-              </Link>
+              </button>
             );
-          })}
+          }
+
+          return (
+            <Link
+              key={item.label}
+              href={item.href || "/"}
+              className={cn(
+                "flex flex-col items-center justify-center gap-1 transition-all duration-300 relative px-4 py-2",
+                isActive
+                  ? "text-white"
+                  : "text-[#8197a4] hover:text-white/80",
+              )}
+            >
+              <item.icon
+                className={cn(
+                  "w-5 h-5 transition-all duration-300",
+                  isActive ? "scale-110" : "scale-100",
+                )}
+              />
+              <span
+                className={cn(
+                  "text-[8px] font-bold uppercase tracking-wider font-sans transition-all duration-300",
+                  isActive ? "opacity-100" : "opacity-60",
+                )}
+              >
+                {item.label}
+              </span>
+
+              {isActive && (
+                <div className="absolute bottom-1 w-1 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
+              )}
+            </Link>
+          );
+        })}
       </nav>
+
+      {/* Global Signup Popup Modal */}
+      {isSignupOpen && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-in fade-in duration-300"
+          onClick={() => setIsSignupOpen(false)}
+        >
+          <div
+            className="w-full max-w-md animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <SignupForm onClose={() => setIsSignupOpen(false)} />
+          </div>
+        </div>
+      )}
     </>
   );
 };

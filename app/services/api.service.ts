@@ -10,15 +10,16 @@ export interface ApiResponse<T> {
 
 interface ApiServiceOptions<TPayload = unknown> extends AxiosRequestConfig {
   method: Method;
-  url: string; // TMDB endpoint (e.g., "3/trending/all/day")
+  url: string; // TMDB endpoint (e.g., "3/trending/all/day") or internal route (e.g., "/api/signup")
   params?: Record<string, unknown>;
   payload?: TPayload;
 }
 
 /**
- * Main API Service that communicates with TMDB.
- * - Server-side: Calls TMDB directly via tmdbInstance for performance and reliability.
- * - Client-side: Calls our local /api/movies proxy to avoid CORS and hide API keys.
+ * Main API Service that communicates with TMDB and internal APIs.
+ * - For internal API routes (starting with "/api"): Calls axiosInstance directly.
+ * - Server-side TMDB: Calls TMDB directly via tmdbInstance for performance and reliability.
+ * - Client-side TMDB: Calls our local /api/movies proxy to avoid CORS and hide API keys.
  */
 export const ApiService = async <TResponse, TPayload = unknown>(
   options: ApiServiceOptions<TPayload>,
@@ -26,8 +27,22 @@ export const ApiService = async <TResponse, TPayload = unknown>(
   const { method, url, params, payload, ...rest } = options;
 
   const isServer = typeof window === "undefined";
+  const isInternal = url.startsWith("/api");
 
   try {
+    if (isInternal) {
+      // Direct call to local API for internal endpoints.
+      const response = await axiosInstance.request<TResponse>({
+        method,
+        url,
+        params,
+        data: payload,
+        ...rest,
+      });
+
+      return response as TResponse;
+    }
+
     if (isServer) {
       // Direct call to TMDB on the server.
       // tmdbInstance has baseURL: ".../3", so we strip any leading "3/" or "/3/" from the url.

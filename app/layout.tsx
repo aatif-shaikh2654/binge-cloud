@@ -76,13 +76,15 @@ export default function RootLayout({
           speed={200}
           shadow="0 0 10px #2563eb,0 0 5px #2563eb"
         />
-        <Sidebar />
-        <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
-          <main className="flex-1">
-            <QueryProvider>{children}</QueryProvider>
-          </main>
-          <Footer />
-        </div>
+        <QueryProvider>
+          <Sidebar />
+          <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </QueryProvider>
       </body>
     </html>
   );
