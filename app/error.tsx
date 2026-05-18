@@ -43,7 +43,7 @@ export default function Error({
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background relative overflow-hidden px-6">
+    <div className="h-[80vh] md:h-screen w-full flex flex-col items-center justify-center bg-background relative overflow-hidden px-6">
       {/* Background gradients for cinematic feel */}
       <div className="absolute inset-0 bg-gradient-to-b from-red-950/20 via-background to-background pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-600/5 rounded-full blur-[120px] pointer-events-none" />
@@ -67,13 +67,13 @@ export default function Error({
             onClick={() => reset()}
             variant="premium"
             size="lg"
-            className="w-full sm:w-fit h-12  px-8 group"
+            className="w-fit h-12  px-8 group"
           >
             <RefreshCcw className="w-5 h-5 mr-2 group-hover:rotate-180 transition-transform duration-500" />
             Try Again
           </Button>
 
-          <Link href="/" className="w-full sm:w-fit">
+          <Link href="/" className="w-fit">
             <Button variant="glass" size="lg" className="w-full h-12 px-8">
               <Home className="w-5 h-5 mr-2" />
               Go Home
