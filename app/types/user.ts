@@ -12,3 +12,6 @@ export interface SignupPayload {
 }
 
 export type SignupResponse = User;
+
+export type LoginPayload = SignupPayload;
+export type LoginResponse = User;

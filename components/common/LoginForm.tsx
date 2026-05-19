@@ -1,7 +1,7 @@
 "use client";
 
-import { signup } from "@/app/services/auth.service";
-import { SignupPayload } from "@/app/types/user";
+import { login } from "@/app/services/auth.service";
+import { LoginPayload } from "@/app/types/user";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,33 +20,24 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-const signupSchema = z
-  .object({
-    usernameOrEmail: z
-      .string()
-      .min(3, { message: "Username or email must be at least 3 characters." }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters." }),
-    confirmPassword: z.string().min(6, {
-      message: "Confirmation password must be at least 6 characters.",
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match.",
-    path: ["confirmPassword"],
-  });
+const loginSchema = z.object({
+  usernameOrEmail: z
+    .string()
+    .min(3, { message: "Username or email must be at least 3 characters." }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters." }),
+});
 
-type SignupFormData = z.infer<typeof signupSchema>;
+type LoginFormData = z.infer<typeof loginSchema>;
 
-interface SignupFormProps {
+interface LoginFormProps {
   onClose?: () => void;
-  onLoginClick?: () => void;
+  onSignUpClick?: () => void;
 }
 
-export default function SignupForm({ onClose, onLoginClick }: SignupFormProps) {
+export default function LoginForm({ onClose, onSignUpClick }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -54,38 +45,32 @@ export default function SignupForm({ onClose, onLoginClick }: SignupFormProps) {
     formState: { errors },
     reset,
     setError,
-  } = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       usernameOrEmail: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: SignupPayload) => signup(data),
+    mutationFn: (data: LoginPayload) => login(data),
     onSuccess: () => {
-      toast.success("Account created successfully!");
+      toast.success("Logged in successfully!");
       reset();
       if (onClose) onClose();
     },
     onError: (error: unknown) => {
-      console.error("Signup failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "Signup failed. Please try again.";
-      if (
-        errorMessage.toLowerCase().includes("username") ||
-        errorMessage.toLowerCase().includes("email")
-      ) {
-        setError("usernameOrEmail", {
-          type: "server",
-          message: errorMessage,
-        });
-      }
+      console.error("Login failed:", error);
+      const errorMessage = error instanceof Error ? error.message : "Login failed. Please check your credentials.";
+      setError("usernameOrEmail", {
+        type: "server",
+        message: errorMessage,
+      });
     },
   });
 
-  const onSubmit = (data: SignupFormData) => {
+  const onSubmit = (data: LoginFormData) => {
     mutate({
       usernameOrEmail: data.usernameOrEmail,
       password: data.password,
@@ -93,10 +78,10 @@ export default function SignupForm({ onClose, onLoginClick }: SignupFormProps) {
   };
 
   return (
-    <Card className="w-full max-w-md border-white/5 bg-black/40 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.8)] rounded-2xl relative overflow-hidden group/signup">
+    <Card className="w-full max-w-md border-white/5 bg-black/40 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.8)] rounded-2xl relative overflow-hidden group/login">
       {/* Dynamic Glow Effect */}
-      <div className="absolute -top-[30%] -left-[30%] w-[60%] h-[60%] bg-blue-500/10 rounded-full blur-[50px] pointer-events-none group-hover/signup:bg-blue-500/15 transition-all duration-700" />
-      <div className="absolute -bottom-[30%] -right-[30%] w-[60%] h-[60%] bg-indigo-500/10 rounded-full blur-[50px] pointer-events-none group-hover/signup:bg-indigo-500/15 transition-all duration-700" />
+      <div className="absolute -top-[30%] -left-[30%] w-[60%] h-[60%] bg-blue-500/10 rounded-full blur-[50px] pointer-events-none group-hover/login:bg-blue-500/15 transition-all duration-700" />
+      <div className="absolute -bottom-[30%] -right-[30%] w-[60%] h-[60%] bg-indigo-500/10 rounded-full blur-[50px] pointer-events-none group-hover/login:bg-indigo-500/15 transition-all duration-700" />
 
       {/* Close Button */}
       {onClose && (
@@ -122,10 +107,10 @@ export default function SignupForm({ onClose, onLoginClick }: SignupFormProps) {
           </div>
         </div>
         <CardTitle className="text-2xl font-bold tracking-tight text-center text-white">
-          Create an Account
+          Welcome Back
         </CardTitle>
         <CardDescription className="text-center text-zinc-400 text-sm">
-          Join Binge Cloud to explore the ultimate cinematic library
+          Log in to your Binge Cloud account to continue
         </CardDescription>
       </CardHeader>
 
@@ -167,31 +152,7 @@ export default function SignupForm({ onClose, onLoginClick }: SignupFormProps) {
             }
           />
 
-          {/* Confirm Password Input */}
-          <Input
-            {...register("confirmPassword")}
-            type={showConfirmPassword ? "text" : "password"}
-            label="Confirm Password"
-            id="confirmPassword"
-            placeholder="••••••••"
-            icon={<Lock className="size-4.5" />}
-            error={errors.confirmPassword?.message}
-            rightElement={
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="text-zinc-500 hover:text-white transition-colors cursor-pointer outline-none focus:outline-none flex items-center justify-center p-1 rounded-full hover:bg-white/5"
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="size-4" />
-                ) : (
-                  <Eye className="size-4" />
-                )}
-              </button>
-            }
-          />
-
-          {/* Submit Button with exactly 12px (rounded-xl!) border-radius */}
+          {/* Submit Button */}
           <Button
             type="submit"
             variant="premiumBlue"
@@ -202,26 +163,26 @@ export default function SignupForm({ onClose, onLoginClick }: SignupFormProps) {
             {isPending ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="size-4 animate-spin" />
-                Creating account...
+                Logging in...
               </span>
             ) : (
               <span className="flex items-center gap-1.5">
-                Sign Up
+                Log In
                 <ArrowRight className="size-4 group-hover/btn:translate-x-1 transition-transform" />
               </span>
             )}
           </Button>
 
-          {/* Link to Login */}
+          {/* Link to Signup */}
           <div className="text-center pt-2">
             <span className="text-zinc-400 text-xs">
-              Already have an account?{" "}
+              {"Don't have an account? "}
               <button
                 type="button"
-                onClick={onLoginClick}
+                onClick={onSignUpClick}
                 className="text-blue-400 hover:text-blue-300 font-semibold hover:underline transition-colors cursor-pointer bg-transparent border-none p-0 outline-none"
               >
-                Log In
+                Sign Up
               </button>
             </span>
           </div>

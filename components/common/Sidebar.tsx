@@ -1,12 +1,21 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Bookmark, Clock, Home, Search, Sparkles, Tv, User } from "lucide-react";
+import {
+  Bookmark,
+  CircleUser,
+  Clock,
+  Home,
+  Search,
+  Sparkles,
+  Tv,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
+import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 
 const sidebarItems = [
@@ -17,7 +26,7 @@ const sidebarItems = [
   { icon: Sparkles, label: "Anime", href: "/anime" },
   { icon: Clock, label: "History", href: "/history" },
   { icon: Bookmark, label: "Watch Later", href: "/watch-later" },
-  { icon: User, label: "Account", onClick: true },
+  { icon: CircleUser, label: "Account", onClick: true },
 ];
 
 const mobileItems = [
@@ -25,13 +34,13 @@ const mobileItems = [
   { icon: Search, label: "Search", href: "/search" },
   { icon: Sparkles, label: "Anime", href: "/anime" },
   { icon: Clock, label: "History", href: "/history" },
-  { icon: User, label: "Account", onClick: true },
 ];
 
 const Sidebar = () => {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
-  const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   return (
     <>
@@ -71,7 +80,7 @@ const Sidebar = () => {
           </Link>
         </div>
 
-        <div className="flex flex-col items-start justify-center gap-2 flex-1 w-full px-3">
+        <div className="flex flex-col items-start justify-start gap-2 flex-1 w-full px-3">
           {sidebarItems.map((item) => {
             const isActive = item.href ? pathname === item.href : false;
             const isAccount = item.onClick;
@@ -79,7 +88,8 @@ const Sidebar = () => {
             const triggerAction = () => {
               setIsHovered(false);
               if (isAccount) {
-                setIsSignupOpen(true);
+                setAuthMode("login");
+                setIsAuthOpen(true);
               }
             };
 
@@ -89,7 +99,7 @@ const Sidebar = () => {
                   key={item.label}
                   onClick={triggerAction}
                   className={cn(
-                    "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group text-[#8197a4] hover:text-white hover:bg-white/5 cursor-pointer w-full text-left outline-none border border-transparent",
+                    "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group text-[#8197a4] hover:text-white hover:bg-white/5 cursor-pointer w-full text-left outline-none border border-transparent mt-auto",
                     isHovered ? "gap-5" : "justify-center",
                   )}
                 >
@@ -151,32 +161,23 @@ const Sidebar = () => {
         </div>
       </aside>
 
+      {/* Mobile Top Profile Button */}
+      <div className="fixed top-4 left-4 z-[100] lg:hidden">
+        <button
+          onClick={() => {
+            setAuthMode("login");
+            setIsAuthOpen(true);
+          }}
+          className="flex items-center justify-center size-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[#8197a4] hover:text-white cursor-pointer active:scale-95 transition-all outline-none shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+        >
+          <CircleUser className="size-5.5" />
+        </button>
+      </div>
+
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 w-full h-[70px] bg-sidebar/95 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around lg:hidden z-[100] px-2">
         {mobileItems.map((item) => {
           const isActive = item.href ? pathname === item.href : false;
-          const isAccount = item.onClick;
-
-          const triggerAction = () => {
-            if (isAccount) {
-              setIsSignupOpen(true);
-            }
-          };
-
-          if (isAccount) {
-            return (
-              <button
-                key={item.label}
-                onClick={triggerAction}
-                className="flex flex-col items-center justify-center gap-1 transition-all duration-300 relative px-4 py-2 text-[#8197a4] hover:text-white/80 cursor-pointer outline-none border border-transparent"
-              >
-                <item.icon className="w-5 h-5 transition-all duration-300 scale-100" />
-                <span className="text-[8px] font-bold uppercase tracking-wider font-sans opacity-60">
-                  {item.label}
-                </span>
-              </button>
-            );
-          }
 
           return (
             <Link
@@ -184,9 +185,7 @@ const Sidebar = () => {
               href={item.href || "/"}
               className={cn(
                 "flex flex-col items-center justify-center gap-1 transition-all duration-300 relative px-4 py-2",
-                isActive
-                  ? "text-white"
-                  : "text-[#8197a4] hover:text-white/80",
+                isActive ? "text-white" : "text-[#8197a4] hover:text-white/80",
               )}
             >
               <item.icon
@@ -212,17 +211,27 @@ const Sidebar = () => {
         })}
       </nav>
 
-      {/* Global Signup Popup Modal */}
-      {isSignupOpen && (
+      {/* Global Auth Popup Modal */}
+      {isAuthOpen && (
         <div
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-in fade-in duration-300"
-          onClick={() => setIsSignupOpen(false)}
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-300"
+          onClick={() => setIsAuthOpen(false)}
         >
           <div
             className="w-full max-w-md animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            <SignupForm onClose={() => setIsSignupOpen(false)} />
+            {authMode === "login" ? (
+              <LoginForm
+                onClose={() => setIsAuthOpen(false)}
+                onSignUpClick={() => setAuthMode("signup")}
+              />
+            ) : (
+              <SignupForm
+                onClose={() => setIsAuthOpen(false)}
+                onLoginClick={() => setAuthMode("login")}
+              />
+            )}
           </div>
         </div>
       )}
