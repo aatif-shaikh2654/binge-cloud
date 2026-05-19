@@ -133,7 +133,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
           <div className="absolute w-full h-full pointer-events-none">
             <iframe
               ref={iframeRef}
-              src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}&enablejsapi=1&disablekb=1&iv_load_policy=3&playsinline=1&fs=0`}
+              src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}&enablejsapi=1&disablekb=1&iv_load_policy=3&playsinline=1&fs=0&vq=hd1080`}
               className={cn(
                 "w-full h-full scale-[2.5] md:scale-[1.8] lg:scale-[1.5] transition-opacity duration-1000",
                 isVideoLoaded ? "opacity-100" : "opacity-0",

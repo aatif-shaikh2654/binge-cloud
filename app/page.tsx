@@ -30,7 +30,7 @@ export default async function Home() {
     <div className="flex flex-col w-full min-h-screen">
       <Herosection movies={movies} />
       <WatchHistory />
-      <MediaSlider media_type="trending" title="Trending" movies={movies} />
+      <MediaSlider title="Trending" movies={movies} />
       <MediaSlider
         media_type="movie"
         title="Top 10 Movies"

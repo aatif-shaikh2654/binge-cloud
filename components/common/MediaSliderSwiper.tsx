@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import MovieCard from "./MovieCard";
 
 // Import Swiper styles
+import { MediaType } from "@/app/types/common";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
@@ -132,6 +133,7 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
             <SwiperSlide key={movie.id} className="pb-4 !overflow-visible">
               <MovieCard
                 movie={movie}
+                mediaType={media_type as MediaType}
                 rank={showRank ? index + 1 : undefined}
               />
             </SwiperSlide>
