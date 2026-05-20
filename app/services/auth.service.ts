@@ -1,4 +1,4 @@
-import { LoginPayload, LoginResponse, SignupPayload, SignupResponse, User } from "../types/user";
+import { ForgotPasswordPayload, LoginPayload, LoginResponse, ResetPasswordPayload, SignupPayload, SignupResponse, User } from "../types/user";
 import { ApiService } from "./api.service";
 
 export const signup = (payload: SignupPayload): Promise<SignupResponse> => {
@@ -23,4 +23,20 @@ export const getUser = (): Promise<User> => {
 
 export const logout = (): Promise<void> => {
   return ApiService({ method: "POST", url: "/api/logout" });
+}
+
+export const forgotPassword = (payload: ForgotPasswordPayload): Promise<{ message: string }> => {
+  return ApiService<{ message: string }, ForgotPasswordPayload>({
+    method: "POST",
+    url: "/api/forgot-password",
+    payload,
+  });
+}
+
+export const resetPassword = (payload: ResetPasswordPayload): Promise<{ message: string }> => {
+  return ApiService<{ message: string }, ResetPasswordPayload>({
+    method: "POST",
+    url: "/api/reset-password",
+    payload,
+  });
 }

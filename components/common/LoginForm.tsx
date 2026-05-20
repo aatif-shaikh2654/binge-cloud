@@ -35,9 +35,10 @@ type LoginFormData = z.infer<typeof loginSchema>;
 interface LoginFormProps {
   onClose?: () => void;
   onSignUpClick?: () => void;
+  onForgotPasswordClick?: () => void;
 }
 
-export default function LoginForm({ onClose, onSignUpClick }: LoginFormProps) {
+export default function LoginForm({ onClose, onSignUpClick, onForgotPasswordClick }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const { checkAuth } = useAuth();
 
@@ -154,6 +155,17 @@ export default function LoginForm({ onClose, onSignUpClick }: LoginFormProps) {
               </button>
             }
           />
+
+          {/* Forgot Password Link */}
+          <div className="flex justify-end -mt-1">
+            <button
+              type="button"
+              onClick={onForgotPasswordClick}
+              className="text-zinc-400 hover:text-blue-400 text-xs font-medium transition-colors cursor-pointer bg-transparent border-none p-0 outline-none"
+            >
+              Forgot Password?
+            </button>
+          </div>
 
           {/* Submit Button */}
           <Button

@@ -25,6 +25,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
 import { useAuth } from "../providers/AuthProvider";
+import ForgotPasswordForm from "./ForgotPasswordForm";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 
@@ -43,13 +44,14 @@ const mobileItems = [
   { icon: Search, label: "Search", href: "/search" },
   { icon: Sparkles, label: "Anime", href: "/anime" },
   { icon: Clock, label: "History", href: "/history" },
+  { icon: Bookmark, label: "Watch Later", href: "/watch-later" },
 ];
 
 const Sidebar = () => {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const [authMode, setAuthMode] = useState<"login" | "signup" | "forgot-password">("login");
   const { user, logout } = useAuth();
 
   return (
@@ -233,9 +235,15 @@ const Sidebar = () => {
               <LoginForm
                 onClose={() => setIsAuthOpen(false)}
                 onSignUpClick={() => setAuthMode("signup")}
+                onForgotPasswordClick={() => setAuthMode("forgot-password")}
+              />
+            ) : authMode === "signup" ? (
+              <SignupForm
+                onClose={() => setIsAuthOpen(false)}
+                onLoginClick={() => setAuthMode("login")}
               />
             ) : (
-              <SignupForm
+              <ForgotPasswordForm
                 onClose={() => setIsAuthOpen(false)}
                 onLoginClick={() => setAuthMode("login")}
               />
