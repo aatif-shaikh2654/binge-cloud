@@ -44,7 +44,6 @@ const mobileItems = [
   { icon: Search, label: "Search", href: "/search" },
   { icon: Sparkles, label: "Anime", href: "/anime" },
   { icon: Clock, label: "History", href: "/history" },
-  { icon: Bookmark, label: "Watch Later", href: "/watch-later" },
 ];
 
 const Sidebar = () => {
@@ -127,7 +126,7 @@ const Sidebar = () => {
                     />
                   }
                 />
-
+                
                 <UserDropdownContent
                   email={user.email || ""}
                   onLogout={logout}
@@ -150,39 +149,6 @@ const Sidebar = () => {
           </div>
         </div>
       </aside>
-
-      {/* Mobile Top Profile Button */}
-      <div className="fixed top-4 left-4 z-[100] lg:hidden">
-        {user ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <button className="flex items-center justify-center size-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-blue-400 hover:text-white cursor-pointer active:scale-95 transition-all outline-none shadow-[0_4px_12px_rgba(0,0,0,0.5)] animate-pulse">
-                  <CircleUser className="size-5.5" />
-                </button>
-              }
-            />
-
-            <UserDropdownContent
-              email={user.email || ""}
-              onLogout={logout}
-              side="bottom"
-              align="start"
-              sideOffset={12}
-            />
-          </DropdownMenu>
-        ) : (
-          <button
-            onClick={() => {
-              setAuthMode("login");
-              setIsAuthOpen(true);
-            }}
-            className="flex items-center justify-center size-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[#8197a4] hover:text-white cursor-pointer active:scale-95 transition-all outline-none shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
-          >
-            <CircleUser className="size-5.5" />
-          </button>
-        )}
-      </div>
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 w-full h-[70px] bg-sidebar/95 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around lg:hidden z-[100] px-2">
@@ -219,6 +185,42 @@ const Sidebar = () => {
             </Link>
           );
         })}
+
+        {/* Profile item in bottom nav */}
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button className="flex flex-col items-center justify-center gap-1 relative px-4 py-2 text-blue-400 cursor-pointer outline-none transition-all duration-300">
+                  <CircleUser className="w-5 h-5" />
+                  <span className="text-[8px] font-bold uppercase tracking-wider font-sans opacity-100">
+                    Profile
+                  </span>
+                </button>
+              }
+            />
+            <UserDropdownContent
+              email={user.email || ""}
+              onLogout={logout}
+              side="top"
+              align="end"
+              sideOffset={12}
+            />
+          </DropdownMenu>
+        ) : (
+          <button
+            onClick={() => {
+              setAuthMode("login");
+              setIsAuthOpen(true);
+            }}
+            className="flex flex-col items-center justify-center gap-1 relative px-4 py-2 text-[#8197a4] hover:text-white/80 cursor-pointer outline-none transition-all duration-300"
+          >
+            <CircleUser className="w-5 h-5" />
+            <span className="text-[8px] font-bold uppercase tracking-wider font-sans opacity-60">
+              Log In
+            </span>
+          </button>
+        )}
       </nav>
 
       {/* Global Auth Popup Modal */}
