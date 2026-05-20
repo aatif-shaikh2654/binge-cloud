@@ -1,3 +1,4 @@
+import pg from "pg";
 import { Sequelize } from "sequelize";
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -6,11 +7,9 @@ if (!databaseUrl) {
   console.warn("DATABASE_URL is not set in environment variables");
 }
 
-// @ts-ignore
 export const sequelize = new Sequelize(databaseUrl || "", {
   dialect: "postgres",
-  // @ts-ignore - necessary for Next.js to properly bundle the pg module sometimes
-  dialectModule: require("pg"),
+  dialectModule: pg,
   logging: false, // Set to console.log to see SQL queries in the console
   dialectOptions: {
     ssl: {

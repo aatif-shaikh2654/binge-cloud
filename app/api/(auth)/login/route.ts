@@ -1,4 +1,5 @@
 import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
+import { generateToken, setAuthCookie } from "@/app/lib/auth";
 import { User } from "@/models/User";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
@@ -12,9 +13,9 @@ export const POST = AsyncWrapper(async (req: Request) => {
 
   let user;
   if (usernameOrEmail.includes("@")) {
-    user = await User.findOne({ where: { email: usernameOrEmail } });
+    user = await User.scope("withPassword").findOne({ where: { email: usernameOrEmail } });
   } else {
-    user = await User.findOne({ where: { username: usernameOrEmail } });
+    user = await User.scope("withPassword").findOne({ where: { username: usernameOrEmail } });
   }
 
   if (!user) {
@@ -25,6 +26,14 @@ export const POST = AsyncWrapper(async (req: Request) => {
   if (!isPasswordValid) {
     throw new ErrorHandler(401, "Invalid username/email or password.");
   }
+
+  // Generate JWT Token
+  const token = generateToken({
+    id: user.id
+  });
+
+  // Store in HTTP-only Cookie
+  await setAuthCookie(token);
 
   return NextResponse.json(user);
 });

@@ -1,4 +1,4 @@
-import { SignupPayload, SignupResponse, LoginPayload, LoginResponse } from "../types/user";
+import { LoginPayload, LoginResponse, SignupPayload, SignupResponse, User } from "../types/user";
 import { ApiService } from "./api.service";
 
 export const signup = (payload: SignupPayload): Promise<SignupResponse> => {
@@ -16,3 +16,11 @@ export const login = (payload: LoginPayload): Promise<LoginResponse> => {
     payload,
   });
 };
+
+export const getUser = (): Promise<User> => {
+  return ApiService<User>({ method: "GET", url: "/api/user" });
+}
+
+export const logout = (): Promise<void> => {
+  return ApiService({ method: "POST", url: "/api/logout" });
+}

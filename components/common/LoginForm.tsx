@@ -2,6 +2,7 @@
 
 import { login } from "@/app/services/auth.service";
 import { LoginPayload } from "@/app/types/user";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,6 +39,7 @@ interface LoginFormProps {
 
 export default function LoginForm({ onClose, onSignUpClick }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const { checkAuth } = useAuth();
 
   const {
     register,
@@ -57,6 +59,7 @@ export default function LoginForm({ onClose, onSignUpClick }: LoginFormProps) {
     mutationFn: (data: LoginPayload) => login(data),
     onSuccess: () => {
       toast.success("Logged in successfully!");
+      checkAuth();
       reset();
       if (onClose) onClose();
     },

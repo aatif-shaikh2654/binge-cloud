@@ -1,5 +1,14 @@
 "use client";
 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  SidebarButton,
+  SidebarLink,
+  UserDropdownContent,
+} from "@/components/ui/sidebar-ui";
 import { cn } from "@/lib/utils";
 import {
   Bookmark,
@@ -15,6 +24,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
+import { useAuth } from "../providers/AuthProvider";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 
@@ -26,7 +36,6 @@ const sidebarItems = [
   { icon: Sparkles, label: "Anime", href: "/anime" },
   { icon: Clock, label: "History", href: "/history" },
   { icon: Bookmark, label: "Watch Later", href: "/watch-later" },
-  { icon: CircleUser, label: "Account", onClick: true },
 ];
 
 const mobileItems = [
@@ -41,6 +50,7 @@ const Sidebar = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const { user, logout } = useAuth();
 
   return (
     <>
@@ -83,95 +93,93 @@ const Sidebar = () => {
         <div className="flex flex-col items-start justify-start gap-2 flex-1 w-full px-3">
           {sidebarItems.map((item) => {
             const isActive = item.href ? pathname === item.href : false;
-            const isAccount = item.onClick;
 
             const triggerAction = () => {
               setIsHovered(false);
-              if (isAccount) {
-                setAuthMode("login");
-                setIsAuthOpen(true);
-              }
             };
 
-            if (isAccount) {
-              return (
-                <button
-                  key={item.label}
-                  onClick={triggerAction}
-                  className={cn(
-                    "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group text-[#8197a4] hover:text-white hover:bg-white/5 cursor-pointer w-full text-left outline-none border border-transparent mt-auto",
-                    isHovered ? "gap-5" : "justify-center",
-                  )}
-                >
-                  <item.icon className="w-5 h-5 transition-all duration-300 shrink-0 z-10" />
-
-                  {/* Text Label - Improved Animation */}
-                  <div
-                    className={cn(
-                      "overflow-hidden transition-all duration-300 ease-in-out",
-                      isHovered
-                        ? "w-auto opacity-100 ml-0"
-                        : "w-0 opacity-0 ml-0",
-                    )}
-                  >
-                    <span className="font-bold text-[13px] tracking-wide whitespace-nowrap font-sans">
-                      {item.label}
-                    </span>
-                  </div>
-                </button>
-              );
-            }
-
             return (
-              <Link
+              <SidebarLink
                 key={item.label}
                 href={item.href || "/"}
                 onClick={triggerAction}
-                className={cn(
-                  "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group",
-                  isActive
-                    ? "bg-white/10 text-white"
-                    : "text-[#8197a4] hover:text-white hover:bg-white/5",
-                  isHovered ? "w-full gap-5" : "justify-center",
-                )}
-              >
-                <item.icon className="w-5 h-5 transition-all duration-300 shrink-0 z-10" />
-
-                {/* Text Label - Improved Animation */}
-                <div
-                  className={cn(
-                    "overflow-hidden transition-all duration-300 ease-in-out",
-                    isHovered
-                      ? "w-auto opacity-100 ml-0"
-                      : "w-0 opacity-0 ml-0",
-                  )}
-                >
-                  <span className="font-bold text-[13px] tracking-wide whitespace-nowrap font-sans">
-                    {item.label}
-                  </span>
-                </div>
-
-                {/* Active Indicator Bar - Discrete version */}
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-white rounded-r-full z-20" />
-                )}
-              </Link>
+                icon={item.icon}
+                label={item.label}
+                isActive={isActive}
+                isHovered={isHovered}
+              />
             );
           })}
+
+          {/* Bottom Account Button / Dropdown */}
+          <div className="mt-auto w-full relative">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <SidebarButton
+                      icon={CircleUser}
+                      label={user.username || "Profile"}
+                      isHovered={isHovered}
+                      iconClassName="text-blue-400 animate-pulse"
+                    />
+                  }
+                />
+
+                <UserDropdownContent
+                  email={user.email || ""}
+                  onLogout={logout}
+                  side="right"
+                  align="end"
+                  sideOffset={16}
+                />
+              </DropdownMenu>
+            ) : (
+              <SidebarButton
+                onClick={() => {
+                  setAuthMode("login");
+                  setIsAuthOpen(true);
+                }}
+                icon={CircleUser}
+                label="Log In"
+                isHovered={isHovered}
+              />
+            )}
+          </div>
         </div>
       </aside>
 
       {/* Mobile Top Profile Button */}
       <div className="fixed top-4 left-4 z-[100] lg:hidden">
-        <button
-          onClick={() => {
-            setAuthMode("login");
-            setIsAuthOpen(true);
-          }}
-          className="flex items-center justify-center size-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[#8197a4] hover:text-white cursor-pointer active:scale-95 transition-all outline-none shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
-        >
-          <CircleUser className="size-5.5" />
-        </button>
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button className="flex items-center justify-center size-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-blue-400 hover:text-white cursor-pointer active:scale-95 transition-all outline-none shadow-[0_4px_12px_rgba(0,0,0,0.5)] animate-pulse">
+                  <CircleUser className="size-5.5" />
+                </button>
+              }
+            />
+
+            <UserDropdownContent
+              email={user.email || ""}
+              onLogout={logout}
+              side="bottom"
+              align="start"
+              sideOffset={12}
+            />
+          </DropdownMenu>
+        ) : (
+          <button
+            onClick={() => {
+              setAuthMode("login");
+              setIsAuthOpen(true);
+            }}
+            className="flex items-center justify-center size-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[#8197a4] hover:text-white cursor-pointer active:scale-95 transition-all outline-none shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+          >
+            <CircleUser className="size-5.5" />
+          </button>
+        )}
       </div>
 
       {/* Mobile Bottom Navigation */}

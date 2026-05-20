@@ -2,12 +2,18 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../lib/db";
 
 export class User extends Model {
-  public id!: string;
-  public name!: string;
-  public email!: string;
-  public password!: string;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  declare id: string;
+  declare username: string | null;
+  declare email: string;
+  declare password: string;
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
+
+  toJSON() {
+    const values = { ...this.get() };
+    delete values.password;
+    return values;
+  }
 }
 
 User.init(
@@ -39,5 +45,15 @@ User.init(
     modelName: "User",
     tableName: "users",
     timestamps: true,
+    defaultScope: {
+      attributes: { exclude: ["password"] },
+    },
+    scopes: {
+      withPassword: {
+        attributes: {
+          exclude: [],
+        },
+      },
+    },
   },
 );

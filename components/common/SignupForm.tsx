@@ -68,7 +68,7 @@ export default function SignupForm({ onClose, onLoginClick }: SignupFormProps) {
     onSuccess: () => {
       toast.success("Account created successfully!");
       reset();
-      if (onClose) onClose();
+      if (onLoginClick) onLoginClick();
     },
     onError: (error: unknown) => {
       console.error("Signup failed:", error);

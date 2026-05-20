@@ -2,6 +2,7 @@ import BravePrompt from "@/components/common/BravePrompt";
 import DisableInspect from "@/components/common/DisableInspect";
 import Footer from "@/components/common/Footer";
 import Sidebar from "@/components/common/Sidebar";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -77,13 +78,15 @@ export default function RootLayout({
           shadow="0 0 10px #2563eb,0 0 5px #2563eb"
         />
         <QueryProvider>
-          <Sidebar />
-          <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <AuthProvider>
+            <Sidebar />
+            <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>
