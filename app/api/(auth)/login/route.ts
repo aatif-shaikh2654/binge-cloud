@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export const POST = AsyncWrapper(async (req: Request) => {
   const { usernameOrEmail, password } = await req.json();
-  
+
   if (!usernameOrEmail || !password) {
     throw new ErrorHandler(400, "Username/Email and Password are required.");
   }
@@ -15,7 +15,9 @@ export const POST = AsyncWrapper(async (req: Request) => {
   if (usernameOrEmail.includes("@")) {
     user = await User.findOne({ email: usernameOrEmail }).select("+password");
   } else {
-    user = await User.findOne({ username: usernameOrEmail }).select("+password");
+    user = await User.findOne({ username: usernameOrEmail }).select(
+      "+password",
+    );
   }
 
   if (!user || !user.password) {
@@ -29,7 +31,7 @@ export const POST = AsyncWrapper(async (req: Request) => {
 
   // Generate JWT Token
   const token = generateToken({
-    id: user.id
+    id: user.id,
   });
 
   // Store in HTTP-only Cookie

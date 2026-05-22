@@ -50,7 +50,9 @@ const Sidebar = () => {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup" | "forgot-password">("login");
+  const [authMode, setAuthMode] = useState<
+    "login" | "signup" | "forgot-password"
+  >("login");
   const { user, logout } = useAuth();
 
   return (
@@ -126,9 +128,9 @@ const Sidebar = () => {
                     />
                   }
                 />
-                
+
                 <UserDropdownContent
-                  email={user.email || ""}
+                  email={user.email || user.username || ""}
                   onLogout={logout}
                   side="right"
                   align="end"
@@ -200,7 +202,7 @@ const Sidebar = () => {
               }
             />
             <UserDropdownContent
-              email={user.email || ""}
+              email={user.email || user.username || ""}
               onLogout={logout}
               side="top"
               align="end"
