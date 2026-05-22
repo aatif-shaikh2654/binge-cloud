@@ -13,12 +13,12 @@ export const POST = AsyncWrapper(async (req: Request) => {
 
   let user;
   if (usernameOrEmail.includes("@")) {
-    user = await User.scope("withPassword").findOne({ where: { email: usernameOrEmail } });
+    user = await User.findOne({ email: usernameOrEmail }).select("+password");
   } else {
-    user = await User.scope("withPassword").findOne({ where: { username: usernameOrEmail } });
+    user = await User.findOne({ username: usernameOrEmail }).select("+password");
   }
 
-  if (!user) {
+  if (!user || !user.password) {
     throw new ErrorHandler(401, "Invalid username/email or password.");
   }
 
@@ -35,5 +35,7 @@ export const POST = AsyncWrapper(async (req: Request) => {
   // Store in HTTP-only Cookie
   await setAuthCookie(token);
 
-  return NextResponse.json(user);
+  const userObj = user.toJSON();
+
+  return NextResponse.json(userObj);
 });

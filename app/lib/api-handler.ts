@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import connectToDatabase from "@/lib/db";
 
 /**
  * Custom error class for API-related errors.
@@ -25,6 +26,7 @@ export function AsyncWrapper(
 ) {
   return async (req: NextRequest) => {
     try {
+      await connectToDatabase();
       return await handler(req);
     } catch (error) {
       if (error instanceof ErrorHandler) {

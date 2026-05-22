@@ -1,20 +1,40 @@
-import pg from "pg";
-import { Sequelize } from "sequelize";
+import mongoose from "mongoose";
 
-const databaseUrl = process.env.DATABASE_URL;
+const MONGODB_URI = process.env.DATABASE_URL;
 
-if (!databaseUrl) {
-  console.warn("DATABASE_URL is not set in environment variables");
+if (!MONGODB_URI) {
+  throw new Error("Please define the DATABASE_URL environment variable inside .env");
 }
 
-export const sequelize = new Sequelize(databaseUrl || "", {
-  dialect: "postgres",
-  dialectModule: pg,
-  logging: false, // Set to console.log to see SQL queries in the console
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false, // This is often needed for cloud hosted PostgreSQL like Supabase
-    },
-  },
-});
+let cached = (global as any).mongoose;
+
+if (!cached) {
+  cached = (global as any).mongoose = { conn: null, promise: null };
+}
+
+async function connectToDatabase() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => {
+      return mongoose;
+    });
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+
+  return cached.conn;
+}
+
+export default connectToDatabase;

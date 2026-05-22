@@ -1,59 +1,45 @@
-import { DataTypes, Model } from "sequelize";
-import { sequelize } from "../lib/db";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-export class User extends Model {
-  declare id: string;
-  declare username: string | null;
-  declare email: string;
-  declare password: string;
-  declare readonly createdAt: Date;
-  declare readonly updatedAt: Date;
-
-  toJSON() {
-    const values = { ...this.get() };
-    delete values.password;
-    return values;
-  }
+export interface IUser extends Document {
+  username?: string;
+  email?: string;
+  password?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-User.init(
+const UserSchema = new Schema<IUser>(
   {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
     username: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: String,
+      required: false,
+      sparse: true,
     },
     email: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: String,
+      required: false,
       unique: true,
-      validate: {
-        isEmail: true,
-      },
+      sparse: true,
+      match: [/.+\@.+\..+/, "Please fill a valid email address"],
     },
     password: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: true,
+      select: false, // By default do not include password in queries
     },
   },
   {
-    sequelize,
-    modelName: "User",
-    tableName: "users",
     timestamps: true,
-    defaultScope: {
-      attributes: { exclude: ["password"] },
-    },
-    scopes: {
-      withPassword: {
-        attributes: {
-          exclude: [],
-        },
+    toJSON: {
+      transform: function (doc, ret: any) {
+        ret.id = ret._id.toString();
+        delete ret._id;
+        delete ret.__v;
+        delete ret.password;
+        return ret;
       },
     },
-  },
+  }
 );
+
+export const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

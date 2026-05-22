@@ -10,9 +10,9 @@ export const GET = AsyncWrapper(async () => {
         throw new ErrorHandler(401, "Unauthorized");
     }
 
-    const user = await User.findByPk(userId);
+    const user = await User.findById(userId);
     if (!user) {
         throw new ErrorHandler(401, "Unauthorized");
     }
     return NextResponse.json(user);
-})
+});
