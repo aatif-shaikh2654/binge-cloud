@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { LogOut, type LucideIcon } from "lucide-react";
+import { Bookmark, LogOut, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import type { IconType } from "react-icons";
@@ -129,6 +129,14 @@ export function UserDropdownContent({
         <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Logged In As</span>
         <span className="text-xs font-semibold text-white/90 truncate max-w-full">{email}</span>
       </div>
+      <Link className="lg:hidden" href="/watch-later">
+        <DropdownMenuItem
+          className="flex items-center gap-2.5 w-full text-left text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 py-2.5 px-3 rounded-xl transition-all duration-300 outline-none cursor-pointer group"
+        >
+          <Bookmark className="size-4 transition-colors" />
+          <span>Watch Later</span>
+        </DropdownMenuItem>
+      </Link>
       <DropdownMenuItem
         onClick={onLogout}
         className="flex items-center gap-2.5 w-full text-left text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 py-2.5 px-3 rounded-xl transition-all duration-300 outline-none cursor-pointer group"

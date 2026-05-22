@@ -19,16 +19,15 @@ export const POST = AsyncWrapper(async (req: Request) => {
   // Always return success to prevent user enumeration
   if (!user) {
     return NextResponse.json({
-      message: "If an account exists with that email, a reset link has been sent.",
+      message:
+        "If an account exists with that email, a reset link has been sent.",
     });
   }
 
   // Generate a short-lived reset token (15 minutes)
-  const resetToken = jwt.sign(
-    { id: user.id, purpose: "reset" },
-    JWT_SECRET,
-    { expiresIn: "15m" }
-  );
+  const resetToken = jwt.sign({ id: user.id, purpose: "reset" }, JWT_SECRET, {
+    expiresIn: "15m",
+  });
 
   const resetLink = `${BASE_URL}/reset-password?token=${resetToken}`;
 
@@ -59,6 +58,7 @@ export const POST = AsyncWrapper(async (req: Request) => {
   });
 
   return NextResponse.json({
-    message: "If an account exists with that email, a reset link has been sent.",
+    message:
+      "If an account exists with that email, a reset link has been sent.",
   });
 });

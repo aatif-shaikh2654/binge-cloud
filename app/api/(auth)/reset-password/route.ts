@@ -27,7 +27,10 @@ export const POST = AsyncWrapper(async (req: Request) => {
   try {
     decoded = jwt.verify(token, JWT_SECRET) as ResetTokenPayload;
   } catch {
-    throw new ErrorHandler(400, "Invalid or expired reset link. Please request a new one.");
+    throw new ErrorHandler(
+      400,
+      "Invalid or expired reset link. Please request a new one.",
+    );
   }
 
   if (decoded.purpose !== "reset") {

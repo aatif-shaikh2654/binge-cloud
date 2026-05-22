@@ -4,6 +4,7 @@ import Footer from "@/components/common/Footer";
 import Sidebar from "@/components/common/Sidebar";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import QueryProvider from "@/components/providers/QueryProvider";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
@@ -77,6 +78,7 @@ export default function RootLayout({
           speed={200}
           shadow="0 0 10px #2563eb,0 0 5px #2563eb"
         />
+        <Toaster />
         <QueryProvider>
           <AuthProvider>
             <Sidebar />
