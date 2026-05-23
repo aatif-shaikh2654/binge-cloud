@@ -13,6 +13,7 @@ interface SidebarLinkProps {
   isActive: boolean;
   isHovered: boolean;
   onClick?: () => void;
+  badgeCount?: number;
 }
 
 export function SidebarLink({
@@ -22,6 +23,7 @@ export function SidebarLink({
   isActive,
   isHovered,
   onClick,
+  badgeCount,
 }: SidebarLinkProps) {
   return (
     <Link
@@ -35,18 +37,28 @@ export function SidebarLink({
         isHovered ? "w-full gap-5" : "justify-center",
       )}
     >
-      <Icon className="w-5 h-5 transition-all duration-300 shrink-0 z-10" />
+      <div className="relative flex items-center justify-center shrink-0">
+        <Icon className="w-5 h-5 transition-all duration-300 z-10" />
+        {!isHovered && badgeCount !== undefined && badgeCount > 0 && (
+          <div className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-blue-500 rounded-full z-20" />
+        )}
+      </div>
 
       {/* Text Label - Improved Animation */}
       <div
         className={cn(
-          "overflow-hidden transition-all duration-300 ease-in-out",
-          isHovered ? "w-auto opacity-100 ml-0" : "w-0 opacity-0 ml-0",
+          "flex items-center justify-between overflow-hidden transition-all duration-300 ease-in-out",
+          isHovered ? "flex-1 opacity-100 ml-0" : "w-0 opacity-0 ml-0",
         )}
       >
         <span className="font-bold text-[13px] tracking-wide whitespace-nowrap font-sans">
           {label}
         </span>
+        {isHovered && badgeCount !== undefined && badgeCount > 0 && (
+          <span className="flex h-5 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
+            {badgeCount > 99 ? "99+" : badgeCount}
+          </span>
+        )}
       </div>
 
       {/* Active Indicator Bar - Discrete version */}
@@ -116,6 +128,7 @@ interface UserDropdownContentProps {
   side?: "bottom" | "top" | "left" | "right";
   align?: "start" | "center" | "end";
   sideOffset?: number;
+  watchlistCount?: number;
 }
 
 export function UserDropdownContent({
@@ -124,6 +137,7 @@ export function UserDropdownContent({
   side,
   align,
   sideOffset,
+  watchlistCount,
 }: UserDropdownContentProps) {
   return (
     <DropdownMenuContent
@@ -142,15 +156,20 @@ export function UserDropdownContent({
       </div>
       <Link className="lg:hidden" href="/watch-later">
         <DropdownMenuItem className="flex items-center gap-2.5 w-full text-left text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 py-2.5 px-3 rounded-xl transition-all duration-300 outline-none cursor-pointer group">
-          <Bookmark className="size-4 transition-colors" />
-          <span>Watch Later</span>
+          <Bookmark className="size-4 transition-colors shrink-0" />
+          <span className="flex-1">Watch Later</span>
+          {watchlistCount !== undefined && watchlistCount > 0 && (
+            <span className="flex h-5 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white shrink-0">
+              {watchlistCount > 99 ? "99+" : watchlistCount}
+            </span>
+          )}
         </DropdownMenuItem>
       </Link>
       <DropdownMenuItem
         onClick={onLogout}
         className="flex items-center gap-2.5 w-full text-left text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 py-2.5 px-3 rounded-xl transition-all duration-300 outline-none cursor-pointer group"
       >
-        <LogOut className="size-4 text-red-400 group-hover:text-red-300 transition-colors" />
+        <LogOut className="size-4 text-red-400 group-hover:text-red-300 transition-colors shrink-0" />
         <span>Log Out</span>
       </DropdownMenuItem>
     </DropdownMenuContent>

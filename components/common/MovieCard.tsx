@@ -10,7 +10,15 @@ import { MediaType, UnifiedMediaItem } from "@/app/types/common";
 import { TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Bookmark, Play, Plus, Star, Volume2, VolumeX } from "lucide-react";
+import {
+  Bookmark,
+  BookmarkMinus,
+  Play,
+  Plus,
+  Star,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -22,9 +30,15 @@ interface MovieCardProps {
   movie: TMDBMovie | UnifiedMediaItem | any;
   mediaType?: MediaType;
   rank?: number;
+  isWatchLaterPage?: boolean;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType, rank }) => {
+const MovieCard: React.FC<MovieCardProps> = ({
+  movie,
+  mediaType,
+  rank,
+  isWatchLaterPage,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showHoverCard, setShowHoverCard] = useState(false);
   const [videoKey, setVideoKey] = useState<string | null>(null);
@@ -97,6 +111,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType, rank }) => {
 
   const handleMouseEnter = () => {
     setIsHovered(true);
+    if (isWatchLaterPage) return;
+
     hoverTimeoutRef.current = setTimeout(async () => {
       setShowHoverCard(true);
       if (!videoKey) {
@@ -189,10 +205,19 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, mediaType, rank }) => {
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
           {/* Play Button Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/40 backdrop-blur-[2px] z-20">
+          <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/40 backdrop-blur-[2px] z-20">
             <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out">
               <FaPlay className="text-white text-xl ml-1" />
             </div>
+            {isWatchLaterPage && (
+              <div
+                className="w-14 h-14 bg-white/20 hover:bg-red-600/90 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.4)] hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer"
+                onClick={handleWatchlistToggle}
+                title="Remove from Watch Later"
+              >
+                <BookmarkMinus className="text-white text-2xl" />
+              </div>
+            )}
           </div>
           <div className="absolute top-3 left-3 flex items-center">
             <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">

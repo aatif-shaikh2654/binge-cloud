@@ -90,7 +90,7 @@ const HistoryCard: React.FC<HistoryCardProps> = ({ item }) => {
       <button
         onClick={(e) => {
           e.preventDefault();
-          removeFromHistory(item.id);
+          removeFromHistory(item.id, item.media_type);
         }}
         className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-white hover:bg-red-500/80 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10 border border-white/10 shadow-lg"
       >

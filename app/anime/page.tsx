@@ -1,6 +1,7 @@
 import AnimeHero from "@/components/common/AnimeHero";
 import AnimeSearch from "@/components/common/AnimeSearch";
 import AnimeSlider from "@/components/common/AnimeSlider";
+import WatchHistory from "@/components/common/WatchHistory";
 import {
   getPopularAnime,
   getTopRatedAnime,
@@ -26,6 +27,8 @@ export default async function AnimePage() {
       <AnimeSearch />
 
       <AnimeHero anime={trending} />
+
+      <WatchHistory filterType="anime" />
 
       <div className="mt-8 space-y-2">
         <AnimeSlider

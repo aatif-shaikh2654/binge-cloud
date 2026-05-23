@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import dynamic from "next/dynamic";
 
 const WatchHistorySkeleton = () => (
-  <section className="ps-8! lg:ps-24! md:py-8 pb-12 overflow-hidden">
+  <section className="ps-8! lg:ps-24! md:pt-8 md:pb-4 pb-4 overflow-hidden">
     <div className="flex items-center justify-between mb-8 pe-8! lg:pe-24!">
       <div className="flex items-center gap-4">
         <div className="w-1.5 h-8 bg-white/10 rounded-full" />
@@ -28,12 +28,20 @@ const WatchHistorySwiper = dynamic(() => import("./WatchHistorySwiper"), {
   loading: () => <WatchHistorySkeleton />,
 });
 
-const WatchHistory = () => {
+interface WatchHistoryProps {
+  filterType?: "anime" | "movie" | "tv";
+}
+
+const WatchHistory = ({ filterType }: WatchHistoryProps) => {
   const { history } = useHistoryStore();
 
-  if (history.length === 0) return null;
+  const filteredHistory = filterType
+    ? history.filter((item) => item.media_type === filterType)
+    : history;
 
-  return <WatchHistorySwiper />;
+  if (filteredHistory.length === 0) return null;
+
+  return <WatchHistorySwiper filterType={filterType} />;
 };
 
 export default WatchHistory;

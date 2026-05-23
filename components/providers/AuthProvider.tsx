@@ -2,9 +2,13 @@
 
 import { getUser, logout as logoutService } from "@/app/services/auth.service";
 import { User } from "@/app/types/user";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getHistory, syncHistory } from "@/app/services/history.service";
+import { getWatchlist, syncWatchlist } from "@/app/services/watchlist.service";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 
 interface AuthContextType {
   user: User | null;
@@ -72,6 +76,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [hasToken, refetch]);
 
+  const syncHistoryMutation = useMutation({
+    mutationFn: syncHistory,
+    onSuccess: (data) => {
+      useHistoryStore.getState().setHistory(data);
+    },
+  });
+
+  const syncWatchlistMutation = useMutation({
+    mutationFn: syncWatchlist,
+    onSuccess: (data) => {
+      useWatchlistStore.getState().setWatchlist(data);
+    },
+  });
+
+  const { data: historyData } = useQuery({
+    queryKey: ["history", user?.id],
+    queryFn: async () => {
+      const currentHistory = useHistoryStore.getState().history;
+      if (currentHistory.length > 0) {
+        return syncHistoryMutation.mutateAsync(currentHistory);
+      }
+      return getHistory();
+    },
+    enabled: !!user,
+  });
+
+  const { data: watchlistData } = useQuery({
+    queryKey: ["watchlist", user?.id],
+    queryFn: async () => {
+      const currentWatchlist = useWatchlistStore.getState().watchlist;
+      if (currentWatchlist.length > 0) {
+        return syncWatchlistMutation.mutateAsync(currentWatchlist);
+      }
+      return getWatchlist();
+    },
+    enabled: !!user,
+  });
+
+  useEffect(() => {
+    if (historyData && !syncHistoryMutation.isPending) {
+      useHistoryStore.getState().setHistory(historyData);
+    }
+  }, [historyData, syncHistoryMutation.isPending]);
+
+  useEffect(() => {
+    if (watchlistData && !syncWatchlistMutation.isPending) {
+      useWatchlistStore.getState().setWatchlist(watchlistData);
+    }
+  }, [watchlistData, syncWatchlistMutation.isPending]);
+
+
   const logout = async () => {
     await logoutService();
     if (typeof window !== "undefined") {
@@ -79,6 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     setHasToken(false);
     queryClient.setQueryData(["authUser"], null);
+    useHistoryStore.getState().clearHistory();
+    useWatchlistStore.getState().setWatchlist([]);
     toast.success("Logged out successfully!");
   };
 

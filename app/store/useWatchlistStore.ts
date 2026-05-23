@@ -2,11 +2,14 @@ import { MediaType, UnifiedMediaItem } from "@/app/types/common";
 import { del, get, set } from "idb-keyval";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { addToWatchlist as apiAddToWatchlist, removeFromWatchlist as apiRemoveFromWatchlist } from "@/app/services/watchlist.service";
+
 
 export type WatchlistItem = UnifiedMediaItem;
 
 interface WatchlistState {
   watchlist: WatchlistItem[];
+  setWatchlist: (items: WatchlistItem[]) => void;
   addToWatchlist: (item: WatchlistItem) => void;
   removeFromWatchlist: (id: number, media_type: MediaType) => void;
   toggleWatchlist: (item: WatchlistItem) => void;
@@ -31,16 +34,21 @@ export const useWatchlistStore = create<WatchlistState>()(
   persist(
     (set, get) => ({
       watchlist: [],
-      addToWatchlist: (item) =>
+      setWatchlist: (items) => set({ watchlist: items }),
+      addToWatchlist: (item) => {
         set((state) => ({
           watchlist: [item, ...state.watchlist],
-        })),
-      removeFromWatchlist: (id, media_type) =>
+        }));
+        apiAddToWatchlist(item).catch(() => { /* ignore guest */ });
+      },
+      removeFromWatchlist: (id, media_type) => {
         set((state) => ({
           watchlist: state.watchlist.filter(
             (m) => !(m.id === id && m.media_type === media_type),
           ),
-        })),
+        }));
+        apiRemoveFromWatchlist(id, media_type).catch(() => { /* ignore guest */ });
+      },
       toggleWatchlist: (item) => {
         const { watchlist, addToWatchlist, removeFromWatchlist } = get();
         const isIn = watchlist.some(

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { get, set, del } from "idb-keyval";
+import { addToHistory as apiAddToHistory, removeFromHistory as apiRemoveFromHistory } from "@/app/services/history.service";
 
 export interface HistoryItem {
   id: number;
@@ -18,8 +19,9 @@ export interface HistoryItem {
 
 interface HistoryState {
   history: HistoryItem[];
+  setHistory: (items: HistoryItem[]) => void;
   addToHistory: (item: HistoryItem) => void;
-  removeFromHistory: (id: number) => void;
+  removeFromHistory: (id: number, media_type: string) => void;
   clearHistory: () => void;
 }
 
@@ -41,7 +43,8 @@ export const useHistoryStore = create<HistoryState>()(
   persist(
     (set) => ({
       history: [],
-      addToHistory: (item) =>
+      setHistory: (items) => set({ history: items }),
+      addToHistory: (item) => {
         set((state) => {
           // Remove existing item if it exists (check both id and media_type)
           const filteredHistory = state.history.filter(
@@ -52,13 +55,17 @@ export const useHistoryStore = create<HistoryState>()(
             (a, b) => b.watchedAt - a.watchedAt
           );
           return {
-            history: newHistory.slice(0, 20), // Keep last 20 items
+            history: newHistory,
           };
-        }),
-      removeFromHistory: (id) =>
+        });
+        apiAddToHistory(item).catch(() => { /* ignore guest */ });
+      },
+      removeFromHistory: (id, media_type) => {
         set((state) => ({
-          history: state.history.filter((h) => h.id !== id),
-        })),
+          history: state.history.filter((h) => !(h.id === id && h.media_type === media_type)),
+        }));
+        apiRemoveFromHistory(id, media_type).catch(() => { /* ignore guest */ });
+      },
       clearHistory: () => set({ history: [] }),
     }),
     {

@@ -24,6 +24,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { useAuth } from "../providers/AuthProvider";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import LoginForm from "./LoginForm";
@@ -54,6 +56,8 @@ const Sidebar = () => {
     "login" | "signup" | "forgot-password"
   >("login");
   const { user, logout } = useAuth();
+  const watchlistCount = useWatchlistStore((state) => state.watchlist.length);
+  const historyCount = useHistoryStore((state) => state.history.length);
 
   return (
     <>
@@ -110,6 +114,13 @@ const Sidebar = () => {
                 label={item.label}
                 isActive={isActive}
                 isHovered={isHovered}
+                badgeCount={
+                  item.label === "Watch Later"
+                    ? watchlistCount
+                    : item.label === "History"
+                      ? historyCount
+                      : undefined
+                }
               />
             );
           })}
@@ -135,6 +146,7 @@ const Sidebar = () => {
                   side="right"
                   align="end"
                   sideOffset={16}
+                  watchlistCount={watchlistCount}
                 />
               </DropdownMenu>
             ) : (
@@ -207,6 +219,7 @@ const Sidebar = () => {
               side="top"
               align="end"
               sideOffset={12}
+              watchlistCount={watchlistCount}
             />
           </DropdownMenu>
         ) : (

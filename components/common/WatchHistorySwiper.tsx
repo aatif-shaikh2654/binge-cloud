@@ -12,15 +12,23 @@ import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 
-const WatchHistorySwiper = () => {
+interface WatchHistorySwiperProps {
+  filterType?: "anime" | "movie" | "tv";
+}
+
+const WatchHistorySwiper = ({ filterType }: WatchHistorySwiperProps) => {
   const { history } = useHistoryStore();
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
 
-  if (history.length === 0) return null;
+  const filteredHistory = filterType 
+    ? history.filter((item) => item.media_type === filterType)
+    : history;
+
+  if (filteredHistory.length === 0) return null;
 
   return (
-    <section className="ps-6! lg:ps-20! md:py-8 pb-12 overflow-hidden">
+    <section className="ps-6! lg:ps-20! md:pt-8 md:pb-4 pb-4 overflow-hidden">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-8 pe-8! lg:pe-20!">
         <div className="flex items-center gap-4">
@@ -76,7 +84,7 @@ const WatchHistorySwiper = () => {
           }}
           className="!overflow-visible"
         >
-          {history.map((item) => (
+          {filteredHistory.map((item) => (
             <SwiperSlide key={item.id} className="pb-4">
               <HistoryCard item={item} />
             </SwiperSlide>
