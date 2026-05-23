@@ -39,7 +39,9 @@ export const useWatchlistStore = create<WatchlistState>()(
         set((state) => ({
           watchlist: [item, ...state.watchlist],
         }));
-        apiAddToWatchlist(item).catch(() => { /* ignore guest */ });
+        if (typeof document !== "undefined" && document.cookie.includes("token=")) {
+          apiAddToWatchlist(item).catch(() => { /* ignore error */ });
+        }
       },
       removeFromWatchlist: (id, media_type) => {
         set((state) => ({
@@ -47,7 +49,9 @@ export const useWatchlistStore = create<WatchlistState>()(
             (m) => !(m.id === id && m.media_type === media_type),
           ),
         }));
-        apiRemoveFromWatchlist(id, media_type).catch(() => { /* ignore guest */ });
+        if (typeof document !== "undefined" && document.cookie.includes("token=")) {
+          apiRemoveFromWatchlist(id, media_type).catch(() => { /* ignore error */ });
+        }
       },
       toggleWatchlist: (item) => {
         const { watchlist, addToWatchlist, removeFromWatchlist } = get();

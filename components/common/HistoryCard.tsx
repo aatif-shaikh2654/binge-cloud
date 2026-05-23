@@ -2,7 +2,7 @@
 
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
 import { HistoryItem, useHistoryStore } from "@/app/store/useHistoryStore";
-import { Play, X } from "lucide-react";
+import { Info, Play, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -14,6 +14,8 @@ interface HistoryCardProps {
 const HistoryCard: React.FC<HistoryCardProps> = ({ item }) => {
   const { removeFromHistory } = useHistoryStore();
   const { handleWatchClick } = useWatchNavigation();
+
+  const detailUrl = `/${item.media_type}/detail?id=${item.id}`;
 
   return (
     <div className="group relative w-full aspect-video rounded-2xl overflow-hidden border border-white/5 bg-white/5 hover:border-blue-500/30 transition-all duration-500">
@@ -87,12 +89,21 @@ const HistoryCard: React.FC<HistoryCardProps> = ({ item }) => {
         )}
       </Link>
 
+      <Link
+        href={detailUrl}
+        className="absolute top-3 right-12 p-2 bg-blue-600/90 backdrop-blur-md rounded-full text-white hover:bg-blue-500 hover:scale-110 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10 border border-blue-400/50 shadow-[0_0_15px_rgba(37,99,235,0.5)]"
+        title="View Details"
+      >
+        <Info className="w-3.5 h-3.5" />
+      </Link>
+
       <button
         onClick={(e) => {
           e.preventDefault();
           removeFromHistory(item.id, item.media_type);
         }}
         className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-md rounded-full text-white/40 hover:text-white hover:bg-red-500/80 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10 border border-white/10 shadow-lg"
+        title="Remove from History"
       >
         <X className="w-3.5 h-3.5" />
       </button>

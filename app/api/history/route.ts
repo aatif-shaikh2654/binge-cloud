@@ -8,8 +8,7 @@ export const GET = AsyncWrapper(async () => {
   const userId = decodedToken?.id;
   if (!userId) throw new ErrorHandler(401, "Unauthorized");
 
-  const history = await History.find({ userId })
-    .sort({ watchedAt: -1 });
+  const history = await History.find({ userId }).sort({ watchedAt: -1 });
   return NextResponse.json(history);
 });
 

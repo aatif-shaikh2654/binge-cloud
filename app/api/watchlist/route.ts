@@ -23,7 +23,7 @@ export const POST = AsyncWrapper(async (req) => {
   const updated = await Watchlist.findOneAndUpdate(
     { userId, id: body.id, media_type: body.media_type },
     { ...cleanBody, userId },
-    { upsert: true, new: true }
+    { upsert: true, new: true },
   );
 
   return NextResponse.json(updated);
@@ -42,6 +42,10 @@ export const DELETE = AsyncWrapper(async (req) => {
     throw new ErrorHandler(400, "Missing id or media_type");
   }
 
-  await Watchlist.findOneAndDelete({ userId, id: Number(id), media_type: media_type as "movie" | "tv" | "anime" });
+  await Watchlist.findOneAndDelete({
+    userId,
+    id: Number(id),
+    media_type: media_type as "movie" | "tv" | "anime",
+  });
   return NextResponse.json({ success: true });
 });

@@ -1,7 +1,10 @@
+import {
+  addToHistory as apiAddToHistory,
+  removeFromHistory as apiRemoveFromHistory,
+} from "@/app/services/history.service";
+import { del, get, set } from "idb-keyval";
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { get, set, del } from "idb-keyval";
-import { addToHistory as apiAddToHistory, removeFromHistory as apiRemoveFromHistory } from "@/app/services/history.service";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface HistoryItem {
   id: number;
@@ -48,29 +51,45 @@ export const useHistoryStore = create<HistoryState>()(
         set((state) => {
           // Remove existing item if it exists (check both id and media_type)
           const filteredHistory = state.history.filter(
-            (h) => !(h.id === item.id && h.media_type === item.media_type)
+            (h) => !(h.id === item.id && h.media_type === item.media_type),
           );
           // Add new item and sort by watchedAt descending
           const newHistory = [item, ...filteredHistory].sort(
-            (a, b) => b.watchedAt - a.watchedAt
+            (a, b) => b.watchedAt - a.watchedAt,
           );
           return {
             history: newHistory,
           };
         });
-        apiAddToHistory(item).catch(() => { /* ignore guest */ });
+        if (
+          typeof document !== "undefined" &&
+          document.cookie.includes("token=")
+        ) {
+          apiAddToHistory(item).catch(() => {
+            /* ignore error */
+          });
+        }
       },
       removeFromHistory: (id, media_type) => {
         set((state) => ({
-          history: state.history.filter((h) => !(h.id === id && h.media_type === media_type)),
+          history: state.history.filter(
+            (h) => !(h.id === id && h.media_type === media_type),
+          ),
         }));
-        apiRemoveFromHistory(id, media_type).catch(() => { /* ignore guest */ });
+        if (
+          typeof document !== "undefined" &&
+          document.cookie.includes("token=")
+        ) {
+          apiRemoveFromHistory(id, media_type).catch(() => {
+            /* ignore error */
+          });
+        }
       },
       clearHistory: () => set({ history: [] }),
     }),
     {
       name: "binge-watch-history",
       storage: createJSONStorage(() => idbStorage),
-    }
-  )
+    },
+  ),
 );

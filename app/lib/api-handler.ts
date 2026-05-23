@@ -1,5 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+import { NextRequest, NextResponse } from "next/server";
+
+// Initialize Redis only if env variables are present to avoid dev crashes
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+const redis =
+  redisUrl && redisToken
+    ? new Redis({
+        url: redisUrl,
+        token: redisToken,
+      })
+    : null;
+
+// Create a rate limiter: 15 requests per 10 seconds per IP
+const ratelimit = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(15, "10 s"),
+      analytics: true,
+    })
+  : null;
 
 /**
  * Custom error class for API-related errors.
@@ -26,6 +49,14 @@ export function AsyncWrapper(
 ) {
   return async (req: NextRequest) => {
     try {
+      if (ratelimit) {
+        const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
+        const { success } = await ratelimit.limit(ip);
+        if (!success) {
+          throw new ErrorHandler(429, "Too Many Requests");
+        }
+      }
+
       await connectToDatabase();
       return await handler(req);
     } catch (error) {

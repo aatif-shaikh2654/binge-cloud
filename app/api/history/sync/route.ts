@@ -1,9 +1,9 @@
 import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
 import { getUserFromCookies } from "@/app/lib/auth";
-import { History } from "@/models/History";
 import { HistoryItem } from "@/app/store/useHistoryStore";
-import { NextResponse } from "next/server";
+import { History } from "@/models/History";
 import mongoose from "mongoose";
+import { NextResponse } from "next/server";
 
 export const POST = AsyncWrapper(async (req) => {
   const decodedToken = await getUserFromCookies();
@@ -20,7 +20,11 @@ export const POST = AsyncWrapper(async (req) => {
       const { _id, createdAt, updatedAt, __v, ...cleanItem } = item as any;
       return {
         updateOne: {
-          filter: { userId: userObjectId, id: item.id, media_type: item.media_type },
+          filter: {
+            userId: userObjectId,
+            id: item.id,
+            media_type: item.media_type,
+          },
           update: { $set: { ...cleanItem, userId: userObjectId } },
           upsert: true,
         },

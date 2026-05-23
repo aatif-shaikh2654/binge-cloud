@@ -6,7 +6,7 @@ import { type AniListMediaDetail } from "@/app/types/anilist";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 interface AnimePlayerProps {
   id: string;
@@ -27,6 +27,8 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 }) => {
   const { addToHistory, history } = useHistoryStore();
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const latestProgressRef = useRef({ currentTime: 0, duration: 0 });
+  const lastSaveTimeRef = useRef(0);
 
   // Background Image for Loader
   const backdropImage =
@@ -95,30 +97,43 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
   // Player Events Listener
   useEffect(() => {
-    const trackProgress = (currentTime: number, duration: number) => {
-      const title =
-        initialDetails.title.english ||
-        initialDetails.title.romaji ||
-        initialDetails.title.native ||
-        "Unknown Anime";
-      const poster =
-        initialDetails.coverImage.extraLarge ||
-        initialDetails.coverImage.large ||
-        "";
-      const backdrop = initialDetails.bannerImage || poster;
+    latestProgressRef.current = { currentTime: 0, duration: 0 };
+    lastSaveTimeRef.current = Date.now();
 
-      addToHistory({
-        id: Number(id),
-        media_type: "anime",
-        title,
-        poster_path: poster,
-        backdrop_path: backdrop,
-        server: currentServer.id,
-        episode: ep,
-        watchedAt: Date.now(),
-        currentTime,
-        duration,
-      });
+    const trackProgress = (
+      currentTime: number,
+      duration: number,
+      force = false,
+    ) => {
+      latestProgressRef.current = { currentTime, duration };
+      const now = Date.now();
+
+      if (force || now - lastSaveTimeRef.current >= 5 * 60 * 1000) {
+        lastSaveTimeRef.current = now;
+        const title =
+          initialDetails.title.english ||
+          initialDetails.title.romaji ||
+          initialDetails.title.native ||
+          "Unknown Anime";
+        const poster =
+          initialDetails.coverImage.extraLarge ||
+          initialDetails.coverImage.large ||
+          "";
+        const backdrop = initialDetails.bannerImage || poster;
+
+        addToHistory({
+          id: Number(id),
+          media_type: "anime",
+          title,
+          poster_path: poster,
+          backdrop_path: backdrop,
+          server: currentServer.id,
+          episode: ep,
+          watchedAt: Date.now(),
+          currentTime,
+          duration,
+        });
+      }
     };
 
     const handleMessage = (event: MessageEvent) => {
@@ -205,7 +220,13 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
     };
 
     window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      const { currentTime, duration } = latestProgressRef.current;
+      if (currentTime > 0 && duration > 0) {
+        trackProgress(currentTime, duration, true);
+      }
+    };
   }, [
     id,
     ep,

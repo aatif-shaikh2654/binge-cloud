@@ -1,9 +1,9 @@
 import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
 import { getUserFromCookies } from "@/app/lib/auth";
-import { Watchlist } from "@/models/Watchlist";
 import { WatchlistItem } from "@/app/store/useWatchlistStore";
-import { NextResponse } from "next/server";
+import { Watchlist } from "@/models/Watchlist";
 import mongoose from "mongoose";
+import { NextResponse } from "next/server";
 
 export const POST = AsyncWrapper(async (req) => {
   const decodedToken = await getUserFromCookies();
@@ -20,7 +20,11 @@ export const POST = AsyncWrapper(async (req) => {
       const { _id, createdAt, updatedAt, __v, ...cleanItem } = item as any;
       return {
         updateOne: {
-          filter: { userId: userObjectId, id: item.id, media_type: item.media_type },
+          filter: {
+            userId: userObjectId,
+            id: item.id,
+            media_type: item.media_type,
+          },
           update: { $setOnInsert: { ...cleanItem, userId: userObjectId } }, // Do not override existing properties if already saved
           upsert: true,
         },

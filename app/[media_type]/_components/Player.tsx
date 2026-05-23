@@ -35,6 +35,8 @@ const Player: React.FC<PlayerProps> = ({
   const history = useHistoryStore((state) => state.history);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const latestProgressRef = useRef({ currentTime: 0, duration: 0 });
+  const lastSaveTimeRef = useRef(0);
 
   // Calculate Initial Start Time (only once per media/episode)
   const initialStartTime = useMemo(() => {
@@ -78,21 +80,34 @@ const Player: React.FC<PlayerProps> = ({
 
   // Player Events Listener
   useEffect(() => {
-    const trackProgress = (currentTime: number, duration: number) => {
+    latestProgressRef.current = { currentTime: 0, duration: 0 };
+    lastSaveTimeRef.current = Date.now();
+
+    const trackProgress = (
+      currentTime: number,
+      duration: number,
+      force = false,
+    ) => {
       if (!details) return;
-      addToHistory({
-        id: Number(id),
-        media_type: tmdbType,
-        title: details.title || details.name || "Unknown",
-        poster_path: details.poster_path || "",
-        backdrop_path: details.backdrop_path || "",
-        server: currentServer.id,
-        season: tmdbType === "tv" ? season : undefined,
-        episode: tmdbType === "tv" ? episode : undefined,
-        watchedAt: Date.now(),
-        currentTime,
-        duration,
-      });
+      latestProgressRef.current = { currentTime, duration };
+      const now = Date.now();
+
+      if (force || now - lastSaveTimeRef.current >= 5 * 60 * 1000) {
+        lastSaveTimeRef.current = now;
+        addToHistory({
+          id: Number(id),
+          media_type: tmdbType,
+          title: details.title || details.name || "Unknown",
+          poster_path: details.poster_path || "",
+          backdrop_path: details.backdrop_path || "",
+          server: currentServer.id,
+          season: tmdbType === "tv" ? season : undefined,
+          episode: tmdbType === "tv" ? episode : undefined,
+          watchedAt: Date.now(),
+          currentTime,
+          duration,
+        });
+      }
     };
 
     const handleMessage = (event: MessageEvent) => {
@@ -145,7 +160,13 @@ const Player: React.FC<PlayerProps> = ({
     };
 
     window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      const { currentTime, duration } = latestProgressRef.current;
+      if (currentTime > 0 && duration > 0) {
+        trackProgress(currentTime, duration, true);
+      }
+    };
   }, [
     id,
     tmdbType,
