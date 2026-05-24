@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
@@ -49,6 +50,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
   const { handleWatchClick } = useWatchNavigation();
   const history = useHistoryStore((state) => state.history);
+  const router = useRouter();
 
   useEffect(() => {
     if (iframeRef.current && isVideoLoaded) {
@@ -206,7 +208,14 @@ const MovieCard: React.FC<MovieCardProps> = ({
           />
           {/* Play Button Overlay */}
           <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/40 backdrop-blur-[2px] z-20">
-            <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out">
+            <div
+              className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                handleWatchClick();
+                router.push(watchUrl);
+              }}
+            >
               <FaPlay className="text-white text-xl ml-1" />
             </div>
             {isWatchLaterPage && (

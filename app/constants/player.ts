@@ -33,13 +33,6 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`,
   },
   {
-    name: "MoviesAPI",
-    id: "moviesapi",
-    movieUrl: (tmdbId: string) => `https://moviesapi.club/movie/${tmdbId}`,
-    tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://moviesapi.club/tv/${tmdbId}/${season}/${episode}`,
-  },
-  {
     name: "VidEasy",
     id: "videasy",
     movieUrl: (tmdbId: string) => `https://player.videasy.net/movie/${tmdbId}`,
@@ -68,7 +61,13 @@ export const PLAYER_SERVERS: PlayerServer[] = [
     tvUrl: (tmdbId: string, season: number, episode: number) =>
       `https://www.2embed.cc/embed/${tmdbId}/${season}/${episode}`,
   },
-
+  {
+    name: "MoviesAPI",
+    id: "moviesapi",
+    movieUrl: (tmdbId: string) => `https://moviesapi.club/movie/${tmdbId}`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://moviesapi.club/tv/${tmdbId}/${season}/${episode}`,
+  },
   // {
   //   name: "Maple",
   //   id: "maple",

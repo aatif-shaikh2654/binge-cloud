@@ -178,12 +178,19 @@ const Sidebar = () => {
                 isActive ? "text-white" : "text-[#8197a4] hover:text-white/80",
               )}
             >
-              <item.icon
-                className={cn(
-                  "w-5 h-5 transition-all duration-300",
-                  isActive ? "scale-110" : "scale-100",
+              <div className="relative">
+                <item.icon
+                  className={cn(
+                    "w-5 h-5 transition-all duration-300",
+                    isActive ? "scale-110" : "scale-100",
+                  )}
+                />
+                {item.label === "History" && historyCount > 0 && (
+                  <div className="absolute -top-1.5 -right-2 bg-blue-600 text-white text-[8px] font-black px-1 min-w-[14px] h-[14px] rounded-full flex items-center justify-center border border-black shadow-sm">
+                    {historyCount > 99 ? "99+" : historyCount}
+                  </div>
                 )}
-              />
+              </div>
               <span
                 className={cn(
                   "text-[8px] font-bold uppercase tracking-wider font-sans transition-all duration-300",

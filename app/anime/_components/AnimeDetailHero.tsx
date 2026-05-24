@@ -100,18 +100,17 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
             alt={title}
             fill
             sizes="100vw"
-            className="object-cover object-top opacity-60 scale-105 animate-in fade-in duration-1000"
+            className="object-cover object-top opacity-60 animate-in fade-in duration-1000"
             priority
           />
         ) : (
           <div className="absolute inset-0 bg-background" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent hidden md:block" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
       </div>
 
       {/* Hero content */}
-      <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-32 lg:pt-48 flex flex-col items-start text-left lg:flex-row gap-8 lg:gap-20">
+      <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-62 lg:pt-98 flex flex-col items-start text-left lg:flex-row gap-8 lg:gap-20">
         {/* Poster */}
         <div className="w-42 md:w-58 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
           <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-white/20 group">
