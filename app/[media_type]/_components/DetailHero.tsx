@@ -148,25 +148,25 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
         <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-background via-background/30 md:via-background/50 to-transparent" />
       </div>
 
+      {videoKey && (
+        <div className="absolute md:top-10 md:right-8 top-7 right-6 z-50">
+          <Button
+            variant="glass"
+            size="icon-xl"
+            className="size-12 lg:size-16 transition-all duration-300 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border-white/20"
+            onClick={toggleMute}
+          >
+            {isMuted ? (
+              <CiVolumeMute className="w-5! h-5! lg:w-7! lg:h-7! text-white" />
+            ) : (
+              <CiVolumeHigh className="w-5! h-5! lg:w-7! lg:h-7! text-white" />
+            )}
+          </Button>
+        </div>
+      )}
       {/* Hero Section: Poster & Main Info */}
       <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-[45vh] md:pt-[60vh] lg:pt-[642px] flex flex-col items-start text-left lg:flex-row gap-8 lg:gap-20 min-h-[75vh] md:min-h-[90vh] lg:min-h-[95vh] pb-10">
         {/* Mute Button (Top Right) */}
-        {videoKey && (
-          <div className="absolute md:top-10 md:right-8 top-7 right-6 z-50">
-            <Button
-              variant="glass"
-              size="icon-xl"
-              className="size-12 lg:size-16 transition-all duration-300 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border-white/20"
-              onClick={toggleMute}
-            >
-              {isMuted ? (
-                <CiVolumeMute className="w-5! h-5! lg:w-8! lg:h-8! text-white" />
-              ) : (
-                <CiVolumeHigh className="w-5! h-5! lg:w-8! lg:h-8! text-white" />
-              )}
-            </Button>
-          </div>
-        )}
 
         {/* Poster - More subtle animation */}
         <div className="w-32 md:w-48 lg:w-64 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
