@@ -1,4 +1,3 @@
-import connectToDatabase from "@/lib/db";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextRequest, NextResponse } from "next/server";
@@ -56,8 +55,6 @@ export function AsyncWrapper(
           throw new ErrorHandler(429, "Too Many Requests");
         }
       }
-
-      await connectToDatabase();
       return await handler(req);
     } catch (error) {
       if (error instanceof ErrorHandler) {
