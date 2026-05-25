@@ -184,34 +184,46 @@ const MovieCard: React.FC<MovieCardProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Base Card */}
-      <Link
-        href={detailUrl}
-        className="group flex flex-col gap-3 cursor-pointer"
-      >
+      {/* Base Card Wrapper */}
+      <div className="group flex flex-col gap-3 relative">
         <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20">
-          <Image
-            src={
-              currentMediaType === "anime"
-                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (movie.coverImage as any)?.extraLarge ||
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (movie.coverImage as any)?.large ||
-                  movie.poster_path ||
-                  ""
-                : `${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`
-            }
-            alt={movie.title || movie.name || "Movie Poster"}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-          {/* Play Button Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/40 backdrop-blur-[2px] z-20">
+          {/* Poster Image Link */}
+          <Link
+            href={detailUrl}
+            className="absolute inset-0 z-10 cursor-pointer"
+          >
+            <Image
+              src={
+                currentMediaType === "anime"
+                  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (movie.coverImage as any)?.extraLarge ||
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (movie.coverImage as any)?.large ||
+                    movie.poster_path ||
+                    ""
+                  : `${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`
+              }
+              alt={movie.title || movie.name || "Movie Poster"}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          </Link>
+
+          {/* Play Button Overlay (Desktop only when on Watch Later page) */}
+          <div
+            className={cn(
+              "absolute inset-0 items-center justify-center gap-3 transition-all duration-500 z-20 pointer-events-none",
+              isWatchLaterPage
+                ? "hidden md:flex md:opacity-0 md:group-hover:opacity-100 bg-black/40 backdrop-blur-[2px]"
+                : "flex opacity-0 group-hover:opacity-100 bg-black/40 backdrop-blur-[2px]",
+            )}
+          >
             <div
-              className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer"
+              className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer pointer-events-auto"
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 handleWatchClick();
                 router.push(watchUrl);
               }}
@@ -220,7 +232,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
             </div>
             {isWatchLaterPage && (
               <div
-                className="w-14 h-14 bg-white/20 hover:bg-red-600/90 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.4)] hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer"
+                className="w-14 h-14 bg-white/20 hover:bg-red-600/90 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.4)] hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer pointer-events-auto"
                 onClick={handleWatchlistToggle}
                 title="Remove from Watch Later"
               >
@@ -228,18 +240,56 @@ const MovieCard: React.FC<MovieCardProps> = ({
               </div>
             )}
           </div>
-          <div className="absolute top-3 left-3 flex items-center">
+
+          {/* Mobile Play Button overlay (Bottom Right) */}
+          {isWatchLaterPage && (
+            <div className="absolute bottom-3 right-3 flex md:hidden items-center z-20">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleWatchClick();
+                  router.push(watchUrl);
+                }}
+                className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(37,99,235,0.5)] cursor-pointer active:scale-90 transition-transform"
+              >
+                <FaPlay className="text-white text-[10px] ml-0.5" />
+              </button>
+            </div>
+          )}
+
+          <div className="absolute top-3 left-3 flex items-center z-20 pointer-events-none">
             <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
               {currentMediaType}
             </span>
           </div>
-          <div className="absolute top-3 right-3 flex items-center">
-            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-md px-2 py-1 flex items-center gap-1">
-              <Star className="w-3 h-3 text-green-500 fill-green-500" />
-              <span className="text-[10px] font-black text-green-500">
-                {rating}%
-              </span>
-            </div>
+          <div className="absolute top-3 right-3 flex items-center z-20">
+            {isWatchLaterPage ? (
+              <>
+                {/* Desktop: Rating Badge */}
+                <div className="hidden md:flex bg-black/60 backdrop-blur-md border border-white/10 rounded-md px-2 py-1 items-center gap-1 pointer-events-none">
+                  <Star className="w-3 h-3 text-green-500 fill-green-500" />
+                  <span className="text-[10px] font-black text-green-500">
+                    {rating}%
+                  </span>
+                </div>
+                {/* Mobile: Remove Button */}
+                <button
+                  onClick={handleWatchlistToggle}
+                  className="flex md:hidden bg-red-500 backdrop-blur-md border border-white/15 rounded-md p-1.5 items-center justify-center cursor-pointer active:scale-90 transition-transform"
+                  title="Remove from Watch Later"
+                >
+                  <BookmarkMinus className="w-3.5 h-3.5 text-white" />
+                </button>
+              </>
+            ) : (
+              <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-md px-2 py-1 flex items-center gap-1 pointer-events-none">
+                <Star className="w-3 h-3 text-green-500 fill-green-500" />
+                <span className="text-[10px] font-black text-green-500">
+                  {rating}%
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -264,15 +314,16 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </div>
         )}
 
-        <div className="flex flex-col gap-0.5 px-1">
-          <h3 className="text-sm font-bold text-white line-clamp-1">
+        {/* Title and metadata block wrapped in its own Link */}
+        <Link href={detailUrl} className="flex flex-col gap-0.5 px-1 z-10 cursor-pointer">
+          <h3 className="text-sm font-bold text-white line-clamp-1 group-hover:text-blue-500 transition-colors">
             {movie.title || movie.name}
           </h3>
           <p className="text-[11px] font-medium text-white/40 tracking-tight">
             {releaseYear} • {currentMediaType}
           </p>
-        </div>
-      </Link>
+        </Link>
+      </div>
 
       {/* Hover Card Overlay */}
       {showHoverCard && (
