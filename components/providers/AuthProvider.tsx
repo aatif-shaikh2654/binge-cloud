@@ -31,14 +31,16 @@ const getCookie = (name: string): string | null => {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const [hasToken, setHasToken] = useState<boolean>(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const hasSyncedHistory = React.useRef(false);
   const hasSyncedWatchlist = React.useRef(false);
 
   // Read cookie on mount
   useEffect(() => {
     if (getCookie("token")) {
-      setTimeout(() => setHasToken(true), 0);
+      setHasToken(true); // eslint-disable-line react-hooks/set-state-in-effect
     }
+    setIsInitialized(true);
   }, []);
 
   const checkAuth = () => {
@@ -149,8 +151,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     toast.success("Logged out successfully!");
   };
 
-  // We are loading if the user has a token but the API query is still fetching
-  const isLoading = hasToken && isQueryLoading;
+  // We are loading if we haven't checked cookies on mount yet, or if the user has a token but the API query is still fetching
+  const isLoading = !isInitialized || (hasToken && isQueryLoading);
   const isAuthenticated = !!user;
 
   return (
