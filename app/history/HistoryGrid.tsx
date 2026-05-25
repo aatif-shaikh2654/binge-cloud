@@ -8,18 +8,29 @@ import { Clock, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const HistoryGrid = () => {
+interface HistoryGridProps {
+  initialHistory?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+const HistoryGrid = ({ initialHistory }: HistoryGridProps) => {
   const { history, clearHistory } = useHistoryStore();
   const [isClient, setIsClient] = useState(false);
   const { user, isLoading: isAuthLoading } = useAuth();
+  const queryClient = useQueryClient();
 
   const { isLoading: isHistoryLoading } = useQuery({
     queryKey: ["history", user?.id],
     enabled: !!user,
   });
+
+  // Seed React Query cache and Zustand store with server-side fetched data on initial render
+  if (isClient && user && initialHistory && !queryClient.getQueryData(["history", user.id])) {
+    queryClient.setQueryData(["history", user.id], initialHistory);
+    useHistoryStore.getState().setHistory(initialHistory);
+  }
 
   useEffect(() => {
     setIsClient(true); // eslint-disable-line react-hooks/set-state-in-effect

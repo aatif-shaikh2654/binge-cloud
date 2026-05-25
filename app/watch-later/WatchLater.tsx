@@ -6,20 +6,31 @@ import PageHeader from "@/components/common/PageHeader";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const WatchLater = () => {
+interface WatchLaterProps {
+  initialWatchlist?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+const WatchLater = ({ initialWatchlist }: WatchLaterProps) => {
   const { watchlist } = useWatchlistStore();
   const [isClient, setIsClient] = useState(false);
   const { user, isLoading: isAuthLoading } = useAuth();
+  const queryClient = useQueryClient();
 
   const { isLoading: isWatchlistLoading } = useQuery({
     queryKey: ["watchlist", user?.id],
     enabled: !!user,
   });
+
+  // Seed React Query cache and Zustand store with server-side fetched data on initial render
+  if (isClient && user && initialWatchlist && !queryClient.getQueryData(["watchlist", user.id])) {
+    queryClient.setQueryData(["watchlist", user.id], initialWatchlist);
+    useWatchlistStore.getState().setWatchlist(initialWatchlist);
+  }
 
   useEffect(() => {
     setIsClient(true); // eslint-disable-line react-hooks/set-state-in-effect
