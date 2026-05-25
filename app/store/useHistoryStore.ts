@@ -31,10 +31,21 @@ interface HistoryState {
 // Custom storage for IndexedDB using idb-keyval
 const idbStorage = {
   getItem: async (name: string): Promise<string | null> => {
+    const isClient = typeof document !== "undefined";
+    const isLoggedIn = isClient && document.cookie.includes("token=");
+    if (isLoggedIn) {
+      return null;
+    }
     const value = await get(name);
     return value ? JSON.stringify(value) : null;
   },
   setItem: async (name: string, value: string): Promise<void> => {
+    const isClient = typeof document !== "undefined";
+    const isLoggedIn = isClient && document.cookie.includes("token=");
+    if (isLoggedIn) {
+      await del(name);
+      return;
+    }
     await set(name, JSON.parse(value));
   },
   removeItem: async (name: string): Promise<void> => {

@@ -7,16 +7,45 @@ import { Button } from "@/components/ui/button";
 import { Clock, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const HistoryGrid = () => {
   const { history, clearHistory } = useHistoryStore();
   const [isClient, setIsClient] = useState(false);
+  const { user, isLoading: isAuthLoading } = useAuth();
+
+  const { isLoading: isHistoryLoading } = useQuery({
+    queryKey: ["history", user?.id],
+    enabled: !!user,
+  });
 
   useEffect(() => {
     setIsClient(true); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
   if (!isClient) return null;
+
+  const showSkeleton = isAuthLoading || (!!user && isHistoryLoading);
+
+  if (showSkeleton) {
+    return (
+      <div className="space-y-10">
+        <PageHeader
+          title="Watch History"
+          description="Manage and resume your recently watched content."
+          className="px-0 lg:px-0"
+        />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="w-full aspect-video rounded-2xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (history.length === 0) {
     return (

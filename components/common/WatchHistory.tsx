@@ -23,6 +23,9 @@ const WatchHistorySkeleton = () => (
   </section>
 );
 
+import { useAuth } from "@/components/providers/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+
 const WatchHistorySwiper = dynamic(() => import("./WatchHistorySwiper"), {
   ssr: false,
   loading: () => <WatchHistorySkeleton />,
@@ -34,6 +37,18 @@ interface WatchHistoryProps {
 
 const WatchHistory = ({ filterType }: WatchHistoryProps) => {
   const { history } = useHistoryStore();
+  const { user, isLoading: isAuthLoading } = useAuth();
+
+  const { isLoading: isHistoryLoading } = useQuery({
+    queryKey: ["history", user?.id],
+    enabled: !!user,
+  });
+
+  const showSkeleton = isAuthLoading || (!!user && isHistoryLoading);
+
+  if (showSkeleton) {
+    return <WatchHistorySkeleton />;
+  }
 
   const filteredHistory = filterType
     ? history.filter((item) => item.media_type === filterType)

@@ -31,6 +31,8 @@ const getCookie = (name: string): string | null => {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const [hasToken, setHasToken] = useState<boolean>(false);
+  const hasSyncedHistory = React.useRef(false);
+  const hasSyncedWatchlist = React.useRef(false);
 
   // Read cookie on mount
   useEffect(() => {
@@ -66,6 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setHasToken(false);
       }, 0);
       queryClient.setQueryData(["authUser"], null);
+      hasSyncedHistory.current = false;
+      hasSyncedWatchlist.current = false;
     }
   }, [isError, queryClient]);
 
@@ -94,9 +98,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     queryKey: ["history", user?.id],
     queryFn: async () => {
       const currentHistory = useHistoryStore.getState().history;
-      if (currentHistory.length > 0) {
+      if (!hasSyncedHistory.current && currentHistory.length > 0) {
+        hasSyncedHistory.current = true;
         return syncHistoryMutation.mutateAsync(currentHistory);
       }
+      hasSyncedHistory.current = true;
       return getHistory();
     },
     enabled: !!user,
@@ -106,9 +112,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     queryKey: ["watchlist", user?.id],
     queryFn: async () => {
       const currentWatchlist = useWatchlistStore.getState().watchlist;
-      if (currentWatchlist.length > 0) {
+      if (!hasSyncedWatchlist.current && currentWatchlist.length > 0) {
+        hasSyncedWatchlist.current = true;
         return syncWatchlistMutation.mutateAsync(currentWatchlist);
       }
+      hasSyncedWatchlist.current = true;
       return getWatchlist();
     },
     enabled: !!user,
@@ -134,6 +142,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     setHasToken(false);
     queryClient.setQueryData(["authUser"], null);
+    hasSyncedHistory.current = false;
+    hasSyncedWatchlist.current = false;
     useHistoryStore.getState().clearHistory();
     useWatchlistStore.getState().setWatchlist([]);
     toast.success("Logged out successfully!");
