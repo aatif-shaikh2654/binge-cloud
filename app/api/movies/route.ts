@@ -12,10 +12,7 @@ export const GET = AsyncWrapper(async (request: NextRequest) => {
   const endpoint = searchParams.get("endpoint");
 
   if (!endpoint) {
-    throw new ErrorHandler(
-      400,
-      'The "endpoint" parameter is required (e.g., ?endpoint=3/movie/popular)',
-    );
+    throw new ErrorHandler(400, "The endpoint parameter is required");
   }
 
   // Ensure endpoint starts with a slash if not already present
@@ -42,7 +39,7 @@ export const GET = AsyncWrapper(async (request: NextRequest) => {
     const errorData = await response.json().catch(() => ({}));
     throw new ErrorHandler(
       response.status,
-      `TMDB API responded with status ${response.status}`,
+      `API responded with status ${response.status}`,
       errorData,
     );
   }
