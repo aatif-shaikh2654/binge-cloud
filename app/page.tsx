@@ -6,12 +6,16 @@ import {
   getTrendingMedia,
   getTrendingMovies,
 } from "./services/all.service";
+import { getHistory } from "@/app/actions";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   // Fetch trending movies on the server
   const trendingData = await getTrendingMovies();
   const movies = trendingData?.results || [];
+
+  // Fetch watch history on the server
+  const initialHistory = await getHistory();
 
   // Fetch popular movies and tv series
   const popularMoviesData = await getMediaList("movie", "popular");
@@ -29,7 +33,7 @@ export default async function Home() {
   return (
     <div className="flex flex-col w-full min-h-screen">
       <Herosection movies={movies} />
-      <WatchHistory />
+      <WatchHistory initialHistory={initialHistory || undefined} />
       <MediaSlider title="Trending" movies={movies} />
       <MediaSlider
         media_type="movie"

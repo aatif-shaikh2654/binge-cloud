@@ -24,7 +24,8 @@ const WatchHistorySkeleton = () => (
 );
 
 import { useAuth } from "@/components/providers/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 const WatchHistorySwiper = dynamic(() => import("./WatchHistorySwiper"), {
   ssr: false,
@@ -33,16 +34,36 @@ const WatchHistorySwiper = dynamic(() => import("./WatchHistorySwiper"), {
 
 interface WatchHistoryProps {
   filterType?: "anime" | "movie" | "tv";
+  initialHistory?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-const WatchHistory = ({ filterType }: WatchHistoryProps) => {
+const WatchHistory = ({ filterType, initialHistory }: WatchHistoryProps) => {
   const { history } = useHistoryStore();
+  const [isClient, setIsClient] = useState(false);
   const { user, isLoading: isAuthLoading } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Seed React Query cache and Zustand store with server-side fetched data on initial render
+  if (
+    isClient &&
+    user &&
+    initialHistory &&
+    !queryClient.getQueryData(["history", user.id])
+  ) {
+    queryClient.setQueryData(["history", user.id], initialHistory);
+    useHistoryStore.getState().setHistory(initialHistory);
+  }
+
+  useEffect(() => {
+    setIsClient(true); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []);
 
   const { isLoading: isHistoryLoading } = useQuery({
     queryKey: ["history", user?.id],
     enabled: !!user,
   });
+
+  if (!isClient) return null;
 
   const showSkeleton = isAuthLoading || (!!user && isHistoryLoading);
 

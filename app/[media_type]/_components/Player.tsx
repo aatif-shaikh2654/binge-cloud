@@ -38,6 +38,18 @@ const Player: React.FC<PlayerProps> = ({
   const latestProgressRef = useRef({ currentTime: 0, duration: 0 });
   const lastSaveTimeRef = useRef(0);
 
+  // Sync props to ref to avoid ESLint rules about refs in render and race conditions
+  const propsRef = useRef({ id, tmdbType, currentServer, season, episode, details, seasons, onEpisodeChange, addToHistory });
+  useEffect(() => {
+    propsRef.current = { id, tmdbType, currentServer, season, episode, details, seasons, onEpisodeChange, addToHistory };
+  });
+
+  // Reset progress tracking refs when navigating to a new episode/season/movie
+  useEffect(() => {
+    latestProgressRef.current = { currentTime: 0, duration: 0 };
+    lastSaveTimeRef.current = Date.now();
+  }, [id, tmdbType, season, episode, currentServer.id]);
+
   // Calculate Initial Start Time (only once per media/episode)
   const initialStartTime = useMemo(() => {
     const savedItem = history.find(
@@ -80,29 +92,27 @@ const Player: React.FC<PlayerProps> = ({
 
   // Player Events Listener
   useEffect(() => {
-    latestProgressRef.current = { currentTime: 0, duration: 0 };
-    lastSaveTimeRef.current = Date.now();
-
     const trackProgress = (
       currentTime: number,
       duration: number,
       force = false,
     ) => {
-      if (!details) return;
+      const currentProps = propsRef.current;
+      if (!currentProps.details) return;
       latestProgressRef.current = { currentTime, duration };
       const now = Date.now();
 
       if (force || now - lastSaveTimeRef.current >= 5 * 60 * 1000) {
         lastSaveTimeRef.current = now;
-        addToHistory({
-          id: Number(id),
-          media_type: tmdbType,
-          title: details.title || details.name || "Unknown",
-          poster_path: details.poster_path || "",
-          backdrop_path: details.backdrop_path || "",
-          server: currentServer.id,
-          season: tmdbType === "tv" ? season : undefined,
-          episode: tmdbType === "tv" ? episode : undefined,
+        currentProps.addToHistory({
+          id: Number(currentProps.id),
+          media_type: currentProps.tmdbType,
+          title: currentProps.details.title || currentProps.details.name || "Unknown",
+          poster_path: currentProps.details.poster_path || "",
+          backdrop_path: currentProps.details.backdrop_path || "",
+          server: currentProps.currentServer.id,
+          season: currentProps.tmdbType === "tv" ? currentProps.season : undefined,
+          episode: currentProps.tmdbType === "tv" ? currentProps.episode : undefined,
           watchedAt: Date.now(),
           currentTime,
           duration,
@@ -121,6 +131,8 @@ const Player: React.FC<PlayerProps> = ({
         }
       }
 
+      const currentProps = propsRef.current;
+
       // Handle Vidnest Player Events (MEDIA_DATA)
       if (
         event.origin === "https://vidnest.fun" &&
@@ -135,22 +147,22 @@ const Player: React.FC<PlayerProps> = ({
 
           // Auto-next for TV shows on completion
           if (
-            tmdbType === "tv" &&
+            currentProps.tmdbType === "tv" &&
             duration > 0 &&
             currentTime >= duration - 1
           ) {
-            const currentSeasonData = seasons?.find(
-              (s) => s.season_number === season,
+            const currentSeasonData = currentProps.seasons?.find(
+              (s) => s.season_number === currentProps.season,
             );
             if (currentSeasonData) {
-              if (episode < currentSeasonData.episode_count) {
-                onEpisodeChange(season, episode + 1);
+              if (currentProps.episode < currentSeasonData.episode_count) {
+                currentProps.onEpisodeChange(currentProps.season, currentProps.episode + 1);
               } else {
-                const nextSeason = seasons?.find(
-                  (s) => s.season_number === season + 1,
+                const nextSeason = currentProps.seasons?.find(
+                  (s) => s.season_number === currentProps.season + 1,
                 );
                 if (nextSeason) {
-                  onEpisodeChange(season + 1, 1);
+                  currentProps.onEpisodeChange(currentProps.season + 1, 1);
                 }
               }
             }
@@ -167,17 +179,7 @@ const Player: React.FC<PlayerProps> = ({
         trackProgress(currentTime, duration, true);
       }
     };
-  }, [
-    id,
-    tmdbType,
-    details,
-    currentServer.id,
-    season,
-    episode,
-    addToHistory,
-    seasons,
-    onEpisodeChange,
-  ]);
+  }, []);
 
   // Initial history entry
   useEffect(() => {

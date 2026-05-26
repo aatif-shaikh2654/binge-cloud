@@ -30,6 +30,34 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
   const latestProgressRef = useRef({ currentTime: 0, duration: 0 });
   const lastSaveTimeRef = useRef(0);
 
+  // Sync props to ref to avoid ESLint rules about refs in render and race conditions
+  const propsRef = useRef({
+    id,
+    ep,
+    currentServer,
+    initialDetails,
+    addToHistory,
+    totalCount,
+    navigate,
+  });
+  useEffect(() => {
+    propsRef.current = {
+      id,
+      ep,
+      currentServer,
+      initialDetails,
+      addToHistory,
+      totalCount,
+      navigate,
+    };
+  });
+
+  // Reset progress tracking refs when navigating to a new episode/server
+  useEffect(() => {
+    latestProgressRef.current = { currentTime: 0, duration: 0 };
+    lastSaveTimeRef.current = Date.now();
+  }, [id, ep, currentServer.id]);
+
   // Background Image for Loader
   const backdropImage =
     initialDetails.bannerImage ||
@@ -55,7 +83,8 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
   // Apply Resume Parameters for Server 3 & Server 4 (Vidnest & Vidnest Pahe)
   if (
-    (currentServer.id.startsWith("server-3") || currentServer.id.startsWith("server-4")) &&
+    (currentServer.id.startsWith("server-3") ||
+      currentServer.id.startsWith("server-4")) &&
     initialStartTime !== null &&
     initialStartTime > 0
   ) {
@@ -97,9 +126,6 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
   // Player Events Listener
   useEffect(() => {
-    latestProgressRef.current = { currentTime: 0, duration: 0 };
-    lastSaveTimeRef.current = Date.now();
-
     const trackProgress = (
       currentTime: number,
       duration: number,
@@ -110,25 +136,26 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
       if (force || now - lastSaveTimeRef.current >= 5 * 60 * 1000) {
         lastSaveTimeRef.current = now;
+        const currentProps = propsRef.current;
         const title =
-          initialDetails.title.english ||
-          initialDetails.title.romaji ||
-          initialDetails.title.native ||
+          currentProps.initialDetails.title.english ||
+          currentProps.initialDetails.title.romaji ||
+          currentProps.initialDetails.title.native ||
           "Unknown Anime";
         const poster =
-          initialDetails.coverImage.extraLarge ||
-          initialDetails.coverImage.large ||
+          currentProps.initialDetails.coverImage.extraLarge ||
+          currentProps.initialDetails.coverImage.large ||
           "";
-        const backdrop = initialDetails.bannerImage || poster;
+        const backdrop = currentProps.initialDetails.bannerImage || poster;
 
-        addToHistory({
-          id: Number(id),
+        currentProps.addToHistory({
+          id: Number(currentProps.id),
           media_type: "anime",
           title,
           poster_path: poster,
           backdrop_path: backdrop,
-          server: currentServer.id,
-          episode: ep,
+          server: currentProps.currentServer.id,
+          episode: currentProps.ep,
           watchedAt: Date.now(),
           currentTime,
           duration,
@@ -147,6 +174,8 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
         }
       }
 
+      const currentProps = propsRef.current;
+
       // 1. Handle Vidnest Player Events (MEDIA_DATA)
       if (
         event.origin === "https://vidnest.fun" &&
@@ -161,12 +190,8 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
           // Auto-next on completion
           if (duration > 0 && currentTime >= duration - 1) {
-            if (ep < totalCount) {
-              console.log(
-                "Vidnest complete. Auto-navigating to episode",
-                ep + 1,
-              );
-              navigate(ep + 1);
+            if (currentProps.ep < currentProps.totalCount) {
+              currentProps.navigate(currentProps.ep + 1);
             }
           }
         }
@@ -185,12 +210,8 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
           eventType === "complete" ||
           (duration > 0 && currentTime >= duration - 1)
         ) {
-          if (ep < totalCount) {
-            console.log(
-              "Tryembed complete. Auto-navigating to episode",
-              ep + 1,
-            );
-            navigate(ep + 1);
+          if (currentProps.ep < currentProps.totalCount) {
+            currentProps.navigate(currentProps.ep + 1);
           }
         }
 
@@ -203,9 +224,8 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
       // 3. Handle Legacy Player Events (Megaplay etc)
       if (data.event === "complete") {
-        if (ep < totalCount) {
-          console.log("Megaplay complete. Auto-navigating to episode", ep + 1);
-          navigate(ep + 1);
+        if (currentProps.ep < currentProps.totalCount) {
+          currentProps.navigate(currentProps.ep + 1);
         }
       }
 
@@ -227,15 +247,7 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
         trackProgress(currentTime, duration, true);
       }
     };
-  }, [
-    id,
-    ep,
-    totalCount,
-    navigate,
-    addToHistory,
-    initialDetails,
-    currentServer.id,
-  ]);
+  }, []);
 
   return (
     <div className="relative w-full h-full">

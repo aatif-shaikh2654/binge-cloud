@@ -7,14 +7,16 @@ import {
   getTopRatedAnime,
   getTrendingAnime,
 } from "../services/anilist.service";
+import { getHistory } from "@/app/actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AnimePage() {
-  const [trendingData, popularData, topRatedData] = await Promise.all([
+  const [trendingData, popularData, topRatedData, initialHistory] = await Promise.all([
     getTrendingAnime(1, 20),
     getPopularAnime(1, 20),
     getTopRatedAnime(1, 20),
+    getHistory(),
   ]);
 
   const trending = trendingData.media ?? [];
@@ -28,7 +30,7 @@ export default async function AnimePage() {
 
       <AnimeHero anime={trending} />
 
-      <WatchHistory filterType="anime" />
+      <WatchHistory filterType="anime" initialHistory={initialHistory || undefined} />
 
       <div className="mt-8 space-y-2">
         <AnimeSlider

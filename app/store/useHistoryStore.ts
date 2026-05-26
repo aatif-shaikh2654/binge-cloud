@@ -60,12 +60,35 @@ export const useHistoryStore = create<HistoryState>()(
       setHistory: (items) => set({ history: items }),
       addToHistory: (item) => {
         set((state) => {
+          const existingItem = state.history.find(
+            (h) => h.id === item.id && h.media_type === item.media_type,
+          );
+
+          const mergedItem = { ...item };
+          if (existingItem) {
+            const isSameEpisode =
+              item.media_type === "anime"
+                ? existingItem.episode === item.episode
+                : item.media_type === "tv"
+                ? existingItem.season === item.season && existingItem.episode === item.episode
+                : true;
+
+            if (isSameEpisode) {
+              if (mergedItem.currentTime === undefined && existingItem.currentTime !== undefined) {
+                mergedItem.currentTime = existingItem.currentTime;
+              }
+              if (mergedItem.duration === undefined && existingItem.duration !== undefined) {
+                mergedItem.duration = existingItem.duration;
+              }
+            }
+          }
+
           // Remove existing item if it exists (check both id and media_type)
           const filteredHistory = state.history.filter(
             (h) => !(h.id === item.id && h.media_type === item.media_type),
           );
           // Add new item and sort by watchedAt descending
-          const newHistory = [item, ...filteredHistory].sort(
+          const newHistory = [mergedItem, ...filteredHistory].sort(
             (a, b) => b.watchedAt - a.watchedAt,
           );
           return {
