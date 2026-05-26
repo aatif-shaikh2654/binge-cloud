@@ -6,6 +6,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
@@ -65,6 +66,7 @@ export default function RootLayout({
           manrope.className,
         )}
       >
+        <Analytics />
         <DisableInspect />
         <BravePrompt />
         <NextTopLoader
@@ -83,9 +85,7 @@ export default function RootLayout({
           <AuthProvider>
             <Sidebar />
             <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
-              <main className="flex-1">
-                {children}
-              </main>
+              <main className="flex-1">{children}</main>
               <Footer />
             </div>
           </AuthProvider>
