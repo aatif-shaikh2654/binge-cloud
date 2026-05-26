@@ -60,9 +60,9 @@ const Player: React.FC<PlayerProps> = ({
       ? currentServer.tvUrl(id, season, episode)
       : currentServer.movieUrl(id);
 
-  // Apply Resume Parameters for Vidnest
+  // Apply Resume Parameters for Server 1 (Vidnest)
   if (
-    currentServer.id === "vidnest" &&
+    currentServer.id === "server-1" &&
     initialStartTime !== null &&
     initialStartTime > 0
   ) {

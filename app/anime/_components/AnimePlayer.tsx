@@ -53,9 +53,9 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
   let videoUrl = `${currentServer.baseUrl}/${id}/${ep}/${currentServer.lang}`;
 
-  // Apply Resume Parameters for Vidnest
+  // Apply Resume Parameters for Server 3 & Server 4 (Vidnest & Vidnest Pahe)
   if (
-    currentServer.id.startsWith("vidnest") &&
+    (currentServer.id.startsWith("server-3") || currentServer.id.startsWith("server-4")) &&
     initialStartTime !== null &&
     initialStartTime > 0
   ) {
