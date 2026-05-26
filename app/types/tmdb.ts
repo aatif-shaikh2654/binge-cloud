@@ -79,6 +79,25 @@ export interface TMDBCreditsResponse {
   cast: TMDBCast[];
 }
 
+export interface TMDBPerson {
+  id: number;
+  name: string;
+  biography: string;
+  profile_path: string | null;
+  birthday: string | null;
+  deathday: string | null;
+  place_of_birth: string | null;
+  known_for_department: string;
+  also_known_as?: string[];
+  popularity?: number;
+}
+
+export interface TMDBPersonCredits {
+  id: number;
+  cast: TMDBMovie[];
+  crew: TMDBMovie[];
+}
+
 export interface TMDBResponse<T> {
   results: T[];
   page: number;

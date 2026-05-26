@@ -315,7 +315,10 @@ const MovieCard: React.FC<MovieCardProps> = ({
         )}
 
         {/* Title and metadata block wrapped in its own Link */}
-        <Link href={detailUrl} className="flex flex-col gap-0.5 px-1 z-10 cursor-pointer">
+        <Link
+          href={detailUrl}
+          className="flex flex-col gap-0.5 px-1 z-10 cursor-pointer"
+        >
           <h3 className="text-sm font-bold text-white line-clamp-1 group-hover:text-blue-500 transition-colors">
             {movie.title || movie.name}
           </h3>
@@ -442,15 +445,13 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 <span className="text-white/40 text-[10px] font-bold border border-white/10 px-1.5 py-0.5 rounded uppercase">
                   {releaseYear}
                 </span>
+                <span className="uppercase text-[10px] border border-blue-500/50 font-black text-blue-500 px-1.5 py-0.5 rounded">
+                  {mediaType}
+                </span>
               </div>
               <h3 className="text-lg font-black text-white leading-tight truncate mb-2">
                 {movie.title || movie.name}
               </h3>
-              {movie?.overview && (
-                <p className="text-white/60 text-xs line-clamp-2 leading-relaxed font-medium">
-                  {movie?.overview}
-                </p>
-              )}
             </Link>
           </div>
         </div>

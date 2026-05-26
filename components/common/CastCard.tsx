@@ -4,6 +4,7 @@ import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { type TMDBCast } from "@/app/types/tmdb";
 import { Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 interface CastCardProps {
@@ -13,8 +14,9 @@ interface CastCardProps {
 
 const CastCard: React.FC<CastCardProps> = ({ person, index }) => {
   return (
-    <div
-      className="group space-y-4 animate-in fade-in slide-in-from-bottom-10 duration-700 h-full"
+    <Link
+      href={`/person/${person.id}`}
+      className="group block space-y-4 animate-in fade-in slide-in-from-bottom-10 duration-700 h-full cursor-pointer"
       style={{
         animationDelay: `${index * 50}ms`,
         animationFillMode: "backwards",
@@ -44,7 +46,7 @@ const CastCard: React.FC<CastCardProps> = ({ person, index }) => {
       <h4 className="text-sm font-black text-white group-hover:text-blue-500 transition-colors tracking-tight">
         {person.name}
       </h4>
-    </div>
+    </Link>
   );
 };
 

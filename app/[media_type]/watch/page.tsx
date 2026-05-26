@@ -1,8 +1,8 @@
 import { getMediaDetails } from "@/app/services/all.service";
+import { type MediaType } from "@/app/types/common";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Watch from "./Watch";
-import { type MediaType } from "@/app/types/common";
 
 export async function generateMetadata({
   params,
@@ -23,9 +23,19 @@ export async function generateMetadata({
     if (!details) return { title: "Watch" };
 
     const title = details.title || details.name;
+    const imageUrl =
+      details.backdrop_path || details.poster_path
+        ? `https://image.tmdb.org/t/p/w1280${details.backdrop_path || details.poster_path}`
+        : undefined;
+
     return {
       title: `Watching - ${title}`,
       description: `Now streaming ${title} on Binge Cloud.`,
+      openGraph: imageUrl
+        ? {
+            images: [imageUrl],
+          }
+        : undefined,
     };
   } catch {
     return { title: "Watch" };
@@ -59,5 +69,7 @@ export default async function WatchPage({ params, searchParams }: PageProps) {
   const details = await getMediaDetails(id, tmdbType);
   const seasons = details?.seasons;
 
-  return <Watch id={id} tmdbType={tmdbType} seasons={seasons} details={details} />;
+  return (
+    <Watch id={id} tmdbType={tmdbType} seasons={seasons} details={details} />
+  );
 }

@@ -5,6 +5,8 @@ import {
   type TMDBMovie,
   type TMDBResponse,
   type TMDBSeasonDetails,
+  type TMDBPerson,
+  type TMDBPersonCredits,
 } from "@/app/types/tmdb";
 import { ApiService } from "./api.service";
 import { tmdbInstance } from "./axios";
@@ -227,5 +229,29 @@ export const getSimilarMedia = async (
     method: "GET",
     url: `/${type}/${id}/recommendations`,
     params: { page },
+  });
+};
+
+/**
+ * Service to fetch person details
+ */
+export const getPersonDetails = async (
+  id: string | number,
+): Promise<TMDBPerson> => {
+  return ApiService<TMDBPerson>({
+    method: "GET",
+    url: `/person/${id}`,
+  });
+};
+
+/**
+ * Service to fetch person combined credits (movies and TV shows)
+ */
+export const getPersonCredits = async (
+  id: string | number,
+): Promise<TMDBPersonCredits> => {
+  return ApiService<TMDBPersonCredits>({
+    method: "GET",
+    url: `/person/${id}/combined_credits`,
   });
 };
