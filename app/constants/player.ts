@@ -17,10 +17,9 @@ export const PLAYER_SERVERS: PlayerServer[] = [
   {
     name: "Server 1",
     id: "server-1",
-    movieUrl: (tmdbId: string) =>
-      `https://vidup.to/movie/${tmdbId}?theme=2563eb&autoPlay=true`,
+    movieUrl: (tmdbId: string) => `https://vidnest.fun/movie/${tmdbId}`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://vidup.to/tv/${tmdbId}/${season}/${episode}?theme=2563eb&autoPlay=true&nextButton=true&autoNext=true`,
+      `https://vidnest.fun/tv/${tmdbId}/${season}/${episode}`,
   },
   {
     name: "Server 2",

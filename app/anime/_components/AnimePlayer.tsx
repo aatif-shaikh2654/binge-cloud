@@ -176,22 +176,66 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
       const currentProps = propsRef.current;
 
-      // 1. Handle Vidnest Player Events (MEDIA_DATA)
-      if (
-        event.origin === "https://vidnest.fun" &&
-        data.type === "MEDIA_DATA"
-      ) {
-        const mediaData = data.data;
-        const currentTime = mediaData.currentTime;
-        const duration = mediaData.duration;
+      // 1. Handle Vidnest Player Events (PLAYER_EVENT and MEDIA_DATA)
+      if (event.origin === "https://vidnest.fun") {
+        if (data.type === "PLAYER_EVENT") {
+          const { currentTime, duration } = data.data || {};
+          if (currentTime !== undefined && duration !== undefined) {
+            trackProgress(currentTime, duration);
 
-        if (currentTime !== undefined && duration !== undefined) {
-          trackProgress(currentTime, duration);
+            // Auto-next on completion
+            if (duration > 0 && currentTime >= duration - 1) {
+              if (currentProps.ep < currentProps.totalCount) {
+                currentProps.navigate(currentProps.ep + 1);
+              }
+            }
+          }
+        } else if (data.type === "MEDIA_DATA") {
+          const mediaData = data.data;
 
-          // Auto-next on completion
-          if (duration > 0 && currentTime >= duration - 1) {
-            if (currentProps.ep < currentProps.totalCount) {
-              currentProps.navigate(currentProps.ep + 1);
+          // Save progress to local storage as requested by docs
+          try {
+            localStorage.setItem("vidNestProgress", JSON.stringify(mediaData));
+          } catch (e) {
+            console.error("Failed to save vidNestProgress to localStorage", e);
+          }
+
+          let currentTime: number | undefined;
+          let duration: number | undefined;
+
+          const episodeKey = `s1e${currentProps.ep}`;
+          const episodeKeySimple = `e${currentProps.ep}`;
+          const episodeKeyNum = `${currentProps.ep}`;
+
+          const animeProgress =
+            mediaData?.[currentProps.id]?.show_progress?.[episodeKey]?.progress ||
+            mediaData?.[currentProps.id]?.show_progress?.[episodeKeySimple]?.progress ||
+            mediaData?.[currentProps.id]?.show_progress?.[episodeKeyNum]?.progress ||
+            mediaData?.show_progress?.[episodeKey]?.progress ||
+            mediaData?.show_progress?.[episodeKeySimple]?.progress ||
+            mediaData?.show_progress?.[episodeKeyNum]?.progress ||
+            mediaData?.[currentProps.id]?.progress ||
+            mediaData?.progress;
+
+          if (animeProgress) {
+            currentTime = animeProgress.watched;
+            duration = animeProgress.duration;
+          }
+
+          // Fallback to top-level properties if available directly
+          if (currentTime === undefined && duration === undefined && mediaData) {
+            currentTime = mediaData.currentTime ?? mediaData.watched;
+            duration = mediaData.duration;
+          }
+
+          if (currentTime !== undefined && duration !== undefined) {
+            trackProgress(currentTime, duration);
+
+            // Auto-next on completion
+            if (duration > 0 && currentTime >= duration - 1) {
+              if (currentProps.ep < currentProps.totalCount) {
+                currentProps.navigate(currentProps.ep + 1);
+              }
             }
           }
         }

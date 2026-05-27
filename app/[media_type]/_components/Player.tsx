@@ -39,9 +39,29 @@ const Player: React.FC<PlayerProps> = ({
   const lastSaveTimeRef = useRef(0);
 
   // Sync props to ref to avoid ESLint rules about refs in render and race conditions
-  const propsRef = useRef({ id, tmdbType, currentServer, season, episode, details, seasons, onEpisodeChange, addToHistory });
+  const propsRef = useRef({
+    id,
+    tmdbType,
+    currentServer,
+    season,
+    episode,
+    details,
+    seasons,
+    onEpisodeChange,
+    addToHistory,
+  });
   useEffect(() => {
-    propsRef.current = { id, tmdbType, currentServer, season, episode, details, seasons, onEpisodeChange, addToHistory };
+    propsRef.current = {
+      id,
+      tmdbType,
+      currentServer,
+      season,
+      episode,
+      details,
+      seasons,
+      onEpisodeChange,
+      addToHistory,
+    };
   });
 
   // Reset progress tracking refs when navigating to a new episode/season/movie
@@ -72,14 +92,15 @@ const Player: React.FC<PlayerProps> = ({
       ? currentServer.tvUrl(id, season, episode)
       : currentServer.movieUrl(id);
 
-  // Apply Resume Parameters for Server 1 (vidup.to)
+  // Apply Resume Parameters for Server 1 (Vidnest)
   if (
     currentServer.id === "server-1" &&
     initialStartTime !== null &&
     initialStartTime > 0
   ) {
+    const paramName = tmdbType === "tv" ? "progress" : "startAt";
     const separator = videoUrl.includes("?") ? "&" : "?";
-    videoUrl += `${separator}startAt=${initialStartTime}`;
+    videoUrl += `${separator}${paramName}=${initialStartTime}`;
   }
 
   // Reset video loaded state when URL changes (Sync state with URL during render)
@@ -106,79 +127,21 @@ const Player: React.FC<PlayerProps> = ({
         currentProps.addToHistory({
           id: Number(currentProps.id),
           media_type: currentProps.tmdbType,
-          title: currentProps.details.title || currentProps.details.name || "Unknown",
+          title:
+            currentProps.details.title ||
+            currentProps.details.name ||
+            "Unknown",
           poster_path: currentProps.details.poster_path || "",
           backdrop_path: currentProps.details.backdrop_path || "",
           server: currentProps.currentServer.id,
-          season: currentProps.tmdbType === "tv" ? currentProps.season : undefined,
-          episode: currentProps.tmdbType === "tv" ? currentProps.episode : undefined,
+          season:
+            currentProps.tmdbType === "tv" ? currentProps.season : undefined,
+          episode:
+            currentProps.tmdbType === "tv" ? currentProps.episode : undefined,
           watchedAt: Date.now(),
           currentTime,
           duration,
         });
-      }
-    };
-
-    const updateLocalStorageVidUp = (currentTime: number, duration: number) => {
-      const currentProps = propsRef.current;
-      if (!currentProps.details) return;
-      try {
-        const storedStr = localStorage.getItem("vidUpProgress");
-        const stored = storedStr ? JSON.parse(storedStr) : {};
-        const key = currentProps.tmdbType === "tv" ? `t${currentProps.id}` : `m${currentProps.id}`;
-        
-        const existingItem = stored[key] || {};
-        const now = Date.now();
-
-        if (currentProps.tmdbType === "tv") {
-          const epKey = `s${currentProps.season}e${currentProps.episode}`;
-          const existingShowProgress = existingItem.show_progress || {};
-          
-          stored[key] = {
-            ...existingItem,
-            id: Number(currentProps.id),
-            type: "tv",
-            title: currentProps.details.title || currentProps.details.name || "Unknown",
-            poster_path: currentProps.details.poster_path || "",
-            backdrop_path: currentProps.details.backdrop_path || "",
-            progress: {
-              watched: currentTime,
-              duration: duration,
-            },
-            last_season_watched: currentProps.season,
-            last_episode_watched: currentProps.episode,
-            show_progress: {
-              ...existingShowProgress,
-              [epKey]: {
-                season: currentProps.season,
-                episode: currentProps.episode,
-                progress: {
-                  watched: currentTime,
-                  duration: duration,
-                },
-                last_updated: now,
-              }
-            },
-            last_updated: now,
-          };
-        } else {
-          stored[key] = {
-            id: Number(currentProps.id),
-            type: "movie",
-            title: currentProps.details.title || currentProps.details.name || "Unknown",
-            poster_path: currentProps.details.poster_path || "",
-            backdrop_path: currentProps.details.backdrop_path || "",
-            progress: {
-              watched: currentTime,
-              duration: duration,
-            },
-            last_updated: now,
-          };
-        }
-
-        localStorage.setItem("vidUpProgress", JSON.stringify(stored));
-      } catch (e) {
-        console.error("Failed to update vidUpProgress in localStorage", e);
       }
     };
 
@@ -195,65 +158,100 @@ const Player: React.FC<PlayerProps> = ({
 
       const currentProps = propsRef.current;
 
-      // Handle VidUP.to Player Events
+      // Handle Vidnest Player Events (PLAYER_EVENT and MEDIA_DATA)
       if (
-        (event.origin === "https://vidup.to" || event.origin === "https://www.vidup.to") &&
-        data
+        event.origin === "https://vidnest.fun"
       ) {
-        // Handle MEDIA_DATA event
-        if (data.type === "MEDIA_DATA" && data.data) {
-          try {
-            localStorage.setItem("vidUpProgress", JSON.stringify(data.data));
-          } catch (e) {
-            console.error("Failed to save vidUpProgress to localStorage", e);
-          }
-          
-          const mediaData = data.data;
-          let currentTime: number | undefined;
-          let duration: number | undefined;
-
-          const key = currentProps.tmdbType === "tv" ? `t${currentProps.id}` : `m${currentProps.id}`;
-          const item = mediaData[key];
-          if (item) {
-            if (currentProps.tmdbType === "tv") {
-              const epKey = `s${currentProps.season}e${currentProps.episode}`;
-              const epProgress = item.show_progress?.[epKey]?.progress;
-              if (epProgress) {
-                currentTime = epProgress.watched;
-                duration = epProgress.duration;
-              }
-            } else {
-              if (item.progress) {
-                currentTime = item.progress.watched;
-                duration = item.progress.duration;
-              }
-            }
-          }
-
+        if (data?.type === "PLAYER_EVENT") {
+          const { currentTime, duration } = data.data || {};
           if (currentTime !== undefined && duration !== undefined) {
             trackProgress(currentTime, duration);
-          }
-        }
-
-        // Handle PLAYER_EVENT
-        if (data.type === "PLAYER_EVENT" && data.data) {
-          const { event: playerEvent, currentTime, duration } = data.data;
-
-          if (currentTime !== undefined && duration !== undefined) {
-            trackProgress(currentTime, duration);
-            updateLocalStorageVidUp(currentTime, duration);
 
             // Auto-next for TV shows on completion
             if (
               currentProps.tmdbType === "tv" &&
-              (playerEvent === "ended" || (duration > 0 && currentTime >= duration - 1))
+              duration > 0 &&
+              currentTime >= duration - 1
             ) {
               const currentSeasonData = currentProps.seasons?.find(
                 (s) => s.season_number === currentProps.season,
               );
               if (currentSeasonData) {
                 if (currentProps.episode < currentSeasonData.episode_count) {
-                  currentProps.onEpisodeChange(currentProps.season, currentProps.episode + 1);
+                  currentProps.onEpisodeChange(
+                    currentProps.season,
+                    currentProps.episode + 1,
+                  );
+                } else {
+                  const nextSeason = currentProps.seasons?.find(
+                    (s) => s.season_number === currentProps.season + 1,
+                  );
+                  if (nextSeason) {
+                    currentProps.onEpisodeChange(currentProps.season + 1, 1);
+                  }
+                }
+              }
+            }
+          }
+        } else if (data?.type === "MEDIA_DATA") {
+          const mediaData = data.data;
+
+          // Save progress to local storage as requested by docs
+          try {
+            localStorage.setItem("vidNestProgress", JSON.stringify(mediaData));
+          } catch (e) {
+            console.error("Failed to save vidNestProgress to localStorage", e);
+          }
+
+          let currentTime: number | undefined;
+          let duration: number | undefined;
+
+          if (currentProps.tmdbType === "tv") {
+            const episodeKey = `s${currentProps.season}e${currentProps.episode}`;
+            const tvProgress =
+              mediaData?.[currentProps.id]?.show_progress?.[episodeKey]
+                ?.progress ||
+              mediaData?.show_progress?.[episodeKey]?.progress ||
+              mediaData?.[currentProps.id]?.progress ||
+              mediaData?.progress;
+
+            if (tvProgress) {
+              currentTime = tvProgress.watched;
+              duration = tvProgress.duration;
+            }
+          } else {
+            const movieProgress =
+              mediaData?.[currentProps.id]?.progress || mediaData?.progress;
+            if (movieProgress) {
+              currentTime = movieProgress.watched;
+              duration = movieProgress.duration;
+            }
+          }
+
+          // Fallback to top-level properties if available directly
+          if (currentTime === undefined && duration === undefined && mediaData) {
+            currentTime = mediaData.currentTime ?? mediaData.watched;
+            duration = mediaData.duration;
+          }
+
+          if (currentTime !== undefined && duration !== undefined) {
+            trackProgress(currentTime, duration);
+
+            // Auto-next for TV shows on completion
+            if (
+              currentProps.tmdbType === "tv" &&
+              duration > 0 &&
+              currentTime >= duration - 1
+            ) {
+              const currentSeasonData = currentProps.seasons?.find(
+                (s) => s.season_number === currentProps.season,
+              );
+              if (currentSeasonData) {
+                if (currentProps.episode < currentSeasonData.episode_count) {
+                  currentProps.onEpisodeChange(
+                    currentProps.season,
+                    currentProps.episode + 1,
+                  );
                 } else {
                   const nextSeason = currentProps.seasons?.find(
                     (s) => s.season_number === currentProps.season + 1,
@@ -287,17 +285,20 @@ const Player: React.FC<PlayerProps> = ({
 
         if (currentProps.tmdbType === "tv") {
           const episodeKey = `s${currentProps.season}e${currentProps.episode}`;
-          const tvProgress = mediaData?.[currentProps.id]?.show_progress?.[episodeKey]?.progress 
-            || mediaData?.show_progress?.[episodeKey]?.progress
-            || mediaData?.[currentProps.id]?.progress
-            || mediaData?.progress;
-          
+          const tvProgress =
+            mediaData?.[currentProps.id]?.show_progress?.[episodeKey]
+              ?.progress ||
+            mediaData?.show_progress?.[episodeKey]?.progress ||
+            mediaData?.[currentProps.id]?.progress ||
+            mediaData?.progress;
+
           if (tvProgress) {
             currentTime = tvProgress.watched;
             duration = tvProgress.duration;
           }
         } else {
-          const movieProgress = mediaData?.[currentProps.id]?.progress || mediaData?.progress;
+          const movieProgress =
+            mediaData?.[currentProps.id]?.progress || mediaData?.progress;
           if (movieProgress) {
             currentTime = movieProgress.watched;
             duration = movieProgress.duration;
@@ -324,7 +325,10 @@ const Player: React.FC<PlayerProps> = ({
             );
             if (currentSeasonData) {
               if (currentProps.episode < currentSeasonData.episode_count) {
-                currentProps.onEpisodeChange(currentProps.season, currentProps.episode + 1);
+                currentProps.onEpisodeChange(
+                  currentProps.season,
+                  currentProps.episode + 1,
+                );
               } else {
                 const nextSeason = currentProps.seasons?.find(
                   (s) => s.season_number === currentProps.season + 1,
