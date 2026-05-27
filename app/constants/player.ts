@@ -1,3 +1,5 @@
+import { Globe, type LucideIcon } from "lucide-react";
+
 /**
  * Video Player Server Constants
  */
@@ -7,15 +9,18 @@ export interface PlayerServer {
   id: string;
   movieUrl: (tmdbId: string) => string;
   tvUrl: (tmdbId: string, season: number, episode: number) => string;
+  description?: string;
+  icon?: LucideIcon;
 }
 
 export const PLAYER_SERVERS: PlayerServer[] = [
   {
     name: "Server 1",
     id: "server-1",
-    movieUrl: (tmdbId: string) => `https://vidnest.fun/movie/${tmdbId}`,
+    movieUrl: (tmdbId: string) =>
+      `https://vidup.to/movie/${tmdbId}?theme=2563eb&autoPlay=true`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://vidnest.fun/tv/${tmdbId}/${season}/${episode}`,
+      `https://vidup.to/tv/${tmdbId}/${season}/${episode}?theme=2563eb&autoPlay=true&nextButton=true&autoNext=true`,
   },
   {
     name: "Server 2",
@@ -28,74 +33,40 @@ export const PLAYER_SERVERS: PlayerServer[] = [
   {
     name: "Server 3",
     id: "server-3",
-    movieUrl: (tmdbId: string) => `https://vidlink.pro/movie/${tmdbId}`,
-    tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`,
-  },
-  {
-    name: "Server 4",
-    id: "server-4",
-    movieUrl: (tmdbId: string) => `https://player.videasy.net/movie/${tmdbId}`,
-    tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://player.videasy.net/tv/${tmdbId}/${season}/${episode}`,
-  },
-  {
-    name: "Server 5",
-    id: "server-5",
-    movieUrl: (tmdbId: string) => `https://111movies.com/movie/${tmdbId}`,
-    tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://111movies.com/tv/${tmdbId}/${season}/${episode}`,
-  },
-  {
-    name: "Server 6",
-    id: "server-6",
     movieUrl: (tmdbId: string) =>
       `https://player.vidzee.wtf/embed/movie/${tmdbId}`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
       `https://player.vidzee.wtf/embed/tv/${tmdbId}/${season}/${episode}`,
   },
   {
-    name: "Server 7",
-    id: "server-7",
-    movieUrl: (tmdbId: string) => `https://www.2embed.cc/embed/${tmdbId}`,
+    name: "Server 4",
+    id: "server-4",
+    movieUrl: (tmdbId: string) => `https://vidlink.pro/movie/${tmdbId}`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://www.2embed.cc/embed/${tmdbId}/${season}/${episode}`,
+      `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`,
   },
   {
-    name: "Server 8",
-    id: "server-8",
-    movieUrl: (tmdbId: string) => `https://moviesapi.club/movie/${tmdbId}`,
+    name: "Server 5",
+    id: "server-5",
+    movieUrl: (tmdbId: string) => `https://player.videasy.net/movie/${tmdbId}`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://moviesapi.club/tv/${tmdbId}/${season}/${episode}`,
+      `https://player.videasy.net/tv/${tmdbId}/${season}/${episode}`,
   },
-  // {
-  //   name: "Server 9",
-  //   id: "server-9",
-  //   movieUrl: (tmdbId: string) =>
-  //     `https://maplemovie.site/embed/movie/${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://maplemovie.site/embed/tv/${tmdbId}/${season}/${episode}`,
-  // },
-  // {
-  //   name: "Server 10",
-  //   id: "server-10",
-  //   movieUrl: (tmdbId: string) => `https://primesrc.xyz/embed/movie/${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://primesrc.xyz/embed/tv/${tmdbId}/${season}/${episode}`,
-  // },
-  // {
-  //   name: "Server 11",
-  //   id: "server-11",
-  //   movieUrl: (tmdbId: string) =>
-  //     `https://multiembed.mov/directstream.php?video_id=${tmdbId}&tmdb=1`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://multiembed.mov/directstream.php?video_id=${tmdbId}&tmdb=1&s=${season}&e=${episode}`,
-  // },
-  // {
-  //   name: "Server 12",
-  //   id: "server-12",
-  //   movieUrl: (tmdbId: string) => `https://autoembed.to/movie/tmdb/${tmdbId}`,
-  //   tvUrl: (tmdbId: string, season: number, episode: number) =>
-  //     `https://autoembed.to/tv/tmdb/${tmdbId}/${season}/${episode}`,
-  // },
+  {
+    name: "Server 6",
+    id: "server-6",
+    movieUrl: (tmdbId: string) => `https://111movies.com/movie/${tmdbId}`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://111movies.com/tv/${tmdbId}/${season}/${episode}`,
+  },
+  {
+    name: "Server 7",
+    id: "server-7",
+    movieUrl: (tmdbId: string) =>
+      `https://www.vidsrc.wtf/2/movie/${tmdbId}?color=2563eb`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://www.vidsrc.wtf/2/tv/${tmdbId}/${season}/${episode}?color=2563eb`,
+    description: "Multi-Language",
+    icon: Globe,
+  },
 ];

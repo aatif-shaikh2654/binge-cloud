@@ -24,6 +24,7 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
   onServerChange,
 }) => {
   const [open, setOpen] = useState(false);
+  const ActiveServerIcon = currentServer.icon;
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
@@ -33,8 +34,9 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
         )}
       >
         <Server className="w-4 h-4 text-blue-400" />
-        <span className="hidden sm:inline font-black uppercase tracking-widest text-[10px]">
+        <span className="hidden sm:inline-flex items-center gap-1 font-black uppercase tracking-widest text-[10px]">
           {currentServer.name}
+          {ActiveServerIcon && <ActiveServerIcon className="w-3 h-3 text-blue-400" />}
         </span>
       </SheetTrigger>
       <SheetContent
@@ -59,6 +61,7 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
           <div className="flex flex-col gap-2 p-6">
             {PLAYER_SERVERS.map((server) => {
               const isActive = currentServer.id === server.id;
+              const ServerIcon = server.icon;
               return (
                 <button
                   key={server.id}
@@ -88,9 +91,22 @@ const ServerSwitcher: React.FC<ServerSwitcherProps> = ({
                       />
                     </div>
                     <div className="flex flex-col items-start">
-                      <p className="text-[13px] font-black tracking-tight uppercase">
-                        {server.name}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[13px] font-black tracking-tight uppercase">
+                          {server.name}
+                        </p>
+                        {server.description && (
+                          <span className={cn(
+                            "flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter border",
+                            isActive 
+                              ? "bg-white/20 border-white/20 text-white" 
+                              : "bg-blue-500/10 border-blue-500/20 text-blue-500"
+                          )}>
+                            {ServerIcon && <ServerIcon className="w-2.5 h-2.5" />}
+                            {server.description}
+                          </span>
+                        )}
+                      </div>
                       <p
                         className={cn(
                           "text-[9px] font-bold uppercase tracking-widest mt-0.5",

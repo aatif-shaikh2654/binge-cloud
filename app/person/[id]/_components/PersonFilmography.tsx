@@ -3,8 +3,8 @@
 import { type TMDBPersonCredits } from "@/app/types/tmdb";
 import MovieCard from "@/components/common/MovieCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Film, Tv, Loader2 } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Film, Loader2, Tv } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface PersonFilmographyProps {
   credits: TMDBPersonCredits;
@@ -18,13 +18,20 @@ export default function PersonFilmography({ credits }: PersonFilmographyProps) {
   // Filter and sort cast credits
   const movieCredits = useMemo(() => {
     return (credits.cast || [])
-      .filter((item) => item.media_type === "movie" && (item.poster_path || item.backdrop_path))
+      .filter(
+        (item) =>
+          item.media_type === "movie" &&
+          (item.poster_path || item.backdrop_path),
+      )
       .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   }, [credits.cast]);
 
   const tvCredits = useMemo(() => {
     return (credits.cast || [])
-      .filter((item) => item.media_type === "tv" && (item.poster_path || item.backdrop_path))
+      .filter(
+        (item) =>
+          item.media_type === "tv" && (item.poster_path || item.backdrop_path),
+      )
       .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   }, [credits.cast]);
 
@@ -67,7 +74,7 @@ export default function PersonFilmography({ credits }: PersonFilmographyProps) {
           setVisibleCount((prev) => prev + itemsPerLoad);
         }
       },
-      { threshold: 0.1, rootMargin: "100px" }
+      { threshold: 0.1, rootMargin: "100px" },
     );
 
     const target = observerTarget.current;
@@ -102,28 +109,31 @@ export default function PersonFilmography({ credits }: PersonFilmographyProps) {
         }}
         className="w-full"
       >
-        <TabsList className="bg-white/[0.02] border border-white/10 rounded-md mb-8 p-1 w-full sm:w-fit flex items-center gap-1.5 h-12 overflow-x-auto flex-nowrap select-none">
+        <TabsList className="bg-white/[0.02] border border-white/10 rounded-md mb-8 p-1 w-full sm:w-fit flex items-center gap-1.5 h-20 overflow-x-auto flex-nowrap select-none">
           <TabsTrigger
             value="all"
-            className="font-black text-[10px] md:text-xs uppercase tracking-wider px-5 h-full rounded-[4px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! cursor-pointer flex items-center justify-center shrink-0"
+            className="font-black text-[10px] md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! cursor-pointer flex items-center justify-center shrink-0"
           >
             All ({allCredits.length})
           </TabsTrigger>
           <TabsTrigger
             value="movies"
-            className="font-black text-[10px] md:text-xs uppercase tracking-wider px-5 h-full rounded-[4px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! flex items-center gap-2 cursor-pointer shrink-0"
+            className="font-black text-[10px] md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! flex items-center gap-2 cursor-pointer shrink-0"
           >
             <Film className="w-3.5 h-3.5" /> Movies ({movieCredits.length})
           </TabsTrigger>
           <TabsTrigger
             value="tv"
-            className="font-black text-[10px] md:text-xs uppercase tracking-wider px-5 h-full rounded-[4px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! flex items-center gap-2 cursor-pointer shrink-0"
+            className="font-black text-[10px] md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! flex items-center gap-2 cursor-pointer shrink-0"
           >
             <Tv className="w-3.5 h-3.5" /> TV Shows ({tvCredits.length})
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="outline-none animate-in fade-in duration-500">
+        <TabsContent
+          value="all"
+          className="outline-none animate-in fade-in duration-500"
+        >
           {allCreditsPaginated.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {allCreditsPaginated.map((item) => (
@@ -136,26 +146,40 @@ export default function PersonFilmography({ credits }: PersonFilmographyProps) {
             </div>
           ) : (
             <div className="text-center py-16 bg-white/5 border border-dashed border-white/10 rounded-2xl">
-              <p className="text-white/40 font-medium">No acting credits found.</p>
+              <p className="text-white/40 font-medium">
+                No acting credits found.
+              </p>
             </div>
           )}
         </TabsContent>
 
-        <TabsContent value="movies" className="outline-none animate-in fade-in duration-500">
+        <TabsContent
+          value="movies"
+          className="outline-none animate-in fade-in duration-500"
+        >
           {movieCreditsPaginated.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {movieCreditsPaginated.map((item) => (
-                <MovieCard key={`${item.id}-movie`} movie={item} mediaType="movie" />
+                <MovieCard
+                  key={`${item.id}-movie`}
+                  movie={item}
+                  mediaType="movie"
+                />
               ))}
             </div>
           ) : (
             <div className="text-center py-16 bg-white/5 border border-dashed border-white/10 rounded-2xl">
-              <p className="text-white/40 font-medium">No movies found in credits.</p>
+              <p className="text-white/40 font-medium">
+                No movies found in credits.
+              </p>
             </div>
           )}
         </TabsContent>
 
-        <TabsContent value="tv" className="outline-none animate-in fade-in duration-500">
+        <TabsContent
+          value="tv"
+          className="outline-none animate-in fade-in duration-500"
+        >
           {tvCreditsPaginated.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {tvCreditsPaginated.map((item) => (
@@ -164,7 +188,9 @@ export default function PersonFilmography({ credits }: PersonFilmographyProps) {
             </div>
           ) : (
             <div className="text-center py-16 bg-white/5 border border-dashed border-white/10 rounded-2xl">
-              <p className="text-white/40 font-medium">No TV shows found in credits.</p>
+              <p className="text-white/40 font-medium">
+                No TV shows found in credits.
+              </p>
             </div>
           )}
         </TabsContent>
