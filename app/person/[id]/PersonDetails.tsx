@@ -69,7 +69,7 @@ export default function PersonDetails({ person, credits }: PersonDetailsProps) {
         {/* Profile Card & Bio Info */}
         <div className="flex flex-col md:flex-row gap-8 lg:gap-16 items-start">
           {/* Avatar Section */}
-          <div className="w-full md:w-[300px] shrink-0 flex flex-col items-center md:items-start gap-6">
+          <div className="w-full md:w-[300px] shrink-0 flex flex-col items-start gap-6">
             <div className="relative aspect-[3/4] w-64 md:w-full rounded-2xl overflow-hidden border-2 border-white/10 bg-neutral-900/50 shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all duration-500 hover:border-blue-500/50 group">
               {person.profile_path ? (
                 <Image

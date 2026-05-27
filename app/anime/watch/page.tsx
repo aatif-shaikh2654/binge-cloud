@@ -22,7 +22,10 @@ export async function generateMetadata({
     const title = details.title.english || details.title.romaji || "Anime";
     const displayTitle = ep ? `${title} — Episode ${ep}` : title;
     const imageUrl =
-      details.bannerImage || details.coverImage.extraLarge || undefined;
+      details.bannerImage ||
+      details.coverImage.extraLarge ||
+      details.coverImage.large ||
+      undefined;
 
     return {
       title: `Watching - ${displayTitle}`,
