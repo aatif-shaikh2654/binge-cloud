@@ -1,6 +1,10 @@
 "use client";
 
-import { type AniListMediaDetail } from "@/app/types/anilist";
+import {
+  type AniListMedia,
+  type AniListMediaDetail,
+} from "@/app/types/anilist";
+import AnimeSlider from "@/components/common/AnimeSlider";
 import React from "react";
 import AnimeCharactersSlider from "../_components/AnimeCharactersSlider";
 import AnimeDetailHero from "../_components/AnimeDetailHero";
@@ -9,9 +13,13 @@ import AnimeRelations from "../_components/AnimeRelations";
 
 interface AnimeDetailProps {
   details: AniListMediaDetail;
+  similarAnime?: AniListMedia[];
 }
 
-const AnimeDetail: React.FC<AnimeDetailProps> = ({ details }) => {
+const AnimeDetail: React.FC<AnimeDetailProps> = ({
+  details,
+  similarAnime = [],
+}) => {
   if (!details) return null;
 
   const characters = details.characters?.edges ?? [];
@@ -27,7 +35,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ details }) => {
       <AnimeDetailHero details={details} />
 
       {hasEpisodes && (
-        <div className="mt-12 md:mt-24">
+        <div className="mt-12">
           <AnimeEpisodeSectionContent
             animeId={details.id}
             totalEpisodes={details.episodes}
@@ -38,14 +46,20 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ details }) => {
       )}
 
       {characters.length > 0 && (
-        <div className="mt-12 md:mt-24">
+        <div className="mt-12">
           <AnimeCharactersSlider characters={characters} />
         </div>
       )}
 
       {relations.length > 0 && (
-        <div className="mt-12 md:mt-24">
+        <div className="mt-4 md:mt-12">
           <AnimeRelations relations={relations} />
+        </div>
+      )}
+
+      {similarAnime.length > 0 && (
+        <div className="mt-4">
+          <AnimeSlider anime={similarAnime} title="Recommended Anime" />
         </div>
       )}
     </div>

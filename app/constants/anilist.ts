@@ -48,6 +48,21 @@ export const ANIME_PAGE_QUERY = `
   }
 `;
 
+export const ANIME_GENRE_QUERY = `
+  query AnimeListByGenre($page: Int, $perPage: Int, $sort: [MediaSort], $genre_in: [String], $id_not: Int) {
+    Page(page: $page, perPage: $perPage) {
+      pageInfo {
+        hasNextPage
+        currentPage
+        total
+      }
+      media(type: ANIME, sort: $sort, genre_in: $genre_in, id_not: $id_not, isAdult: false) {
+        ${ANIME_MEDIA_FRAGMENT}
+      }
+    }
+  }
+`;
+
 export const ANIME_DETAIL_QUERY = `
   query AnimeDetail($id: Int) {
     Media(id: $id, type: ANIME, isAdult: false) {

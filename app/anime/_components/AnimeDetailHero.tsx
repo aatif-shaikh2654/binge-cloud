@@ -291,6 +291,16 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
                 </p>
               </div>
             )}
+            {details.episodes != null && (
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">
+                  Total Episodes
+                </p>
+                <p className="text-sm font-bold text-white/80">
+                  {details.episodes}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

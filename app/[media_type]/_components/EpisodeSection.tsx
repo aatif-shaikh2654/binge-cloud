@@ -123,11 +123,13 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({
             Seasons & Stories
           </h2>
           {nextEpisodeToAir && (
-            <div className="flex lg:mt-2 items-center gap-2.5 px-4 py-2.5 rounded-[10px] border border-blue-500/20 bg-blue-500/5 text-xs md:text-sm font-semibold text-blue-400 mt-2.5 w-fit">
+            <div className="flex lg:mt-2 items-center leading-[150%]! gap-2.5 px-4 py-2.5 rounded-[10px] border border-blue-500/20 bg-blue-500/5 text-xs md:text-sm font-semibold text-blue-400 mt-2.5 w-fit">
               <Calendar className="w-4 h-4 text-blue-400 shrink-0 animate-pulse" />
               <span>
-                Next episode (S{nextEpisodeToAir.season_number} EP {nextEpisodeToAir.episode_number}
-                {nextEpisodeToAir.name ? `: ${nextEpisodeToAir.name}` : ""}) airing{" "}
+                Next episode (S{nextEpisodeToAir.season_number} EP{" "}
+                {nextEpisodeToAir.episode_number}
+                {nextEpisodeToAir.name ? `: ${nextEpisodeToAir.name}` : ""})
+                airing{" "}
                 <span className="text-white font-bold">
                   {formatTMDBAiringDate(nextEpisodeToAir.air_date)}
                 </span>

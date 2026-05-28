@@ -105,7 +105,7 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
   );
 
   return (
-    <section className="ps-8! lg:ps-24! md:py-6 pb-6 relative z-10">
+    <section className="ps-6! lg:ps-24! md:py-6 pb-6 relative z-10">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between pe-8! lg:pe-24! border-b border-white/5 pb-4 md:pb-6 mb-8 gap-4">
         <div className="space-y-1 md:space-y-2">
@@ -121,7 +121,7 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
             )}
           </h2>
           {nextAiringEpisode && (
-            <div className="flex lg:mt-2 items-center gap-2.5 px-4 py-2.5 rounded-[10px] border border-blue-500/20 bg-blue-500/5 text-xs md:text-sm font-semibold text-blue-400 mt-2.5 w-fit">
+            <div className="flex lg:mt-2 items-center leading-[150%]! gap-2.5 px-4 py-2.5 rounded-[10px] border border-blue-500/20 bg-blue-500/5 text-xs md:text-sm font-semibold text-blue-400 mt-2.5 w-fit">
               <Calendar className="w-4 h-4 text-blue-400 shrink-0 animate-pulse" />
               <span>
                 Next episode (Ep {nextAiringEpisode.episode}) airing{" "}

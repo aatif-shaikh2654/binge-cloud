@@ -2,6 +2,7 @@ import {
   ANILIST_ENDPOINT,
   ANIME_DETAIL_QUERY,
   ANIME_PAGE_QUERY,
+  ANIME_GENRE_QUERY,
 } from "@/app/constants/anilist";
 import {
   type AniListDetailResponse,
@@ -90,6 +91,22 @@ export const searchAnime = async (
     page,
     perPage,
     sort: ["SEARCH_MATCH", "TRENDING_DESC"],
+  });
+  return data.data.Page;
+};
+
+export const getAnimeByGenre = async (
+  genres: string[],
+  excludeId: number,
+  page: number = 1,
+  perPage: number = 20,
+): Promise<AniListPageResponse> => {
+  const data = await fetchAniList<AniListResponse>(ANIME_GENRE_QUERY, {
+    page,
+    perPage,
+    genre_in: genres,
+    id_not: excludeId,
+    sort: ["POPULARITY_DESC"],
   });
   return data.data.Page;
 };
