@@ -118,33 +118,48 @@ export const VidfastServer: React.FC<VidfastServerProps> = ({
           console.error("Failed to save vidFastProgress to localStorage", e);
         }
 
+        const hasShowProgress = !!(
+          mediaData?.[currentProps.id]?.show_progress ||
+          mediaData?.show_progress
+        );
+
         let currentTime: number | undefined;
         let duration: number | undefined;
 
         if (currentProps.tmdbType === "tv") {
           const episodeKey = `s${currentProps.season}e${currentProps.episode}`;
-          const tvProgress =
-            mediaData?.[currentProps.id]?.show_progress?.[episodeKey]
-              ?.progress ||
-            mediaData?.show_progress?.[episodeKey]?.progress ||
-            mediaData?.[currentProps.id]?.progress ||
-            mediaData?.progress;
+          let tvProgress;
+          if (hasShowProgress) {
+            tvProgress =
+              mediaData?.[currentProps.id]?.show_progress?.[episodeKey]?.progress ||
+              mediaData?.show_progress?.[episodeKey]?.progress;
+          } else {
+            tvProgress =
+              mediaData?.[currentProps.id]?.progress ||
+              mediaData?.progress;
+          }
 
           if (tvProgress) {
             currentTime = tvProgress.watched;
             duration = tvProgress.duration;
           }
         } else {
-          const movieProgress =
-            mediaData?.[currentProps.id]?.progress || mediaData?.progress;
+          const movieProgress = !hasShowProgress
+            ? (mediaData?.[currentProps.id]?.progress || mediaData?.progress)
+            : undefined;
           if (movieProgress) {
             currentTime = movieProgress.watched;
             duration = movieProgress.duration;
           }
         }
 
-        // Fallback to top-level properties if available directly
-        if (currentTime === undefined && duration === undefined && mediaData) {
+        // Fallback to top-level properties if available directly (only if this is not a database dump payload)
+        if (
+          currentTime === undefined &&
+          duration === undefined &&
+          mediaData &&
+          !hasShowProgress
+        ) {
           currentTime = mediaData.currentTime ?? mediaData.watched;
           duration = mediaData.duration;
         }
