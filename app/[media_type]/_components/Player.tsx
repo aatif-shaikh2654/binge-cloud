@@ -9,6 +9,15 @@ import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { VidnestServer } from "../servers/VidnestServer";
+import { VidsrcServer } from "../servers/VidsrcServer";
+import { VidfastServer } from "../servers/VidfastServer";
+
+const TRACKING_COMPONENTS = {
+  vidnest: VidnestServer,
+  vidsrc: VidsrcServer,
+  vidfast: VidfastServer,
+} as const;
 
 interface PlayerProps {
   id: string;
@@ -87,31 +96,10 @@ const Player: React.FC<PlayerProps> = ({
     return 0;
   }, [id, tmdbType, season, episode, history]);
 
-  let videoUrl =
+  const videoUrl =
     tmdbType === "tv"
-      ? currentServer.tvUrl(id, season, episode)
-      : currentServer.movieUrl(id);
-
-  // Apply Resume Parameters for Server 1 (Vidnest)
-  if (
-    currentServer.id === "server-1" &&
-    initialStartTime !== null &&
-    initialStartTime > 0
-  ) {
-    const paramName = tmdbType === "tv" ? "progress" : "startAt";
-    const separator = videoUrl.includes("?") ? "&" : "?";
-    videoUrl += `${separator}${paramName}=${initialStartTime}`;
-  }
-
-  // Apply Resume Parameters for VidFast
-  if (
-    currentServer.id === "server-8" &&
-    initialStartTime !== null &&
-    initialStartTime > 0
-  ) {
-    const separator = videoUrl.includes("?") ? "&" : "?";
-    videoUrl += `${separator}startAt=${initialStartTime}`;
-  }
+      ? currentServer.tvUrl(id, season, episode, initialStartTime || undefined)
+      : currentServer.movieUrl(id, initialStartTime || undefined);
 
   // Reset video loaded state when URL changes (Sync state with URL during render)
   const [prevUrl, setPrevUrl] = useState(videoUrl);
@@ -120,366 +108,42 @@ const Player: React.FC<PlayerProps> = ({
     setIsVideoLoaded(false);
   }
 
-  // Player Events Listener
+  const trackProgress = (
+    currentTime: number,
+    duration: number,
+    force = false,
+  ) => {
+    const currentProps = propsRef.current;
+    if (!currentProps.details) return;
+    latestProgressRef.current = { currentTime, duration };
+    const now = Date.now();
+
+    if (force || now - lastSaveTimeRef.current >= 5 * 60 * 1000) {
+      lastSaveTimeRef.current = now;
+      currentProps.addToHistory({
+        id: Number(currentProps.id),
+        media_type: currentProps.tmdbType,
+        title:
+          currentProps.details.title ||
+          currentProps.details.name ||
+          "Unknown",
+        poster_path: currentProps.details.poster_path || "",
+        backdrop_path: currentProps.details.backdrop_path || "",
+        server: currentProps.currentServer.id,
+        season:
+          currentProps.tmdbType === "tv" ? currentProps.season : undefined,
+        episode:
+          currentProps.tmdbType === "tv" ? currentProps.episode : undefined,
+        watchedAt: Date.now(),
+        currentTime,
+        duration,
+      });
+    }
+  };
+
+  // Player Events Cleanup
   useEffect(() => {
-    const trackProgress = (
-      currentTime: number,
-      duration: number,
-      force = false,
-    ) => {
-      const currentProps = propsRef.current;
-      if (!currentProps.details) return;
-      latestProgressRef.current = { currentTime, duration };
-      const now = Date.now();
-
-      if (force || now - lastSaveTimeRef.current >= 5 * 60 * 1000) {
-        lastSaveTimeRef.current = now;
-        currentProps.addToHistory({
-          id: Number(currentProps.id),
-          media_type: currentProps.tmdbType,
-          title:
-            currentProps.details.title ||
-            currentProps.details.name ||
-            "Unknown",
-          poster_path: currentProps.details.poster_path || "",
-          backdrop_path: currentProps.details.backdrop_path || "",
-          server: currentProps.currentServer.id,
-          season:
-            currentProps.tmdbType === "tv" ? currentProps.season : undefined,
-          episode:
-            currentProps.tmdbType === "tv" ? currentProps.episode : undefined,
-          watchedAt: Date.now(),
-          currentTime,
-          duration,
-        });
-      }
-    };
-
-    const handleMessage = (event: MessageEvent) => {
-      let data = event.data;
-
-      if (typeof data === "string") {
-        try {
-          data = JSON.parse(data);
-        } catch {
-          return;
-        }
-      }
-
-      const currentProps = propsRef.current;
-
-      // Handle Vidnest Player Events (PLAYER_EVENT and MEDIA_DATA)
-      if (event.origin === "https://vidnest.fun") {
-        if (data?.type === "PLAYER_EVENT") {
-          const { currentTime, duration } = data.data || {};
-          if (currentTime !== undefined && duration !== undefined) {
-            trackProgress(currentTime, duration);
-
-            // Auto-next for TV shows on completion
-            if (
-              currentProps.tmdbType === "tv" &&
-              duration > 0 &&
-              currentTime >= duration - 1
-            ) {
-              const currentSeasonData = currentProps.seasons?.find(
-                (s) => s.season_number === currentProps.season,
-              );
-              if (currentSeasonData) {
-                if (currentProps.episode < currentSeasonData.episode_count) {
-                  currentProps.onEpisodeChange(
-                    currentProps.season,
-                    currentProps.episode + 1,
-                  );
-                } else {
-                  const nextSeason = currentProps.seasons?.find(
-                    (s) => s.season_number === currentProps.season + 1,
-                  );
-                  if (nextSeason) {
-                    currentProps.onEpisodeChange(currentProps.season + 1, 1);
-                  }
-                }
-              }
-            }
-          }
-        } else if (data?.type === "MEDIA_DATA") {
-          const mediaData = data.data;
-
-          // Save progress to local storage as requested by docs
-          try {
-            localStorage.setItem("vidNestProgress", JSON.stringify(mediaData));
-          } catch (e) {
-            console.error("Failed to save vidNestProgress to localStorage", e);
-          }
-
-          let currentTime: number | undefined;
-          let duration: number | undefined;
-
-          if (currentProps.tmdbType === "tv") {
-            const episodeKey = `s${currentProps.season}e${currentProps.episode}`;
-            const tvProgress =
-              mediaData?.[currentProps.id]?.show_progress?.[episodeKey]
-                ?.progress ||
-              mediaData?.show_progress?.[episodeKey]?.progress ||
-              mediaData?.[currentProps.id]?.progress ||
-              mediaData?.progress;
-
-            if (tvProgress) {
-              currentTime = tvProgress.watched;
-              duration = tvProgress.duration;
-            }
-          } else {
-            const movieProgress =
-              mediaData?.[currentProps.id]?.progress || mediaData?.progress;
-            if (movieProgress) {
-              currentTime = movieProgress.watched;
-              duration = movieProgress.duration;
-            }
-          }
-
-          // Fallback to top-level properties if available directly
-          if (
-            currentTime === undefined &&
-            duration === undefined &&
-            mediaData
-          ) {
-            currentTime = mediaData.currentTime ?? mediaData.watched;
-            duration = mediaData.duration;
-          }
-
-          if (currentTime !== undefined && duration !== undefined) {
-            trackProgress(currentTime, duration);
-
-            // Auto-next for TV shows on completion
-            if (
-              currentProps.tmdbType === "tv" &&
-              duration > 0 &&
-              currentTime >= duration - 1
-            ) {
-              const currentSeasonData = currentProps.seasons?.find(
-                (s) => s.season_number === currentProps.season,
-              );
-              if (currentSeasonData) {
-                if (currentProps.episode < currentSeasonData.episode_count) {
-                  currentProps.onEpisodeChange(
-                    currentProps.season,
-                    currentProps.episode + 1,
-                  );
-                } else {
-                  const nextSeason = currentProps.seasons?.find(
-                    (s) => s.season_number === currentProps.season + 1,
-                  );
-                  if (nextSeason) {
-                    currentProps.onEpisodeChange(currentProps.season + 1, 1);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Handle Vidsrc.wtf Player Events (MEDIA_DATA)
-      if (
-        event.origin === "https://www.vidsrc.wtf" &&
-        data?.type === "MEDIA_DATA"
-      ) {
-        const mediaData = data.data;
-
-        // Save progress to local storage as requested by docs
-        try {
-          localStorage.setItem("vidsrcwtf-Progress", JSON.stringify(mediaData));
-        } catch (e) {
-          console.error("Failed to save vidsrcwtf-Progress to localStorage", e);
-        }
-
-        let currentTime: number | undefined;
-        let duration: number | undefined;
-
-        if (currentProps.tmdbType === "tv") {
-          const episodeKey = `s${currentProps.season}e${currentProps.episode}`;
-          const tvProgress =
-            mediaData?.[currentProps.id]?.show_progress?.[episodeKey]
-              ?.progress ||
-            mediaData?.show_progress?.[episodeKey]?.progress ||
-            mediaData?.[currentProps.id]?.progress ||
-            mediaData?.progress;
-
-          if (tvProgress) {
-            currentTime = tvProgress.watched;
-            duration = tvProgress.duration;
-          }
-        } else {
-          const movieProgress =
-            mediaData?.[currentProps.id]?.progress || mediaData?.progress;
-          if (movieProgress) {
-            currentTime = movieProgress.watched;
-            duration = movieProgress.duration;
-          }
-        }
-
-        // Fallback to top-level properties if available directly
-        if (currentTime === undefined && duration === undefined && mediaData) {
-          currentTime = mediaData.currentTime ?? mediaData.watched;
-          duration = mediaData.duration;
-        }
-
-        if (currentTime !== undefined && duration !== undefined) {
-          trackProgress(currentTime, duration);
-
-          // Auto-next for TV shows on completion
-          if (
-            currentProps.tmdbType === "tv" &&
-            duration > 0 &&
-            currentTime >= duration - 1
-          ) {
-            const currentSeasonData = currentProps.seasons?.find(
-              (s) => s.season_number === currentProps.season,
-            );
-            if (currentSeasonData) {
-              if (currentProps.episode < currentSeasonData.episode_count) {
-                currentProps.onEpisodeChange(
-                  currentProps.season,
-                  currentProps.episode + 1,
-                );
-              } else {
-                const nextSeason = currentProps.seasons?.find(
-                  (s) => s.season_number === currentProps.season + 1,
-                );
-                if (nextSeason) {
-                  currentProps.onEpisodeChange(currentProps.season + 1, 1);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Handle VidFast Player Events
-      const isVidfastOrigin = (origin: string) => {
-        return [
-          "https://vidfast.pro",
-          "https://vidfast.in",
-          "https://vidfast.io",
-          "https://vidfast.me",
-          "https://vidfast.net",
-          "https://vidfast.pm",
-          "https://vidfast.xyz",
-        ].includes(origin);
-      };
-
-      if (isVidfastOrigin(event.origin)) {
-        if (data?.type === "PLAYER_EVENT") {
-          const { currentTime, duration } = data.data || {};
-          if (currentTime !== undefined && duration !== undefined) {
-            trackProgress(currentTime, duration);
-
-            // Auto-next for TV shows on completion
-            if (
-              currentProps.tmdbType === "tv" &&
-              duration > 0 &&
-              currentTime >= duration - 1
-            ) {
-              const currentSeasonData = currentProps.seasons?.find(
-                (s) => s.season_number === currentProps.season,
-              );
-              if (currentSeasonData) {
-                if (currentProps.episode < currentSeasonData.episode_count) {
-                  currentProps.onEpisodeChange(
-                    currentProps.season,
-                    currentProps.episode + 1,
-                  );
-                } else {
-                  const nextSeason = currentProps.seasons?.find(
-                    (s) => s.season_number === currentProps.season + 1,
-                  );
-                  if (nextSeason) {
-                    currentProps.onEpisodeChange(currentProps.season + 1, 1);
-                  }
-                }
-              }
-            }
-          }
-        } else if (data?.type === "MEDIA_DATA") {
-          const mediaData = data.data;
-
-          // Save progress to local storage as requested by docs
-          try {
-            localStorage.setItem("vidFastProgress", JSON.stringify(mediaData));
-          } catch (e) {
-            console.error("Failed to save vidFastProgress to localStorage", e);
-          }
-
-          let currentTime: number | undefined;
-          let duration: number | undefined;
-
-          if (currentProps.tmdbType === "tv") {
-            const episodeKey = `s${currentProps.season}e${currentProps.episode}`;
-            const tvProgress =
-              mediaData?.[currentProps.id]?.show_progress?.[episodeKey]
-                ?.progress ||
-              mediaData?.show_progress?.[episodeKey]?.progress ||
-              mediaData?.[currentProps.id]?.progress ||
-              mediaData?.progress;
-
-            if (tvProgress) {
-              currentTime = tvProgress.watched;
-              duration = tvProgress.duration;
-            }
-          } else {
-            const movieProgress =
-              mediaData?.[currentProps.id]?.progress || mediaData?.progress;
-            if (movieProgress) {
-              currentTime = movieProgress.watched;
-              duration = movieProgress.duration;
-            }
-          }
-
-          // Fallback to top-level properties if available directly
-          if (
-            currentTime === undefined &&
-            duration === undefined &&
-            mediaData
-          ) {
-            currentTime = mediaData.currentTime ?? mediaData.watched;
-            duration = mediaData.duration;
-          }
-
-          if (currentTime !== undefined && duration !== undefined) {
-            trackProgress(currentTime, duration);
-
-            // Auto-next for TV shows on completion
-            if (
-              currentProps.tmdbType === "tv" &&
-              duration > 0 &&
-              currentTime >= duration - 1
-            ) {
-              const currentSeasonData = currentProps.seasons?.find(
-                (s) => s.season_number === currentProps.season,
-              );
-              if (currentSeasonData) {
-                if (currentProps.episode < currentSeasonData.episode_count) {
-                  currentProps.onEpisodeChange(
-                    currentProps.season,
-                    currentProps.episode + 1,
-                  );
-                } else {
-                  const nextSeason = currentProps.seasons?.find(
-                    (s) => s.season_number === currentProps.season + 1,
-                  );
-                  if (nextSeason) {
-                    currentProps.onEpisodeChange(currentProps.season + 1, 1);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
     return () => {
-      window.removeEventListener("message", handleMessage);
       const { currentTime, duration } = latestProgressRef.current;
       if (currentTime > 0 && duration > 0) {
         trackProgress(currentTime, duration, true);
@@ -504,6 +168,10 @@ const Player: React.FC<PlayerProps> = ({
     });
   }, [id, tmdbType, details, currentServer.id, season, episode, addToHistory]);
 
+  const TrackingComponent = currentServer.trackingType
+    ? TRACKING_COMPONENTS[currentServer.trackingType]
+    : null;
+
   return (
     <div className="absolute inset-0 z-0 bg-background overflow-hidden">
       {/* Backdrop / Loader Layer */}
@@ -524,6 +192,18 @@ const Player: React.FC<PlayerProps> = ({
             </p>
           </div>
         </div>
+      )}
+
+      {TrackingComponent && (
+        <TrackingComponent
+          id={id}
+          tmdbType={tmdbType}
+          season={season}
+          episode={episode}
+          seasons={seasons}
+          onEpisodeChange={onEpisodeChange}
+          trackProgress={trackProgress}
+        />
       )}
 
       <iframe

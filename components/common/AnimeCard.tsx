@@ -8,7 +8,7 @@ import { type AniListMedia } from "@/app/types/anilist";
 import { type MediaType } from "@/app/types/common";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Bookmark, Play, Plus, Star } from "lucide-react";
+import { Bookmark, Play, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -21,11 +21,7 @@ interface AnimeCardProps {
   disableHoverCard?: boolean;
 }
 
-const AnimeCard: React.FC<AnimeCardProps> = ({
-  anime,
-  badge,
-  disableHoverCard,
-}) => {
+const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
@@ -59,7 +55,6 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
     anime.title.romaji ||
     anime.title.native ||
     "Unknown";
-  const score = anime.averageScore != null ? `${anime.averageScore}%` : "N/A";
   const format = anime.format
     ? (FORMAT_LABEL[anime.format] ?? anime.format)
     : null;
@@ -85,6 +80,10 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
     : "Play Now";
 
   const coverSrc = anime.coverImage.extraLarge || anime.coverImage.large;
+
+  const latestEpisode = anime.nextAiringEpisode
+    ? anime.nextAiringEpisode.episode - 1
+    : anime.episodes;
 
   return (
     <div
@@ -121,30 +120,11 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
             </div>
           </div>
 
-          {/* Badge (Relation or Format) */}
-          {(badge || format) && (
-            <div className="absolute top-3 left-3">
+          {/* Latest Episode Badge */}
+          {latestEpisode != null && latestEpisode > 0 && (
+            <div className="absolute top-2 left-3">
               <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
-                {badge || format}
-              </span>
-            </div>
-          )}
-
-          {/* Score badge */}
-          <div className="absolute top-3 right-3">
-            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-md px-2 py-1 flex items-center gap-1">
-              <Star className="w-3 h-3 text-green-500 fill-green-500" />
-              <span className="text-[10px] font-black text-green-500">
-                {score}
-              </span>
-            </div>
-          </div>
-
-          {/* Status badge (airing indicator) */}
-          {anime.status === "RELEASING" && (
-            <div className="absolute bottom-3 left-3">
-              <span className="bg-green-500/20 border border-green-500/40 text-green-400 text-[9px] font-black px-2 py-0.5 rounded-full tracking-wider uppercase">
-                Airing
+                EP {latestEpisode}
               </span>
             </div>
           )}

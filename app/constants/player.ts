@@ -7,8 +7,9 @@ import { Globe, type LucideIcon } from "lucide-react";
 export interface PlayerServer {
   name: string;
   id: string;
-  movieUrl: (tmdbId: string) => string;
-  tvUrl: (tmdbId: string, season: number, episode: number) => string;
+  movieUrl: (tmdbId: string, startAt?: number) => string;
+  tvUrl: (tmdbId: string, season: number, episode: number, startAt?: number) => string;
+  trackingType?: "vidnest" | "vidsrc" | "vidfast";
   description?: string;
   icon?: LucideIcon;
 }
@@ -17,9 +18,11 @@ export const PLAYER_SERVERS: PlayerServer[] = [
   {
     name: "Server 1",
     id: "server-1",
-    movieUrl: (tmdbId: string) => `https://vidnest.fun/movie/${tmdbId}`,
-    tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://vidnest.fun/tv/${tmdbId}/${season}/${episode}`,
+    movieUrl: (tmdbId: string, startAt?: number) =>
+      `https://vidnest.fun/movie/${tmdbId}${startAt ? `?startAt=${startAt}` : ""}`,
+    tvUrl: (tmdbId: string, season: number, episode: number, startAt?: number) =>
+      `https://vidnest.fun/tv/${tmdbId}/${season}/${episode}${startAt ? `?progress=${startAt}` : ""}`,
+    trackingType: "vidnest",
   },
   {
     name: "Server 2",
@@ -67,13 +70,15 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       `https://www.vidsrc.wtf/2/tv/${tmdbId}/${season}/${episode}?color=2563eb`,
     description: "Multi-Language",
     icon: Globe,
+    trackingType: "vidsrc",
   },
   {
     name: "Server 8",
     id: "server-8",
-    movieUrl: (tmdbId: string) =>
-      `https://vidfast.pro/movie/${tmdbId}?theme=2563eb`,
-    tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://vidfast.pro/tv/${tmdbId}/${season}/${episode}?theme=2563eb`,
+    movieUrl: (tmdbId: string, startAt?: number) =>
+      `https://vidfast.pro/movie/${tmdbId}?theme=2563eb${startAt ? `&startAt=${startAt}` : ""}`,
+    tvUrl: (tmdbId: string, season: number, episode: number, startAt?: number) =>
+      `https://vidfast.pro/tv/${tmdbId}/${season}/${episode}?theme=2563eb${startAt ? `&startAt=${startAt}` : ""}`,
+    trackingType: "vidfast",
   },
 ];

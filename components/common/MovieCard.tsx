@@ -25,6 +25,10 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { getAnimeDetails } from "@/app/services/anilist.service";
+import { getMediaDetails } from "@/app/services/all.service";
+import { type AniListMediaDetail } from "@/app/types/anilist";
 
 interface MovieCardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,6 +74,48 @@ const MovieCard: React.FC<MovieCardProps> = ({
     if (movie.media_type) return movie.media_type;
     return "movie";
   }, [mediaType, movie.media_type]);
+
+  const isAnime = currentMediaType === "anime";
+  const isTv = currentMediaType === "tv";
+
+  const { data: realTimeDetails } = useQuery({
+    queryKey: ["realTimeDetails", currentMediaType, movie.id],
+    queryFn: async () => {
+      if (isAnime) {
+        return getAnimeDetails(movie.id);
+      } else if (isTv) {
+        return getMediaDetails(movie.id, "tv");
+      }
+      return null;
+    },
+    enabled: isWatchLaterPage && (isAnime || isTv),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const latestAiredEp = useMemo(() => {
+    if (!isWatchLaterPage) return null;
+    if (currentMediaType === "anime") {
+      const details = realTimeDetails as AniListMediaDetail | null;
+      if (details) {
+        return details.nextAiringEpisode
+          ? `EP ${details.nextAiringEpisode.episode - 1}`
+          : `EP ${details.episodes}`;
+      }
+      // fallback to stored data
+      return movie.nextAiringEpisode
+        ? `EP ${movie.nextAiringEpisode.episode - 1}`
+        : movie.episodes
+          ? `EP ${movie.episodes}`
+          : null;
+    } else if (currentMediaType === "tv") {
+      const details = realTimeDetails as TMDBMovie | null;
+      if (details?.last_episode_to_air) {
+        return `S${details.last_episode_to_air.season_number} E${details.last_episode_to_air.episode_number}`;
+      }
+      return null;
+    }
+    return null;
+  }, [currentMediaType, realTimeDetails, movie, isWatchLaterPage]);
 
   const inWatchlist = isInWatchlist(movie.id, currentMediaType);
 
@@ -258,6 +304,14 @@ const MovieCard: React.FC<MovieCardProps> = ({
             </div>
           )}
 
+          {isWatchLaterPage && latestAiredEp && (
+            <div className="absolute bottom-3 right-3 md:right-3 max-md:right-13 z-20 pointer-events-none">
+              <span className="bg-green-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase shadow-md">
+                {latestAiredEp}
+              </span>
+            </div>
+          )}
+
           <div className="absolute top-3 left-3 flex items-center z-20 pointer-events-none">
             <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
               {currentMediaType}
@@ -324,6 +378,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </h3>
           <p className="text-[11px] font-medium text-white/40 tracking-tight">
             {releaseYear} • {currentMediaType}
+            {isWatchLaterPage && latestAiredEp && ` • Latest: ${latestAiredEp}`}
           </p>
         </Link>
       </div>

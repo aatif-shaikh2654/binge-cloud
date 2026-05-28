@@ -64,6 +64,7 @@ export interface AniListMedia {
   format: AniListFormat | null;
   studios: AniListStudios | null;
   logo_path?: string | null;
+  nextAiringEpisode?: AniListNextAiringEpisode | null;
 }
 
 // ─── Detail types ─────────────────────────────────────────────────────────────

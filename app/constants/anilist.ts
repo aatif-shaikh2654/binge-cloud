@@ -28,6 +28,9 @@ export const ANIME_MEDIA_FRAGMENT = `
       name
     }
   }
+  nextAiringEpisode {
+    episode
+  }
 `;
 
 export const ANIME_PAGE_QUERY = `

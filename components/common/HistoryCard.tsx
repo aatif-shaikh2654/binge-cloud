@@ -1,11 +1,16 @@
 "use client";
 
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { getMediaDetails } from "@/app/services/all.service";
+import { getAnimeDetails } from "@/app/services/anilist.service";
 import { HistoryItem, useHistoryStore } from "@/app/store/useHistoryStore";
+import { type AniListMediaDetail } from "@/app/types/anilist";
+import { type TMDBMovie } from "@/app/types/tmdb";
+import { useQuery } from "@tanstack/react-query";
 import { Info, Play, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useMemo } from "react";
 
 interface HistoryCardProps {
   item: HistoryItem;
@@ -14,6 +19,42 @@ interface HistoryCardProps {
 const HistoryCard: React.FC<HistoryCardProps> = ({ item }) => {
   const { removeFromHistory } = useHistoryStore();
   const { handleWatchClick } = useWatchNavigation();
+
+  const isAnime = item.media_type === "anime";
+  const isTv = item.media_type === "tv";
+
+  const { data: realTimeDetails } = useQuery({
+    queryKey: ["realTimeDetails", item.media_type, item.id],
+    queryFn: async () => {
+      if (isAnime) {
+        return getAnimeDetails(item.id);
+      } else if (isTv) {
+        return getMediaDetails(item.id, "tv");
+      }
+      return null;
+    },
+    enabled: isAnime || isTv,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const latestAiredEp = useMemo(() => {
+    if (isAnime) {
+      const details = realTimeDetails as AniListMediaDetail | null;
+      if (details) {
+        return details.nextAiringEpisode
+          ? `${details.nextAiringEpisode.episode - 1}`
+          : `${details.episodes}`;
+      }
+      return null;
+    } else if (isTv) {
+      const details = realTimeDetails as TMDBMovie | null;
+      if (details?.last_episode_to_air) {
+        return `S${details.last_episode_to_air.season_number} E${details.last_episode_to_air.episode_number}`;
+      }
+      return null;
+    }
+    return null;
+  }, [isAnime, isTv, realTimeDetails]);
 
   const detailUrl = `/${item.media_type}/detail?id=${item.id}`;
 
@@ -40,6 +81,16 @@ const HistoryCard: React.FC<HistoryCardProps> = ({ item }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100"
         />
+
+        {latestAiredEp && (
+          <div className="absolute bottom-3 right-3 z-10 pointer-events-none">
+            <span className="bg-green-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase shadow-md">
+              {latestAiredEp.startsWith("S")
+                ? latestAiredEp
+                : `EP ${latestAiredEp}`}
+            </span>
+          </div>
+        )}
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
 
