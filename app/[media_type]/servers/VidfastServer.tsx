@@ -12,6 +12,7 @@ interface VidfastServerProps {
   seasons?: TMDBSeason[];
   onEpisodeChange: (s: number, e: number) => void;
   trackProgress: (currentTime: number, duration: number, force?: boolean) => void;
+  iframeRef: React.RefObject<HTMLIFrameElement | null>;
 }
 
 export const VidfastServer: React.FC<VidfastServerProps> = ({
@@ -22,6 +23,7 @@ export const VidfastServer: React.FC<VidfastServerProps> = ({
   seasons,
   onEpisodeChange,
   trackProgress,
+  iframeRef,
 }) => {
   const propsRef = useRef({
     id,
@@ -59,6 +61,8 @@ export const VidfastServer: React.FC<VidfastServerProps> = ({
     };
 
     const handleMessage = (event: MessageEvent) => {
+      if (event.source !== iframeRef.current?.contentWindow) return;
+
       let data = event.data;
 
       if (typeof data === "string") {
@@ -181,7 +185,7 @@ export const VidfastServer: React.FC<VidfastServerProps> = ({
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [iframeRef]);
 
   return null;
 };

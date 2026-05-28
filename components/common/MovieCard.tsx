@@ -88,7 +88,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
       }
       return null;
     },
-    enabled: isWatchLaterPage && (isAnime || isTv),
+    enabled: !!isWatchLaterPage && (isAnime || isTv),
     staleTime: 5 * 60 * 1000,
   });
 

@@ -15,11 +15,11 @@ const redis =
       })
     : null;
 
-// Create a rate limiter: 15 requests per 10 seconds per IP
+// Create a rate limiter: 20 requests per 10 seconds per IP
 const ratelimit = redis
   ? new Ratelimit({
       redis,
-      limiter: Ratelimit.slidingWindow(10, "10 s"),
+      limiter: Ratelimit.slidingWindow(20, "10 s"),
       analytics: true,
     })
   : null;

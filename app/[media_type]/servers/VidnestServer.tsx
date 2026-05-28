@@ -12,6 +12,7 @@ interface VidnestServerProps {
   seasons?: TMDBSeason[];
   onEpisodeChange: (s: number, e: number) => void;
   trackProgress: (currentTime: number, duration: number, force?: boolean) => void;
+  iframeRef: React.RefObject<HTMLIFrameElement | null>;
 }
 
 export const VidnestServer: React.FC<VidnestServerProps> = ({
@@ -22,6 +23,7 @@ export const VidnestServer: React.FC<VidnestServerProps> = ({
   seasons,
   onEpisodeChange,
   trackProgress,
+  iframeRef,
 }) => {
   const propsRef = useRef({
     id,
@@ -47,6 +49,8 @@ export const VidnestServer: React.FC<VidnestServerProps> = ({
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      if (event.source !== iframeRef.current?.contentWindow) return;
+
       let data = event.data;
 
       if (typeof data === "string") {
@@ -169,7 +173,7 @@ export const VidnestServer: React.FC<VidnestServerProps> = ({
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [iframeRef]);
 
   return null;
 };

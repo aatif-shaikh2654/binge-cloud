@@ -203,10 +203,12 @@ const Player: React.FC<PlayerProps> = ({
           seasons={seasons}
           onEpisodeChange={onEpisodeChange}
           trackProgress={trackProgress}
+          iframeRef={iframeRef}
         />
       )}
 
       <iframe
+        key={videoUrl}
         ref={iframeRef}
         src={videoUrl}
         className={cn(
