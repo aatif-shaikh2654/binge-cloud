@@ -1,11 +1,11 @@
 "use client";
 
+import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/app/store/useHistoryStore";
 import {
   type AniListNextAiringEpisode,
   type AniListStreamingEpisode,
 } from "@/app/types/anilist";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
 import {
   Select,
   SelectContent,
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Play } from "lucide-react";
+import { Calendar, Play } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 
@@ -67,6 +67,16 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
   const { handleWatchClick } = useWatchNavigation();
   const { history } = useHistoryStore();
 
+  const formatAiringDate = (airingAt: number) => {
+    const date = new Date(airingAt * 1000);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   const historyItem = history.find(
     (h) => h.id === animeId && h.media_type === "anime",
   );
@@ -102,7 +112,7 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
           <h3 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-blue-500">
             All Episodes
           </h3>
-          <h2 className="text-2xl md:text-5xl font-black tracking-tighter">
+          <h2 className="text-2xl md:text-5xl font-black leading-[140%]! tracking-tighter">
             Episodes
             {totalCount > 0 && (
               <span className="ml-3 text-base md:text-2xl font-black text-white/30">
@@ -110,6 +120,17 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
               </span>
             )}
           </h2>
+          {nextAiringEpisode && (
+            <div className="flex lg:mt-2 items-center gap-2.5 px-4 py-2.5 rounded-[10px] border border-blue-500/20 bg-blue-500/5 text-xs md:text-sm font-semibold text-blue-400 mt-2.5 w-fit">
+              <Calendar className="w-4 h-4 text-blue-400 shrink-0 animate-pulse" />
+              <span>
+                Next episode (Ep {nextAiringEpisode.episode}) airing{" "}
+                <span className="text-white font-bold">
+                  {formatAiringDate(nextAiringEpisode.airingAt)}
+                </span>
+              </span>
+            </div>
+          )}
         </div>
 
         {chunkCount > 1 && (
@@ -160,10 +181,10 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
               href={`/anime/watch?id=${animeId}&ep=${epNum}`}
               onClick={handleWatchClick}
               className={cn(
-                "group flex flex-col gap-2 p-3.5 rounded-lg border transition-all duration-300 active:scale-95",
+                "group flex flex-col gap-2 p-3.5 rounded-[10px] border transition-all duration-300 active:scale-95",
                 isCurrentlyWatching
-                  ? "bg-blue-600/80 border-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.2)] backdrop-blur-sm"
-                  : "bg-black border-white/5 hover:bg-zinc-900 hover:border-blue-500/30",
+                  ? "bg-blue-600 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+                  : "bg-zinc-900/40 border-white/10 hover:bg-zinc-900 hover:border-blue-500/40",
               )}
             >
               <div className="flex items-center justify-between">
@@ -172,7 +193,7 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
                     "text-[10px] font-black uppercase tracking-widest transition-colors",
                     isCurrentlyWatching
                       ? "text-white"
-                      : "text-white/40 group-hover:text-blue-400",
+                      : "text-white/60 group-hover:text-blue-400",
                   )}
                 >
                   EP {epNum}
@@ -187,11 +208,11 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
                 />
               </div>
               {cleanTitle ? (
-                <p className="text-xs font-bold text-white/80 line-clamp-2 leading-tight group-hover:text-white transition-colors">
+                <p className="text-xs font-bold text-white line-clamp-2 leading-tight group-hover:text-white transition-colors">
                   {cleanTitle}
                 </p>
               ) : (
-                <p className="text-sm font-black text-white/60 group-hover:text-white transition-colors">
+                <p className="text-sm font-bold text-white/80 group-hover:text-white transition-colors">
                   Episode {epNum}
                 </p>
               )}

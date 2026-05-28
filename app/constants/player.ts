@@ -68,4 +68,12 @@ export const PLAYER_SERVERS: PlayerServer[] = [
     description: "Multi-Language",
     icon: Globe,
   },
+  {
+    name: "Server 8",
+    id: "server-8",
+    movieUrl: (tmdbId: string) =>
+      `https://vidfast.pro/movie/${tmdbId}?theme=2563eb`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://vidfast.pro/tv/${tmdbId}/${season}/${episode}?theme=2563eb`,
+  },
 ];

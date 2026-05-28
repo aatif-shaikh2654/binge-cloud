@@ -103,6 +103,16 @@ const Player: React.FC<PlayerProps> = ({
     videoUrl += `${separator}${paramName}=${initialStartTime}`;
   }
 
+  // Apply Resume Parameters for VidFast
+  if (
+    currentServer.id === "server-8" &&
+    initialStartTime !== null &&
+    initialStartTime > 0
+  ) {
+    const separator = videoUrl.includes("?") ? "&" : "?";
+    videoUrl += `${separator}startAt=${initialStartTime}`;
+  }
+
   // Reset video loaded state when URL changes (Sync state with URL during render)
   const [prevUrl, setPrevUrl] = useState(videoUrl);
   if (videoUrl !== prevUrl) {
@@ -159,9 +169,7 @@ const Player: React.FC<PlayerProps> = ({
       const currentProps = propsRef.current;
 
       // Handle Vidnest Player Events (PLAYER_EVENT and MEDIA_DATA)
-      if (
-        event.origin === "https://vidnest.fun"
-      ) {
+      if (event.origin === "https://vidnest.fun") {
         if (data?.type === "PLAYER_EVENT") {
           const { currentTime, duration } = data.data || {};
           if (currentTime !== undefined && duration !== undefined) {
@@ -229,7 +237,11 @@ const Player: React.FC<PlayerProps> = ({
           }
 
           // Fallback to top-level properties if available directly
-          if (currentTime === undefined && duration === undefined && mediaData) {
+          if (
+            currentTime === undefined &&
+            duration === undefined &&
+            mediaData
+          ) {
             currentTime = mediaData.currentTime ?? mediaData.watched;
             duration = mediaData.duration;
           }
@@ -335,6 +347,128 @@ const Player: React.FC<PlayerProps> = ({
                 );
                 if (nextSeason) {
                   currentProps.onEpisodeChange(currentProps.season + 1, 1);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Handle VidFast Player Events
+      const isVidfastOrigin = (origin: string) => {
+        return [
+          "https://vidfast.pro",
+          "https://vidfast.in",
+          "https://vidfast.io",
+          "https://vidfast.me",
+          "https://vidfast.net",
+          "https://vidfast.pm",
+          "https://vidfast.xyz",
+        ].includes(origin);
+      };
+
+      if (isVidfastOrigin(event.origin)) {
+        if (data?.type === "PLAYER_EVENT") {
+          const { currentTime, duration } = data.data || {};
+          if (currentTime !== undefined && duration !== undefined) {
+            trackProgress(currentTime, duration);
+
+            // Auto-next for TV shows on completion
+            if (
+              currentProps.tmdbType === "tv" &&
+              duration > 0 &&
+              currentTime >= duration - 1
+            ) {
+              const currentSeasonData = currentProps.seasons?.find(
+                (s) => s.season_number === currentProps.season,
+              );
+              if (currentSeasonData) {
+                if (currentProps.episode < currentSeasonData.episode_count) {
+                  currentProps.onEpisodeChange(
+                    currentProps.season,
+                    currentProps.episode + 1,
+                  );
+                } else {
+                  const nextSeason = currentProps.seasons?.find(
+                    (s) => s.season_number === currentProps.season + 1,
+                  );
+                  if (nextSeason) {
+                    currentProps.onEpisodeChange(currentProps.season + 1, 1);
+                  }
+                }
+              }
+            }
+          }
+        } else if (data?.type === "MEDIA_DATA") {
+          const mediaData = data.data;
+
+          // Save progress to local storage as requested by docs
+          try {
+            localStorage.setItem("vidFastProgress", JSON.stringify(mediaData));
+          } catch (e) {
+            console.error("Failed to save vidFastProgress to localStorage", e);
+          }
+
+          let currentTime: number | undefined;
+          let duration: number | undefined;
+
+          if (currentProps.tmdbType === "tv") {
+            const episodeKey = `s${currentProps.season}e${currentProps.episode}`;
+            const tvProgress =
+              mediaData?.[currentProps.id]?.show_progress?.[episodeKey]
+                ?.progress ||
+              mediaData?.show_progress?.[episodeKey]?.progress ||
+              mediaData?.[currentProps.id]?.progress ||
+              mediaData?.progress;
+
+            if (tvProgress) {
+              currentTime = tvProgress.watched;
+              duration = tvProgress.duration;
+            }
+          } else {
+            const movieProgress =
+              mediaData?.[currentProps.id]?.progress || mediaData?.progress;
+            if (movieProgress) {
+              currentTime = movieProgress.watched;
+              duration = movieProgress.duration;
+            }
+          }
+
+          // Fallback to top-level properties if available directly
+          if (
+            currentTime === undefined &&
+            duration === undefined &&
+            mediaData
+          ) {
+            currentTime = mediaData.currentTime ?? mediaData.watched;
+            duration = mediaData.duration;
+          }
+
+          if (currentTime !== undefined && duration !== undefined) {
+            trackProgress(currentTime, duration);
+
+            // Auto-next for TV shows on completion
+            if (
+              currentProps.tmdbType === "tv" &&
+              duration > 0 &&
+              currentTime >= duration - 1
+            ) {
+              const currentSeasonData = currentProps.seasons?.find(
+                (s) => s.season_number === currentProps.season,
+              );
+              if (currentSeasonData) {
+                if (currentProps.episode < currentSeasonData.episode_count) {
+                  currentProps.onEpisodeChange(
+                    currentProps.season,
+                    currentProps.episode + 1,
+                  );
+                } else {
+                  const nextSeason = currentProps.seasons?.find(
+                    (s) => s.season_number === currentProps.season + 1,
+                  );
+                  if (nextSeason) {
+                    currentProps.onEpisodeChange(currentProps.season + 1, 1);
+                  }
                 }
               }
             }

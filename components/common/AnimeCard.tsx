@@ -251,12 +251,6 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
                   ))}
                 </div>
               )}
-
-              {anime.description && (
-                <p className="text-white/60 text-xs line-clamp-2 leading-relaxed font-medium">
-                  {anime.description.replace(/<[^>]*>/g, "")}
-                </p>
-              )}
             </Link>
           </div>
         </div>
