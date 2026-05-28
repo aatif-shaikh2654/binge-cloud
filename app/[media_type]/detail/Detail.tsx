@@ -31,7 +31,11 @@ const Detail: React.FC<DetailProps> = ({ details, credits, tmdbType }) => {
       {/* Episodes Section (For TV Shows) */}
       {tmdbType === "tv" && details.seasons && (
         <div className="relative z-10 container mx-auto px-6 lg:px-20">
-          <EpisodeSection tvId={details.id} seasons={details.seasons} />
+          <EpisodeSection
+            tvId={details.id}
+            seasons={details.seasons}
+            nextEpisodeToAir={details.next_episode_to_air}
+          />
         </div>
       )}
 

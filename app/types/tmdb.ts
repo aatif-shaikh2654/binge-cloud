@@ -32,6 +32,12 @@ export interface TMDBMovie {
     air_date: string;
     name: string;
   } | null;
+  next_episode_to_air?: {
+    episode_number: number;
+    season_number: number;
+    air_date: string;
+    name: string;
+  } | null;
 }
 
 export interface TMDBSeason {
