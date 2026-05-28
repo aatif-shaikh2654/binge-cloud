@@ -73,14 +73,21 @@ const Player: React.FC<PlayerProps> = ({
     };
   });
 
-  // Reset progress tracking refs when navigating to a new episode/season/movie
+  const resolvedStartTimeRef = useRef<number | null>(null);
+
+  // Reset progress tracking refs and start time cache when navigating to a new episode/season/movie/server
   useEffect(() => {
     latestProgressRef.current = { currentTime: 0, duration: 0 };
     lastSaveTimeRef.current = Date.now();
+    resolvedStartTimeRef.current = null;
   }, [id, tmdbType, season, episode, currentServer.id]);
 
-  // Calculate Initial Start Time (only once per media/episode)
+  // Calculate Initial Start Time (only once per media/episode/server)
   const initialStartTime = useMemo(() => {
+    if (resolvedStartTimeRef.current !== null) {
+      return resolvedStartTimeRef.current;
+    }
+
     const savedItem = history.find(
       (h) =>
         h.id === Number(id) &&
@@ -90,11 +97,16 @@ const Player: React.FC<PlayerProps> = ({
           : true),
     );
 
-    if (savedItem?.currentTime && savedItem.currentTime > 10) {
-      return Math.floor(savedItem.currentTime);
+    const time = savedItem?.currentTime && savedItem.currentTime > 10
+      ? Math.floor(savedItem.currentTime)
+      : 0;
+
+    if (time > 0 || history.length > 0) {
+      resolvedStartTimeRef.current = time;
     }
-    return 0;
-  }, [id, tmdbType, season, episode, history]);
+
+    return time;
+  }, [id, tmdbType, season, episode, currentServer.id, history]);
 
   const videoUrl =
     tmdbType === "tv"

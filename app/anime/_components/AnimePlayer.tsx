@@ -52,10 +52,13 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
     };
   });
 
+  const resolvedStartTimeRef = useRef<number | null>(null);
+
   // Reset progress tracking refs when navigating to a new episode/server
   useEffect(() => {
     latestProgressRef.current = { currentTime: 0, duration: 0 };
     lastSaveTimeRef.current = Date.now();
+    resolvedStartTimeRef.current = null;
   }, [id, ep, currentServer.id]);
 
   // Background Image for Loader
@@ -67,17 +70,25 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
   // Calculate Initial Start Time
   const initialStartTime = useMemo(() => {
+    if (resolvedStartTimeRef.current !== null) {
+      return resolvedStartTimeRef.current;
+    }
+
     const savedItem = history.find(
       (h) =>
         h.id === Number(id) && h.media_type === "anime" && h.episode === ep,
     );
 
-    if (savedItem?.currentTime && savedItem.currentTime > 10) {
-      return Math.floor(savedItem.currentTime);
+    const time = savedItem?.currentTime && savedItem.currentTime > 10
+      ? Math.floor(savedItem.currentTime)
+      : 0;
+
+    if (time > 0 || history.length > 0) {
+      resolvedStartTimeRef.current = time;
     }
-    return 0;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, ep, currentServer.id]); // history removed to stabilize videoUrl during playback
+
+    return time;
+  }, [id, ep, currentServer.id, history]);
 
   let videoUrl = `${currentServer.baseUrl}/${id}/${ep}/${currentServer.lang}`;
 
