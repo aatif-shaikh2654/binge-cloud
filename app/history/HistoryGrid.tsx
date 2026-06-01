@@ -8,6 +8,7 @@ import { Clock, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { getHistory } from "@/app/services/history.service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -23,6 +24,7 @@ const HistoryGrid = ({ initialHistory }: HistoryGridProps) => {
 
   const { isLoading: isHistoryLoading } = useQuery({
     queryKey: ["history", user?.id],
+    queryFn: getHistory,
     enabled: !!user,
   });
 

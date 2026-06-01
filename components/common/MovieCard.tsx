@@ -2,14 +2,17 @@
 
 import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { getMovieVideos } from "@/app/services/all.service";
+import { getMediaDetails, getMovieVideos } from "@/app/services/all.service";
+import { getAnimeDetails } from "@/app/services/anilist.service";
 import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { usePlayerStore } from "@/app/store/usePlayerStore";
 import { useWatchlistStore } from "@/app/store/useWatchlistStore";
+import { type AniListMediaDetail } from "@/app/types/anilist";
 import { MediaType, UnifiedMediaItem } from "@/app/types/common";
 import { TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import {
   Bookmark,
   BookmarkMinus,
@@ -25,10 +28,6 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { getAnimeDetails } from "@/app/services/anilist.service";
-import { getMediaDetails } from "@/app/services/all.service";
-import { type AniListMediaDetail } from "@/app/types/anilist";
 
 interface MovieCardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -501,7 +500,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
                   {releaseYear}
                 </span>
                 <span className="uppercase text-[10px] border border-blue-500/50 font-black text-blue-500 px-1.5 py-0.5 rounded">
-                  {mediaType}
+                  {currentMediaType}
                 </span>
               </div>
               <h3 className="text-lg font-black text-white leading-tight truncate mb-2">

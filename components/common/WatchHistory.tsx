@@ -24,6 +24,7 @@ const WatchHistorySkeleton = () => (
 );
 
 import { useAuth } from "@/components/providers/AuthProvider";
+import { getHistory } from "@/app/services/history.service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -60,6 +61,7 @@ const WatchHistory = ({ filterType, initialHistory }: WatchHistoryProps) => {
 
   const { isLoading: isHistoryLoading } = useQuery({
     queryKey: ["history", user?.id],
+    queryFn: getHistory,
     enabled: !!user,
   });
 

@@ -157,6 +157,14 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+
+            {latestEpisode != null && latestEpisode > 0 && (
+              <div className="absolute top-2.5 left-3 z-30">
+                <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
+                  EP {latestEpisode}
+                </span>
+              </div>
+            )}
           </Link>
 
           <div className="p-4 space-y-3">

@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Initialize Redis only if env variables are present to avoid dev crashes
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+const isDev = process.env.NODE_ENV === "development";
 
 const redis =
   redisUrl && redisToken
@@ -15,13 +16,15 @@ const redis =
       })
     : null;
 
-// Create a rate limiter: 20 requests per 10 seconds per IP
+// Create a rate limiter: 30 requests per 10 seconds per IP
 const ratelimit = redis
-  ? new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(20, "10 s"),
-      analytics: true,
-    })
+  ? isDev
+    ? null
+    : new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(30, "10 s"),
+        analytics: true,
+      })
   : null;
 
 /**

@@ -47,7 +47,9 @@ tmdbInstance.interceptors.request.use((config) => {
 // ✅ Request interceptor for local proxy
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    // Add any client-side auth logic here if needed
+    if (typeof window === "undefined") {
+      config.baseURL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    }
     return config;
   },
   (error: AxiosError) => Promise.reject(error),

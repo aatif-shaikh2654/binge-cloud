@@ -9,7 +9,7 @@ import { type TMDBMovie } from "@/app/types/tmdb";
 import ZoomableImage from "@/components/common/ZoomableImage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Bookmark, Play, Plus, Star } from "lucide-react";
+import { Bookmark, ChevronDown, ChevronUp, Play, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
@@ -24,6 +24,7 @@ interface DetailHeroProps {
 
 const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
   const { handleWatchClick } = useWatchNavigation();
   const history = useHistoryStore((state) => state.history);
 
@@ -264,15 +265,38 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
             </Button>
           </div>
 
-          <div className="space-y-3 max-w-2xl">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 flex items-center justify-start gap-3">
-              Storyline
-              <div className="h-px flex-1 bg-white/10 hidden lg:block" />
-            </h3>
-            <p className="text-sm md:text-lg text-white/80 leading-relaxed font-medium">
-              {details.overview}
-            </p>
-          </div>
+          {details.overview && (
+            <div className="space-y-3 max-w-2xl">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 flex items-center justify-start gap-3">
+                Storyline
+                <div className="h-px flex-1 bg-white/10 hidden lg:block" />
+              </h3>
+              <p
+                className={cn(
+                  "text-sm md:text-lg text-white/80 leading-relaxed font-medium transition-all duration-300",
+                  isDescExpanded ? "" : "line-clamp-4"
+                )}
+              >
+                {details.overview}
+              </p>
+              {details.overview.length > 250 && (
+                <button
+                  onClick={() => setIsDescExpanded(!isDescExpanded)}
+                  className="flex items-center gap-1.5 text-blue-500 hover:text-blue-400 font-extrabold text-sm transition-colors cursor-pointer"
+                >
+                  {isDescExpanded ? (
+                    <>
+                      Show Less <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      Read More <ChevronDown className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>

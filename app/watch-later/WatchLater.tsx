@@ -4,6 +4,7 @@ import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import MovieCard from "@/components/common/MovieCard";
 import PageHeader from "@/components/common/PageHeader";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { getWatchlist } from "@/app/services/watchlist.service";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +24,7 @@ const WatchLater = ({ initialWatchlist }: WatchLaterProps) => {
 
   const { isLoading: isWatchlistLoading } = useQuery({
     queryKey: ["watchlist", user?.id],
+    queryFn: getWatchlist,
     enabled: !!user,
   });
 

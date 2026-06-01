@@ -9,10 +9,10 @@ import { type MediaType } from "@/app/types/common";
 import ZoomableImage from "@/components/common/ZoomableImage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Bookmark, Play, Plus, Star } from "lucide-react";
+import { Bookmark, ChevronDown, ChevronUp, Play, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
 
@@ -24,6 +24,7 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
   const { handleWatchClick } = useWatchNavigation();
   const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
   const history = useHistoryStore((state) => state.history);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   const tmdbType: MediaType = "anime";
   const inWatchlist = isInWatchlist(details.id, tmdbType);
@@ -237,9 +238,30 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
                 Storyline
                 <div className="h-px flex-1 bg-white/10 hidden lg:block" />
               </h3>
-              <p className="text-sm md:text-lg text-white/80 leading-relaxed line-clamp-4 font-medium">
+              <p
+                className={cn(
+                  "text-sm md:text-lg text-white/80 leading-relaxed font-medium transition-all duration-300",
+                  isDescExpanded ? "" : "line-clamp-4"
+                )}
+              >
                 {cleanDescription}
               </p>
+              {cleanDescription.length > 250 && (
+                <button
+                  onClick={() => setIsDescExpanded(!isDescExpanded)}
+                  className="flex items-center gap-1.5 text-blue-500 hover:text-blue-400 font-extrabold text-sm transition-colors cursor-pointer"
+                >
+                  {isDescExpanded ? (
+                    <>
+                      Show Less <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      Read More <ChevronDown className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           )}
 

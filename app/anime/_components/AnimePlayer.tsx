@@ -6,7 +6,7 @@ import { type AniListMediaDetail } from "@/app/types/anilist";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface AnimePlayerProps {
   id: string;
@@ -52,14 +52,31 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
     };
   });
 
-  const resolvedStartTimeRef = useRef<number | null>(null);
+  const [initialStartTime, setInitialStartTime] = useState<number | null>(null);
 
-  // Reset progress tracking refs when navigating to a new episode/server
+  // Reset progress tracking refs and initialStartTime when navigating to a new episode/server
   useEffect(() => {
     latestProgressRef.current = { currentTime: 0, duration: 0 };
     lastSaveTimeRef.current = Date.now();
-    resolvedStartTimeRef.current = null;
+    setInitialStartTime(null); // eslint-disable-line react-hooks/set-state-in-effect
   }, [id, ep, currentServer.id]);
+
+  // Resolve start time from history once per navigation
+  useEffect(() => {
+    if (initialStartTime !== null) return;
+
+    const savedItem = history.find(
+      (h) =>
+        h.id === Number(id) && h.media_type === "anime" && h.episode === ep,
+    );
+
+    if (savedItem || history.length > 0) {
+      const time = savedItem?.currentTime && savedItem.currentTime > 10
+        ? Math.floor(savedItem.currentTime)
+        : 0;
+      setInitialStartTime(time); // eslint-disable-line react-hooks/set-state-in-effect
+    }
+  }, [id, ep, currentServer.id, history, initialStartTime]);
 
   // Background Image for Loader
   const backdropImage =
@@ -67,28 +84,6 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
     initialDetails.coverImage.extraLarge ||
     initialDetails.coverImage.large ||
     "";
-
-  // Calculate Initial Start Time
-  const initialStartTime = useMemo(() => {
-    if (resolvedStartTimeRef.current !== null) {
-      return resolvedStartTimeRef.current;
-    }
-
-    const savedItem = history.find(
-      (h) =>
-        h.id === Number(id) && h.media_type === "anime" && h.episode === ep,
-    );
-
-    const time = savedItem?.currentTime && savedItem.currentTime > 10
-      ? Math.floor(savedItem.currentTime)
-      : 0;
-
-    if (time > 0 || history.length > 0) {
-      resolvedStartTimeRef.current = time;
-    }
-
-    return time;
-  }, [id, ep, currentServer.id, history]);
 
   let videoUrl = `${currentServer.baseUrl}/${id}/${ep}/${currentServer.lang}`;
 

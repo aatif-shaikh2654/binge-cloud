@@ -1,8 +1,7 @@
 import {
-  ANILIST_ENDPOINT,
   ANIME_DETAIL_QUERY,
-  ANIME_PAGE_QUERY,
   ANIME_GENRE_QUERY,
+  ANIME_PAGE_QUERY,
 } from "@/app/constants/anilist";
 import {
   type AniListDetailResponse,
@@ -17,7 +16,10 @@ const fetchAniList = async <T extends AniListResponse | AniListDetailResponse>(
   variables: Record<string, unknown>,
 ): Promise<T> => {
   const isServer = typeof window === "undefined";
-  const url = isServer ? ANILIST_ENDPOINT : "/api/anime";
+  const baseUrl = isServer
+    ? process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+    : "";
+  const url = `${baseUrl}/api/anime`;
 
   const response = await fetch(url, {
     method: "POST",

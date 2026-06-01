@@ -8,7 +8,7 @@ import { type TMDBMovie, type TMDBSeason } from "@/app/types/tmdb";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { VidnestServer } from "../servers/VidnestServer";
 import { VidsrcServer } from "../servers/VidsrcServer";
 import { VidfastServer } from "../servers/VidfastServer";
@@ -73,20 +73,18 @@ const Player: React.FC<PlayerProps> = ({
     };
   });
 
-  const resolvedStartTimeRef = useRef<number | null>(null);
+  const [initialStartTime, setInitialStartTime] = useState<number | null>(null);
 
-  // Reset progress tracking refs and start time cache when navigating to a new episode/season/movie/server
+  // Reset progress tracking refs and initialStartTime when navigating to a new episode/season/movie/server
   useEffect(() => {
     latestProgressRef.current = { currentTime: 0, duration: 0 };
     lastSaveTimeRef.current = Date.now();
-    resolvedStartTimeRef.current = null;
+    setInitialStartTime(null); // eslint-disable-line react-hooks/set-state-in-effect
   }, [id, tmdbType, season, episode, currentServer.id]);
 
-  // Calculate Initial Start Time (only once per media/episode/server)
-  const initialStartTime = useMemo(() => {
-    if (resolvedStartTimeRef.current !== null) {
-      return resolvedStartTimeRef.current;
-    }
+  // Resolve start time from history once per navigation
+  useEffect(() => {
+    if (initialStartTime !== null) return;
 
     const savedItem = history.find(
       (h) =>
@@ -97,16 +95,13 @@ const Player: React.FC<PlayerProps> = ({
           : true),
     );
 
-    const time = savedItem?.currentTime && savedItem.currentTime > 10
-      ? Math.floor(savedItem.currentTime)
-      : 0;
-
-    if (time > 0 || history.length > 0) {
-      resolvedStartTimeRef.current = time;
+    if (savedItem || history.length > 0) {
+      const time = savedItem?.currentTime && savedItem.currentTime > 10
+        ? Math.floor(savedItem.currentTime)
+        : 0;
+      setInitialStartTime(time); // eslint-disable-line react-hooks/set-state-in-effect
     }
-
-    return time;
-  }, [id, tmdbType, season, episode, currentServer.id, history]);
+  }, [id, tmdbType, season, episode, currentServer.id, history, initialStartTime]);
 
   const videoUrl =
     tmdbType === "tv"

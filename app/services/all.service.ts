@@ -9,7 +9,6 @@ import {
   type TMDBPersonCredits,
 } from "@/app/types/tmdb";
 import { ApiService } from "./api.service";
-import { tmdbInstance } from "./axios";
 
 /**
  * Helper to fetch a movie/show logo path directly from TMDB
@@ -19,12 +18,11 @@ const fetchMovieLogo = async (
   type: MediaType,
 ): Promise<string | undefined> => {
   try {
-    const data = (await tmdbInstance.get<TMDBImageResponse>(
-      `${type}/${id}/images`,
-      {
-        params: { include_image_language: "en,null" },
-      },
-    )) as unknown as TMDBImageResponse;
+    const data = await ApiService<TMDBImageResponse>({
+      method: "GET",
+      url: `/${type}/${id}/images`,
+      params: { include_image_language: "en,null" },
+    });
 
     const logo =
       data.logos?.find(
