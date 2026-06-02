@@ -130,14 +130,14 @@ const MovieCard: React.FC<MovieCardProps> = ({
   };
 
   const rating = useMemo(() => {
-    if (movie.vote_average !== undefined) {
-      return (movie.vote_average * 10).toFixed(0);
+    if (movie.vote_average !== undefined && movie.vote_average !== null) {
+      return movie.vote_average.toFixed(1);
     }
     const score = movie.averageScore as number | undefined;
     if (score !== undefined && score !== null) {
-      return score.toFixed(0);
+      return (score / 10).toFixed(1);
     }
-    return "0";
+    return "0.0";
   }, [movie]);
 
   const releaseYear = useMemo(() => {
@@ -323,7 +323,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 <div className="hidden md:flex bg-black/60 backdrop-blur-md border border-white/10 rounded-md px-2 py-1 items-center gap-1 pointer-events-none">
                   <Star className="w-3 h-3 text-green-500 fill-green-500" />
                   <span className="text-[10px] font-black text-green-500">
-                    {rating}%
+                    {rating}
                   </span>
                 </div>
                 {/* Mobile: Remove Button */}
@@ -339,7 +339,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
               <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-md px-2 py-1 flex items-center gap-1 pointer-events-none">
                 <Star className="w-3 h-3 text-green-500 fill-green-500" />
                 <span className="text-[10px] font-black text-green-500">
-                  {rating}%
+                  {rating}
                 </span>
               </div>
             )}
@@ -494,7 +494,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
             <Link href={detailUrl}>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-green-500 font-black text-xs uppercase tracking-wider">
-                  {rating}% Match
+                  {rating} Rating
                 </span>
                 <span className="text-white/40 text-[10px] font-bold border border-white/10 px-1.5 py-0.5 rounded uppercase">
                   {releaseYear}

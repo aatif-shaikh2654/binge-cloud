@@ -224,7 +224,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
               {details.genres?.map((genre) => (
                 <span
                   key={genre.id}
-                  className="px-3 py-1 rounded-full border border-white/20 bg-white/5 text-[9px] lg:text-[10px] font-black text-white/90 tracking-tight"
+                  className="uppercase text-[9px] lg:text-[10px] border border-white/15 font-black text-white/60 px-1.5 py-0.5 rounded tracking-wider bg-white/[0.02]"
                 >
                   {genre.name}
                 </span>

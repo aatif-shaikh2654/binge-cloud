@@ -232,7 +232,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
                   {anime.genres.slice(0, 3).map((g) => (
                     <span
                       key={g}
-                      className="text-[10px] font-medium text-white/50 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full"
+                      className="uppercase text-[9px] lg:text-[10px] border border-white/15 font-black text-white/60 px-1.5 py-0.5 rounded tracking-wider bg-white/[0.02]"
                     >
                       {g}
                     </span>
