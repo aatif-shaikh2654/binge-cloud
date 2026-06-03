@@ -271,7 +271,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({
                     </h4>
                     <div className="flex items-center gap-1 text-green-500 text-[8px] md:text-[10px] font-black shrink-0">
                       <Star className="w-2.5 h-2.5 md:w-3 md:h-3 fill-green-500" />
-                      {(episode.vote_average * 10).toFixed(0)}%
+                      {(episode.vote_average || 0).toFixed(1)}
                     </div>
                   </div>
                   <p className="hidden md:line-clamp-2 text-[10px] md:text-xs text-white/40 font-medium leading-relaxed mt-1 md:mt-2">
