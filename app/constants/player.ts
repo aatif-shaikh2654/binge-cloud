@@ -98,4 +98,12 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       `https://vidnest.fun/tv/${tmdbId}/${season}/${episode}${startAt ? `?progress=${startAt}` : ""}`,
     trackingType: "vidnest",
   },
+  {
+    name: "Server 9",
+    id: "server-9",
+    movieUrl: (tmdbId: string) =>
+      `https://streams.iqsmartgames.com/embed/movie/${tmdbId}?key=e11a7debaaa4f5d25b671706ffe4d2acb56efbd4`,
+    tvUrl: (tmdbId: string, season: number, episode: number) =>
+      `https://streams.iqsmartgames.com/embed/tv/${tmdbId}/${season}/${episode}?key=e11a7debaaa4f5d25b671706ffe4d2acb56efbd4`,
+  },
 ];
