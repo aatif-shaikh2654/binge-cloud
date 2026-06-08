@@ -1,4 +1,4 @@
-import { getPersonCredits, getPersonDetails } from "@/app/services/all.service";
+import { getPersonDetails } from "@/app/services/all.service";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import React from "react";
@@ -46,12 +46,9 @@ export default async function PersonPage({ params }: PageProps) {
 
   if (!id) notFound();
 
-  let person, credits;
+  let person;
   try {
-    [person, credits] = await Promise.all([
-      getPersonDetails(id),
-      getPersonCredits(id),
-    ]);
+    person = await getPersonDetails(id);
   } catch (error) {
     console.error("Error loading person page details:", error);
     notFound();
@@ -61,5 +58,5 @@ export default async function PersonPage({ params }: PageProps) {
     notFound();
   }
 
-  return <PersonDetails person={person} credits={credits} />;
+  return <PersonDetails person={person} />;
 }

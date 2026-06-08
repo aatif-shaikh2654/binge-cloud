@@ -1,20 +1,22 @@
+import { getHistory } from "@/app/actions";
 import AnimeHero from "@/components/common/AnimeHero";
-import { AnimeSliderSkeleton } from "@/components/common/AnimeSlider";
+import AnimeSearch from "@/components/common/AnimeSearch";
+import { SliderSkeleton } from "@/components/common/SliderSkeleton";
 import { WatchHistorySkeleton } from "@/components/common/WatchHistory";
+import nextDynamic from "next/dynamic";
+import { Suspense } from "react";
 import {
   getPopularAnime,
   getTopRatedAnime,
   getTrendingAnime,
 } from "../services/anilist.service";
-import { getHistory } from "@/app/actions";
-import { Suspense } from "react";
-import nextDynamic from "next/dynamic";
 
-const AnimeSearch = nextDynamic(() => import("@/components/common/AnimeSearch"), {
-  ssr: false,
-});
-const WatchHistory = nextDynamic(() => import("@/components/common/WatchHistory"));
-const AnimeSlider = nextDynamic(() => import("@/components/common/AnimeSlider"));
+const WatchHistory = nextDynamic(
+  () => import("@/components/common/WatchHistory"),
+);
+const AnimeSlider = nextDynamic(
+  () => import("@/components/common/AnimeSlider"),
+);
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +74,7 @@ export default async function AnimePage() {
       </Suspense>
 
       <div className="mt-8 space-y-2">
-        <Suspense fallback={<AnimeSliderSkeleton title="Trending Now" />}>
+        <Suspense fallback={<SliderSkeleton title="Trending Now" />}>
           <AnimeSlider
             title="Trending Now"
             anime={trending}
@@ -80,11 +82,11 @@ export default async function AnimePage() {
           />
         </Suspense>
 
-        <Suspense fallback={<AnimeSliderSkeleton title="Most Popular" />}>
+        <Suspense fallback={<SliderSkeleton title="Most Popular" />}>
           <PopularAnimeWrapper />
         </Suspense>
 
-        <Suspense fallback={<AnimeSliderSkeleton title="Top Rated" />}>
+        <Suspense fallback={<SliderSkeleton title="Top Rated" />}>
           <TopRatedAnimeWrapper />
         </Suspense>
       </div>

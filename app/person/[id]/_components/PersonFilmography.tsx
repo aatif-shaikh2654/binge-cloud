@@ -5,41 +5,43 @@ import MovieCard from "@/components/common/MovieCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Film, Loader2, Tv } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PersonFilmographyProps {
-  credits: TMDBPersonCredits;
+  credits?: TMDBPersonCredits;
+  isLoading?: boolean;
 }
 
-export default function PersonFilmography({ credits }: PersonFilmographyProps) {
+export default function PersonFilmography({ credits, isLoading }: PersonFilmographyProps) {
   const [activeTab, setActiveTab] = useState("all");
   const [visibleCount, setVisibleCount] = useState(20);
   const itemsPerLoad = 20;
 
   // Filter and sort cast credits
   const movieCredits = useMemo(() => {
-    return (credits.cast || [])
+    return (credits?.cast || [])
       .filter(
         (item) =>
           item.media_type === "movie" &&
           (item.poster_path || item.backdrop_path),
       )
       .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-  }, [credits.cast]);
+  }, [credits?.cast]);
 
   const tvCredits = useMemo(() => {
-    return (credits.cast || [])
+    return (credits?.cast || [])
       .filter(
         (item) =>
           item.media_type === "tv" && (item.poster_path || item.backdrop_path),
       )
       .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-  }, [credits.cast]);
+  }, [credits?.cast]);
 
   const allCredits = useMemo(() => {
-    return (credits.cast || [])
+    return (credits?.cast || [])
       .filter((item) => item.poster_path || item.backdrop_path)
       .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-  }, [credits.cast]);
+  }, [credits?.cast]);
 
   // Paginated slices
   const movieCreditsPaginated = useMemo(() => {
@@ -88,6 +90,29 @@ export default function PersonFilmography({ credits }: PersonFilmographyProps) {
       }
     };
   }, [activeTab, hasMore]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8 border-t border-white/5 pt-12 animate-pulse">
+        <div className="space-y-1">
+          <Skeleton className="h-4 w-24 bg-white/5" />
+          <Skeleton className="h-10 w-64 bg-white/5" />
+        </div>
+        <div className="h-[50px] w-64 rounded-md bg-white/5" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-3">
+              <Skeleton className="aspect-[2/3] w-full rounded-xl bg-white/5" />
+              <div className="flex flex-col gap-1.5 px-1">
+                <Skeleton className="h-4 w-3/4 bg-white/5 animate-pulse" />
+                <Skeleton className="h-3 w-1/2 bg-white/5 animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 border-t border-white/5 pt-12">

@@ -10,6 +10,8 @@ import AnimeCharactersSlider from "../_components/AnimeCharactersSlider";
 import AnimeDetailHero from "../_components/AnimeDetailHero";
 import AnimeEpisodeSectionContent from "../_components/AnimeEpisodeSectionContent";
 import AnimeRelations from "../_components/AnimeRelations";
+import { useQuery } from "@tanstack/react-query";
+import { getAnimeByGenre } from "@/app/services/anilist.service";
 
 interface AnimeDetailProps {
   details: AniListMediaDetail;
@@ -18,8 +20,23 @@ interface AnimeDetailProps {
 
 const AnimeDetail: React.FC<AnimeDetailProps> = ({
   details,
-  similarAnime = [],
+  similarAnime: initialSimilarAnime,
 }) => {
+  const { data: similarAnimeData } = useQuery({
+    queryKey: ["similarAnime", details?.id, details?.genres],
+    queryFn: async () => {
+      if (details?.genres && details.genres.length > 0) {
+        const response = await getAnimeByGenre(details.genres, details.id);
+        return response.media || [];
+      }
+      return [];
+    },
+    initialData: initialSimilarAnime,
+    enabled: !!details?.id && !!details?.genres && details.genres.length > 0,
+  });
+
+  const similarAnime = similarAnimeData || [];
+
   if (!details) return null;
 
   const characters = details.characters?.edges ?? [];

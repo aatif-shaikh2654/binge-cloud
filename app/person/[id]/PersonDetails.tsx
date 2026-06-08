@@ -8,13 +8,21 @@ import { useMemo } from "react";
 import PersonBio from "./_components/PersonBio";
 import PersonFilmography from "./_components/PersonFilmography";
 import PersonalInfo from "./_components/PersonalInfo";
+import { useQuery } from "@tanstack/react-query";
+import { getPersonCredits } from "@/app/services/all.service";
 
 interface PersonDetailsProps {
   person: TMDBPerson;
-  credits: TMDBPersonCredits;
+  credits?: TMDBPersonCredits;
 }
 
-export default function PersonDetails({ person, credits }: PersonDetailsProps) {
+export default function PersonDetails({ person, credits: initialCredits }: PersonDetailsProps) {
+  const { data: credits, isLoading } = useQuery({
+    queryKey: ["personCredits", person?.id],
+    queryFn: () => getPersonCredits(person.id),
+    initialData: initialCredits,
+    enabled: !!person?.id,
+  });
   // Compute Age
   const age = useMemo(() => {
     if (!person.birthday) return null;
@@ -99,7 +107,7 @@ export default function PersonDetails({ person, credits }: PersonDetailsProps) {
         </div>
 
         {/* Filmography Section */}
-        <PersonFilmography credits={credits} />
+        <PersonFilmography credits={credits} isLoading={isLoading} />
       </div>
     </div>
   );

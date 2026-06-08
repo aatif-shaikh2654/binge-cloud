@@ -90,12 +90,13 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
           slidesPerView={2.2}
           freeMode={true}
           breakpoints={{
-            640: { slidesPerView: 2.2, spaceBetween: 16 },
-            768: { slidesPerView: 4.2, spaceBetween: 24 },
-            1024: { slidesPerView: 5.2, spaceBetween: 24 },
-            1280: { slidesPerView: 6.2, spaceBetween: 24 },
-            1536: { slidesPerView: 7.2, spaceBetween: 24 },
-            1920: { slidesPerView: 8.2, spaceBetween: 24 },
+            480: { slidesPerView: 2.6, spaceBetween: 16 },
+            640: { slidesPerView: 3.2, spaceBetween: 16 },
+            768: { slidesPerView: 4.2, spaceBetween: 16 },
+            1024: { slidesPerView: 5.2, spaceBetween: 20 },
+            1280: { slidesPerView: 6.2, spaceBetween: 20 },
+            1536: { slidesPerView: 7.2, spaceBetween: 20 },
+            1920: { slidesPerView: 8.2, spaceBetween: 20 },
           }}
           className="!overflow-visible"
         >

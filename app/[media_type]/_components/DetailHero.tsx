@@ -9,7 +9,14 @@ import { type TMDBMovie } from "@/app/types/tmdb";
 import ZoomableImage from "@/components/common/ZoomableImage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Bookmark, ChevronDown, ChevronUp, Play, Plus, Star } from "lucide-react";
+import {
+  Bookmark,
+  ChevronDown,
+  ChevronUp,
+  Play,
+  Plus,
+  Star,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
@@ -94,9 +101,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
   const releaseYear = new Date(
     details?.release_date || details?.first_air_date || "",
   ).getFullYear();
-  const rating = details?.vote_average
-    ? (details.vote_average * 10).toFixed(0)
-    : "0";
+  const rating = details?.vote_average ? details.vote_average.toFixed(1) : "0";
   const runtime = details?.runtime || details?.episode_run_time?.[0] || 0;
 
   const watchUrl = isResumable
@@ -190,9 +195,9 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
         <div className="flex-1 max-w-3xl space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-200 fill-mode-backwards w-full">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-start gap-3">
-              <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-green-500/10 border border-green-500/20 rounded-full text-green-500 text-[10px] font-black uppercase tracking-wider">
-                <Star className="w-3 h-3 fill-green-500" />
-                {rating}% Match
+              <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-500 text-[10px] font-black uppercase tracking-wider">
+                <Star className="w-3 h-3 fill-yellow-500" />
+                {rating}
               </div>
               {!isNaN(releaseYear) && (
                 <span className="text-white/60 text-[10px] font-black uppercase tracking-widest">
@@ -274,7 +279,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
               <p
                 className={cn(
                   "text-sm md:text-lg text-white/80 leading-relaxed font-medium transition-all duration-300",
-                  isDescExpanded ? "" : "line-clamp-4"
+                  isDescExpanded ? "" : "line-clamp-4",
                 )}
               >
                 {details.overview}

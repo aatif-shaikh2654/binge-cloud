@@ -2,8 +2,8 @@ import {
   getMediaDetails,
   getMediaList,
   getSimilarMedia,
+  getTrendingMedia,
 } from "@/app/services/all.service";
-import { type MediaType } from "@/app/types/common";
 import PageHeader from "@/components/common/PageHeader";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -13,7 +13,7 @@ export async function generateMetadata({
   params,
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const [{ media_type }, { related_to }] = await Promise.all([
+  const [{ media_type }, { related_to, filter }] = await Promise.all([
     params,
     searchParams,
   ]);
@@ -35,6 +35,13 @@ export async function generateMetadata({
     }
   }
 
+  if (filter === "trending") {
+    return {
+      title: isMovies ? "Top 10 Movies" : "Top 10 Series",
+      description: `Discover the most watched ${isMovies ? "movies" : "TV series"} of the week on Binge Cloud.`,
+    };
+  }
+
   return {
     title: isMovies ? "Popular Movies" : "Popular TV Series",
     description: `Discover our curated selection of top-rated ${media_type === "movie" ? "movies" : "TV series"}. From blockbusters to hidden gems, find everything you love here.`,
@@ -45,17 +52,17 @@ export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ media_type: string }>;
-  searchParams: Promise<{ related_to?: string }>;
+  searchParams: Promise<{ related_to?: string; filter?: string }>;
 }
 
 export default async function MediaPage({ params, searchParams }: PageProps) {
-  const [{ media_type }, { related_to }] = await Promise.all([
+  const [{ media_type }, { related_to, filter }] = await Promise.all([
     params,
     searchParams,
   ]);
 
   // Map route names to TMDB types
-  const typeMap: Record<string, MediaType> = {
+  const typeMap: Record<string, "movie" | "tv"> = {
     movie: "movie",
     tv: "tv",
   };
@@ -83,6 +90,14 @@ export default async function MediaPage({ params, searchParams }: PageProps) {
     } catch {
       initialData = await getMediaList(tmdbType, "popular", 1);
     }
+  } else if (filter === "trending") {
+    try {
+      initialData = await getTrendingMedia(tmdbType, "week", 1);
+      title = tmdbType === "movie" ? "Top 10 Movies" : "Top 10 Series";
+      description = `Discover the most watched ${tmdbType === "movie" ? "movies" : "TV series"} of the week.`;
+    } catch {
+      initialData = await getMediaList(tmdbType, "popular", 1);
+    }
   } else {
     // Fetch first page on server
     initialData = await getMediaList(tmdbType, "popular", 1);
@@ -96,6 +111,7 @@ export default async function MediaPage({ params, searchParams }: PageProps) {
         initialData={initialData}
         mediaType={tmdbType}
         relatedTo={related_to}
+        filter={filter}
       />
     </div>
   );

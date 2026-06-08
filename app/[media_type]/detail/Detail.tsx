@@ -6,6 +6,8 @@ import { type MediaType } from "@/app/types/common";
 import EpisodeSection from "../_components/EpisodeSection";
 import DetailHero from "../_components/DetailHero";
 import dynamic from "next/dynamic";
+import { useQuery } from "@tanstack/react-query";
+import { getMediaCredits } from "@/app/services/all.service";
 
 const CastSlider = dynamic(() => import("../_components/CastSlider"), {
   ssr: false,
@@ -17,11 +19,18 @@ const RelatedMedia = dynamic(() => import("../_components/RelatedMedia"), {
 
 interface DetailProps {
   details: TMDBMovie;
-  credits: TMDBCreditsResponse;
+  credits?: TMDBCreditsResponse;
   tmdbType: MediaType;
 }
 
-const Detail: React.FC<DetailProps> = ({ details, credits, tmdbType }) => {
+const Detail: React.FC<DetailProps> = ({ details, credits: initialCredits, tmdbType }) => {
+  const { data: credits } = useQuery({
+    queryKey: ["credits", tmdbType, details?.id],
+    queryFn: () => getMediaCredits(details.id, tmdbType),
+    initialData: initialCredits,
+    enabled: !!details?.id,
+  });
+
   if (!details) return null;
 
   return (

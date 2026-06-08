@@ -2,9 +2,8 @@
 
 import { getSimilarMedia } from "@/app/services/all.service";
 import { type MediaType } from "@/app/types/common";
-import MediaSlider, {
-  MediaSliderSkeleton,
-} from "@/components/common/MediaSlider";
+import MediaSlider from "@/components/common/MediaSlider";
+import SliderSkeleton from "@/components/common/SliderSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
@@ -25,7 +24,7 @@ const RelatedMedia: React.FC<RelatedMediaProps> = ({ id, tmdbType }) => {
   if (isLoading) {
     return (
       <div className="mt-12 md:mt-24">
-        <MediaSliderSkeleton
+        <SliderSkeleton
           title={`Related ${tmdbType === "movie" ? "Movies" : "Series"}`}
         />
       </div>

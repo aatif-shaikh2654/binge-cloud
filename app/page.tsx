@@ -1,6 +1,6 @@
 import { getHistory } from "@/app/actions";
 import Herosection from "@/components/common/Herosection";
-import { MediaSliderSkeleton } from "@/components/common/MediaSlider";
+import { SliderSkeleton } from "@/components/common/SliderSkeleton";
 import { WatchHistorySkeleton } from "@/components/common/WatchHistory";
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
@@ -34,6 +34,7 @@ async function Top10MoviesWrapper() {
       title="Top 10 Movies"
       movies={top10Movies}
       showRank={true}
+      seeAllHref="/movie?filter=trending"
     />
   );
 }
@@ -71,6 +72,7 @@ async function Top10SeriesWrapper() {
       title="Top 10 Series"
       movies={top10Series}
       showRank={true}
+      seeAllHref="/tv?filter=trending"
     />
   );
 }
@@ -90,23 +92,23 @@ export default async function Home() {
         <WatchHistoryWrapper />
       </Suspense>
 
-      <Suspense fallback={<MediaSliderSkeleton title="Trending" />}>
+      <Suspense fallback={<SliderSkeleton title="Trending" />}>
         <MediaSlider title="Trending" movies={movies} />
       </Suspense>
 
-      <Suspense fallback={<MediaSliderSkeleton title="Top 10 Movies" />}>
+      <Suspense fallback={<SliderSkeleton title="Top 10 Movies" />}>
         <Top10MoviesWrapper />
       </Suspense>
 
-      <Suspense fallback={<MediaSliderSkeleton title="Popular Movies" />}>
+      <Suspense fallback={<SliderSkeleton title="Popular Movies" />}>
         <PopularMoviesWrapper />
       </Suspense>
 
-      <Suspense fallback={<MediaSliderSkeleton title="Popular TV Series" />}>
+      <Suspense fallback={<SliderSkeleton title="Popular TV Series" />}>
         <PopularSeriesWrapper />
       </Suspense>
 
-      <Suspense fallback={<MediaSliderSkeleton title="Top 10 Series" />}>
+      <Suspense fallback={<SliderSkeleton title="Top 10 Series" />}>
         <Top10SeriesWrapper />
       </Suspense>
     </div>

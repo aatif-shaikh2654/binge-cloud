@@ -1,6 +1,6 @@
 "use client";
 
-import { getMediaList, getSimilarMedia } from "@/app/services/all.service";
+import { getMediaList, getSimilarMedia, getTrendingMedia } from "@/app/services/all.service";
 import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
 import MovieCard from "@/components/common/MovieCard";
@@ -11,12 +11,14 @@ interface MediaListProps {
   initialData: TMDBResponse<TMDBMovie>;
   mediaType: MediaType;
   relatedTo?: string | number;
+  filter?: string;
 }
 
 const MediaList: React.FC<MediaListProps> = ({
   initialData,
   mediaType,
   relatedTo,
+  filter,
 }) => {
   const [items, setItems] = useState<TMDBMovie[]>(initialData.results || []);
   const [page, setPage] = useState(1);
@@ -53,9 +55,14 @@ const MediaList: React.FC<MediaListProps> = ({
     const loadMore = async () => {
       setIsLoading(true);
       try {
-        const newData = relatedTo
-          ? await getSimilarMedia(relatedTo, mediaType, page)
-          : await getMediaList(mediaType, "popular", page);
+        let newData;
+        if (relatedTo) {
+          newData = await getSimilarMedia(relatedTo, mediaType, page);
+        } else if (filter === "trending") {
+          newData = await getTrendingMedia(mediaType as "movie" | "tv", "week", page);
+        } else {
+          newData = await getMediaList(mediaType, "popular", page);
+        }
         setItems((prev) => {
           // Filter out potential duplicates just in case
           const newItems = newData.results || [];
@@ -74,7 +81,7 @@ const MediaList: React.FC<MediaListProps> = ({
     };
 
     loadMore();
-  }, [page, mediaType, relatedTo]);
+  }, [page, mediaType, relatedTo, filter]);
 
   return (
     <div className="px-6 lg:px-20 flex flex-col gap-10">

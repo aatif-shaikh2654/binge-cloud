@@ -1,4 +1,4 @@
-import { getMediaCredits, getMediaDetails } from "@/app/services/all.service";
+import { getMediaDetails } from "@/app/services/all.service";
 import { type MediaType } from "@/app/types/common";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -51,16 +51,13 @@ export default async function DetailPage({ params, searchParams }: PageProps) {
 
   const tmdbType = typeMap[media_type] || (media_type as MediaType);
 
-  let details, credits;
+  let details;
   try {
-    [details, credits] = await Promise.all([
-      getMediaDetails(id, tmdbType),
-      getMediaCredits(id, tmdbType),
-    ]);
+    details = await getMediaDetails(id, tmdbType);
   } catch (error) {
     console.error("Error loading detail page:", error);
     notFound();
   }
 
-  return <Detail details={details} credits={credits} tmdbType={tmdbType} />;
+  return <Detail details={details} tmdbType={tmdbType} />;
 }

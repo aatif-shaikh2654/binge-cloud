@@ -1,9 +1,7 @@
-import { getAnimeDetails, getAnimeByGenre } from "@/app/services/anilist.service";
+import { getAnimeDetails } from "@/app/services/anilist.service";
 import { notFound } from "next/navigation";
 import AnimeDetail from "./AnimeDetail";
 import type { Metadata } from "next";
-import { type AniListMedia } from "@/app/types/anilist";
-
 export const dynamic = "force-dynamic";
 
 interface PageProps {
@@ -42,17 +40,12 @@ export default async function AnimeDetailPage({ searchParams }: PageProps) {
   if (!id) notFound();
 
   let details;
-  let similarAnime: AniListMedia[] = [];
   try {
     details = await getAnimeDetails(id);
-    if (details && details.genres && details.genres.length > 0) {
-      const response = await getAnimeByGenre(details.genres, details.id);
-      similarAnime = response.media || [];
-    }
   } catch (error) {
     console.error("Error loading anime detail:", error);
     notFound();
   }
 
-  return <AnimeDetail details={details} similarAnime={similarAnime} />;
+  return <AnimeDetail details={details} />;
 }
