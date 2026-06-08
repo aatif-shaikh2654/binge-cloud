@@ -105,5 +105,7 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       `https://streams.iqsmartgames.com/embed/movie/${tmdbId}?key=e11a7debaaa4f5d25b671706ffe4d2acb56efbd4`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
       `https://streams.iqsmartgames.com/embed/tv/${tmdbId}/${season}/${episode}?key=e11a7debaaa4f5d25b671706ffe4d2acb56efbd4`,
+    description: "Multi-Language",
+    icon: Globe,
   },
 ];
