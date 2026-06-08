@@ -1,62 +1,114 @@
+import { getHistory } from "@/app/actions";
 import Herosection from "@/components/common/Herosection";
-import MediaSlider from "@/components/common/MediaSlider";
-import WatchHistory from "@/components/common/WatchHistory";
+import { MediaSliderSkeleton } from "@/components/common/MediaSlider";
+import { WatchHistorySkeleton } from "@/components/common/WatchHistory";
+import nextDynamic from "next/dynamic";
+import { Suspense } from "react";
 import {
   getMediaList,
   getTrendingMedia,
   getTrendingMovies,
 } from "./services/all.service";
-import { getHistory } from "@/app/actions";
+
+const WatchHistory = nextDynamic(
+  () => import("@/components/common/WatchHistory"),
+);
+const MediaSlider = nextDynamic(
+  () => import("@/components/common/MediaSlider"),
+);
+
 export const dynamic = "force-dynamic";
 
+// Wrapper Server Components for Progressive Streaming (Below-the-fold)
+async function WatchHistoryWrapper() {
+  const initialHistory = await getHistory();
+  return <WatchHistory initialHistory={initialHistory || undefined} />;
+}
+
+async function Top10MoviesWrapper() {
+  const top10MoviesData = await getTrendingMedia("movie", "week");
+  const top10Movies = top10MoviesData?.results?.slice(0, 10) || [];
+  return (
+    <MediaSlider
+      media_type="movie"
+      title="Top 10 Movies"
+      movies={top10Movies}
+      showRank={true}
+    />
+  );
+}
+
+async function PopularMoviesWrapper() {
+  const popularMoviesData = await getMediaList("movie", "popular");
+  const popularMovies = popularMoviesData?.results?.slice(0, 20) || [];
+  return (
+    <MediaSlider
+      media_type="movie"
+      title="Popular Movies"
+      movies={popularMovies}
+    />
+  );
+}
+
+async function PopularSeriesWrapper() {
+  const popularSeriesData = await getMediaList("tv", "popular");
+  const popularSeries = popularSeriesData?.results?.slice(0, 20) || [];
+  return (
+    <MediaSlider
+      media_type="tv"
+      title="Popular TV Series"
+      movies={popularSeries}
+    />
+  );
+}
+
+async function Top10SeriesWrapper() {
+  const top10SeriesData = await getTrendingMedia("tv", "week");
+  const top10Series = top10SeriesData?.results?.slice(0, 10) || [];
+  return (
+    <MediaSlider
+      media_type="tv"
+      title="Top 10 Series"
+      movies={top10Series}
+      showRank={true}
+    />
+  );
+}
+
 export default async function Home() {
-  // Fetch trending movies on the server
+  // Eagerly fetch trending movies at the page level to render above-the-fold instantly
   const trendingData = await getTrendingMovies();
   const movies = trendingData?.results || [];
 
-  // Fetch watch history on the server
-  const initialHistory = await getHistory();
-
-  // Fetch popular movies and tv series
-  const popularMoviesData = await getMediaList("movie", "popular");
-  const popularSeriesData = await getMediaList("tv", "popular");
-
-  // Fetch Top 10 Movies and Series of the week
-  const top10MoviesData = await getTrendingMedia("movie", "week");
-  const top10SeriesData = await getTrendingMedia("tv", "week");
-
-  const popularMovies = popularMoviesData?.results?.slice(0, 20) || [];
-  const popularSeries = popularSeriesData?.results?.slice(0, 20) || [];
-  const top10Movies = top10MoviesData?.results?.slice(0, 10) || [];
-  const top10Series = top10SeriesData?.results?.slice(0, 10) || [];
-
   return (
     <div className="flex flex-col w-full min-h-screen">
+      {/* Render eagerly on the server */}
       <Herosection movies={movies} />
-      <WatchHistory initialHistory={initialHistory || undefined} />
-      <MediaSlider title="Trending" movies={movies} />
-      <MediaSlider
-        media_type="movie"
-        title="Top 10 Movies"
-        movies={top10Movies}
-        showRank={true}
-      />
-      <MediaSlider
-        media_type="movie"
-        title="Popular Movies"
-        movies={popularMovies}
-      />
-      <MediaSlider
-        media_type="tv"
-        title="Popular TV Series"
-        movies={popularSeries}
-      />
-      <MediaSlider
-        media_type="tv"
-        title="Top 10 Series"
-        movies={top10Series}
-        showRank={true}
-      />
+
+      {/* Lazy loaded and progressively streamed below-the-fold */}
+      <Suspense fallback={<WatchHistorySkeleton />}>
+        <WatchHistoryWrapper />
+      </Suspense>
+
+      <Suspense fallback={<MediaSliderSkeleton title="Trending" />}>
+        <MediaSlider title="Trending" movies={movies} />
+      </Suspense>
+
+      <Suspense fallback={<MediaSliderSkeleton title="Top 10 Movies" />}>
+        <Top10MoviesWrapper />
+      </Suspense>
+
+      <Suspense fallback={<MediaSliderSkeleton title="Popular Movies" />}>
+        <PopularMoviesWrapper />
+      </Suspense>
+
+      <Suspense fallback={<MediaSliderSkeleton title="Popular TV Series" />}>
+        <PopularSeriesWrapper />
+      </Suspense>
+
+      <Suspense fallback={<MediaSliderSkeleton title="Top 10 Series" />}>
+        <Top10SeriesWrapper />
+      </Suspense>
     </div>
   );
 }

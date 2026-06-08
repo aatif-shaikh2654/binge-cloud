@@ -13,8 +13,10 @@ export async function generateMetadata({
   params,
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const { media_type } = await params;
-  const { related_to } = await searchParams;
+  const [{ media_type }, { related_to }] = await Promise.all([
+    params,
+    searchParams,
+  ]);
   const isMovies = media_type === "movie";
 
   if (related_to) {
@@ -47,8 +49,10 @@ interface PageProps {
 }
 
 export default async function MediaPage({ params, searchParams }: PageProps) {
-  const { media_type } = await params;
-  const { related_to } = await searchParams;
+  const [{ media_type }, { related_to }] = await Promise.all([
+    params,
+    searchParams,
+  ]);
 
   // Map route names to TMDB types
   const typeMap: Record<string, MediaType> = {

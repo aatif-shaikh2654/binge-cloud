@@ -8,8 +8,7 @@ export async function generateMetadata({
   params,
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const { media_type } = await params;
-  const { id } = await searchParams;
+  const [{ media_type }, { id }] = await Promise.all([params, searchParams]);
 
   const typeMap: Record<string, MediaType> = {
     movie: "movie",
@@ -50,8 +49,7 @@ interface PageProps {
 }
 
 export default async function WatchPage({ params, searchParams }: PageProps) {
-  const { media_type } = await params;
-  const { id } = await searchParams;
+  const [{ media_type }, { id }] = await Promise.all([params, searchParams]);
 
   if (!id) {
     notFound();

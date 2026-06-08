@@ -4,7 +4,7 @@ import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import dynamic from "next/dynamic";
 
-const WatchHistorySkeleton = () => (
+export const WatchHistorySkeleton = () => (
   <section className="ps-8! lg:ps-24! md:pt-8 md:pb-4 pb-4 overflow-hidden">
     <div className="flex items-center justify-between mb-8 pe-8! lg:pe-24!">
       <div className="flex items-center gap-4">

@@ -15,8 +15,7 @@ export async function generateMetadata({
   params,
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const { media_type } = await params;
-  const { id } = await searchParams;
+  const [{ media_type }, { id }] = await Promise.all([params, searchParams]);
 
   const typeMap: Record<string, "movie" | "tv"> = { movie: "movie", tv: "tv" };
   const tmdbType = typeMap[media_type] || (media_type as "movie" | "tv");
@@ -39,8 +38,7 @@ export async function generateMetadata({
 }
 
 export default async function DetailPage({ params, searchParams }: PageProps) {
-  const { media_type } = await params;
-  const { id } = await searchParams;
+  const [{ media_type }, { id }] = await Promise.all([params, searchParams]);
 
   if (!id) notFound();
 

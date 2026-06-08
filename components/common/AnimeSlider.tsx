@@ -12,7 +12,7 @@ interface AnimeSliderProps {
   seeAllHref?: string;
 }
 
-const AnimeSliderSkeleton = ({
+export const AnimeSliderSkeleton = ({
   title,
   className,
 }: {
