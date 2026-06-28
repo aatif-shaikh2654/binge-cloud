@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { X, ZoomIn, ZoomOut } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface ZoomableImageProps {
@@ -35,18 +35,33 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({
   const [initialDistance, setInitialDistance] = useState<number | null>(null);
   const [initialScale, setInitialScale] = useState(1);
 
-  const handleOpen = () => {
-    setIsOpen(true);
-    document.body.style.overflow = "hidden";
-  };
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsOpen(false);
     document.body.style.overflow = "";
     setTimeout(() => {
       setScale(1);
       setPosition({ x: 0, y: 0 });
     }, 300);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, handleClose]);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    document.body.style.overflow = "hidden";
   };
 
   const handleZoomIn = (e: React.MouseEvent) => {

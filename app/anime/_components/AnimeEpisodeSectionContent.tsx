@@ -69,12 +69,18 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
 
   const formatAiringDate = (airingAt: number) => {
     const date = new Date(airingAt * 1000);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    return (
+      date.toLocaleString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Kolkata",
+      }) + " IST"
+    );
   };
 
   const historyItem = history.find(
