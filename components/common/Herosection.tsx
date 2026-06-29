@@ -15,6 +15,7 @@ import { FaPlay } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 import { toast } from "sonner";
 import type { Swiper as SwiperType } from "swiper";
+import GenreBadge from "@/components/common/GenreBadge";
 import { Autoplay, EffectFade } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -140,14 +141,19 @@ const Herosection: React.FC<HerosectionProps> = ({ movies }) => {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      {movie.genre_ids?.slice(0, 2).map((id) => (
-                        <span
-                          key={id}
-                          className="uppercase text-[9px] lg:text-[10px] border border-white/15 font-black text-white/60 px-1.5 py-0.5 rounded tracking-wider bg-white/[0.02]"
-                        >
-                          {TMDB_GENRES[id]}
-                        </span>
-                      ))}
+                      {movie.genre_ids?.slice(0, 2).map((id) => {
+                        const genreName = TMDB_GENRES[id];
+                        if (!genreName) return null;
+                        const genreSlug = genreName.toLowerCase().replace(/\s+/g, "-");
+                        const pathType = movie.media_type === "movie" ? "movie" : "series";
+                        return (
+                          <GenreBadge
+                            key={id}
+                            name={genreName}
+                            href={`/${pathType}/${genreSlug}`}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
 

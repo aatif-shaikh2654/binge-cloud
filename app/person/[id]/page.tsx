@@ -1,7 +1,6 @@
 import { getPersonDetails } from "@/app/services/all.service";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import React from "react";
 import PersonDetails from "./PersonDetails";
 
 export const dynamic = "force-dynamic";

@@ -1,6 +1,8 @@
 import { getWatchlist } from "@/app/actions";
 import WatchLater from "./WatchLater";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Watch Later - Binge Cloud",
   description: "Your personal watchlist of movies and series.",

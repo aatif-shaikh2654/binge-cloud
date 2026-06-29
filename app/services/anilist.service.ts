@@ -2,6 +2,7 @@ import {
   ANIME_DETAIL_QUERY,
   ANIME_GENRE_QUERY,
   ANIME_PAGE_QUERY,
+  ANILIST_ENDPOINT,
 } from "@/app/constants/anilist";
 import {
   type AniListDetailResponse,
@@ -16,16 +17,18 @@ const fetchAniList = async <T extends AniListResponse | AniListDetailResponse>(
   variables: Record<string, unknown>,
 ): Promise<T> => {
   const isServer = typeof window === "undefined";
-  const baseUrl = isServer
-    ? process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-    : "";
-  const url = `${baseUrl}/api/anime`;
+  const url = isServer ? ANILIST_ENDPOINT : "/api/anime";
 
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      ...(isServer && process.env.ANILIST_CLIENT_SECRET
+        ? {
+            Authorization: `Bearer ${process.env.ANILIST_CLIENT_SECRET}`,
+          }
+        : {}),
     },
     body: JSON.stringify({ query, variables }),
   });
@@ -99,7 +102,7 @@ export const searchAnime = async (
 
 export const getAnimeByGenre = async (
   genres: string[],
-  excludeId: number,
+  excludeId?: number,
   page: number = 1,
   perPage: number = 20,
 ): Promise<AniListPageResponse> => {

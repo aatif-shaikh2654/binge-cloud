@@ -1,6 +1,8 @@
 import HistoryGrid from "./HistoryGrid";
 import { getHistory } from "@/app/actions";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Watch History - Binge Cloud",
   description: "Your recently watched movies and series.",

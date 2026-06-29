@@ -23,6 +23,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { CiVolumeHigh, CiVolumeMute } from "react-icons/ci";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
+import GenreBadge from "@/components/common/GenreBadge";
 
 interface DetailHeroProps {
   details: TMDBMovie;
@@ -228,14 +229,17 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
             )}
 
             <div className="flex flex-wrap items-center justify-start gap-2">
-              {details.genres?.map((genre) => (
-                <span
-                  key={genre.id}
-                  className="uppercase text-[9px] lg:text-[10px] border border-white/15 font-black text-white/60 px-1.5 py-0.5 rounded tracking-wider bg-white/[0.02]"
-                >
-                  {genre.name}
-                </span>
-              ))}
+              {details.genres?.map((genre) => {
+                const genreSlug = genre.name.toLowerCase().replace(/\s+/g, "-");
+                const pathType = tmdbType === "movie" ? "movie" : "series";
+                return (
+                  <GenreBadge
+                    key={genre.id}
+                    name={genre.name}
+                    href={`/${pathType}/${genreSlug}`}
+                  />
+                );
+              })}
             </div>
           </div>
 

@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 import type { Swiper as SwiperType } from "swiper";
+import GenreBadge from "@/components/common/GenreBadge";
 import { Autoplay, EffectFade } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -160,14 +161,16 @@ const AnimeHero: React.FC<AnimeHeroProps> = ({ anime }) => {
                           {status}
                         </span>
                       )}
-                      {item.genres.slice(0, 2).map((g) => (
-                        <span
-                          key={g}
-                          className="uppercase text-[9px] lg:text-[10px] border border-white/15 font-black text-white/60 px-1.5 py-0.5 rounded tracking-wider bg-white/[0.02]"
-                        >
-                          {g}
-                        </span>
-                      ))}
+                      {item.genres.slice(0, 2).map((g) => {
+                        const genreSlug = g.toLowerCase().replace(/\s+/g, "-");
+                        return (
+                          <GenreBadge
+                            key={g}
+                            name={g}
+                            href={`/anime/${genreSlug}`}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
 

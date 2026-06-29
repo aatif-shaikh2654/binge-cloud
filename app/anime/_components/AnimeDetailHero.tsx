@@ -15,6 +15,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
+import GenreBadge from "@/components/common/GenreBadge";
 
 interface AnimeDetailHeroProps {
   details: AniListMediaDetail;
@@ -187,14 +188,16 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
 
             {/* Genres */}
             <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1">
-              {details.genres.map((g) => (
-                <span
-                  key={g}
-                  className="uppercase text-[9px] lg:text-[10px] border border-white/15 font-black text-white/60 px-1.5 py-0.5 rounded tracking-wider bg-white/[0.02]"
-                >
-                  {g}
-                </span>
-              ))}
+              {details.genres.map((g) => {
+                const genreSlug = g.toLowerCase().replace(/\s+/g, "-");
+                return (
+                  <GenreBadge
+                    key={g}
+                    name={g}
+                    href={`/anime/${genreSlug}`}
+                  />
+                );
+              })}
             </div>
           </div>
 

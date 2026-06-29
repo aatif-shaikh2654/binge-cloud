@@ -4,6 +4,7 @@ import {
   getPopularAnime,
   getTopRatedAnime,
   getTrendingAnime,
+  getAnimeByGenre,
 } from "@/app/services/anilist.service";
 import {
   AnimeCategory,
@@ -16,10 +17,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface AnimeListProps {
   initialData: AniListPageResponse;
-  category: AnimeCategory;
+  category?: AnimeCategory;
+  genre?: string;
 }
 
-const AnimeList: React.FC<AnimeListProps> = ({ initialData, category }) => {
+const AnimeList: React.FC<AnimeListProps> = ({ initialData, category, genre }) => {
   const [items, setItems] = useState<AniListMedia[]>(initialData.media || []);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialData.pageInfo.hasNextPage);
@@ -55,18 +57,22 @@ const AnimeList: React.FC<AnimeListProps> = ({ initialData, category }) => {
       setIsLoading(true);
       try {
         let newData: AniListPageResponse;
-        switch (category) {
-          case "trending":
-            newData = await getTrendingAnime(page);
-            break;
-          case "popular":
-            newData = await getPopularAnime(page);
-            break;
-          case "top-rated":
-            newData = await getTopRatedAnime(page);
-            break;
-          default:
-            newData = initialData;
+        if (genre) {
+          newData = await getAnimeByGenre([genre], undefined, page);
+        } else {
+          switch (category) {
+            case "trending":
+              newData = await getTrendingAnime(page);
+              break;
+            case "popular":
+              newData = await getPopularAnime(page);
+              break;
+            case "top-rated":
+              newData = await getTopRatedAnime(page);
+              break;
+            default:
+              newData = initialData;
+          }
         }
 
         setItems((prev) => {
@@ -86,7 +92,7 @@ const AnimeList: React.FC<AnimeListProps> = ({ initialData, category }) => {
     };
 
     loadMore();
-  }, [page, category, initialData]);
+  }, [page, category, initialData, genre]);
 
   return (
     <div className="px-6 lg:px-20 flex flex-col gap-10">

@@ -1,6 +1,6 @@
 "use client";
 
-import { getMediaList, getSimilarMedia, getTrendingMedia } from "@/app/services/all.service";
+import { getMediaList, getSimilarMedia, getTrendingMedia, discoverMedia } from "@/app/services/all.service";
 import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
 import MovieCard from "@/components/common/MovieCard";
@@ -12,6 +12,7 @@ interface MediaListProps {
   mediaType: MediaType;
   relatedTo?: string | number;
   filter?: string;
+  genreId?: number;
 }
 
 const MediaList: React.FC<MediaListProps> = ({
@@ -19,6 +20,7 @@ const MediaList: React.FC<MediaListProps> = ({
   mediaType,
   relatedTo,
   filter,
+  genreId,
 }) => {
   const [items, setItems] = useState<TMDBMovie[]>(initialData.results || []);
   const [page, setPage] = useState(1);
@@ -60,6 +62,8 @@ const MediaList: React.FC<MediaListProps> = ({
           newData = await getSimilarMedia(relatedTo, mediaType, page);
         } else if (filter === "trending") {
           newData = await getTrendingMedia(mediaType as "movie" | "tv", "week", page);
+        } else if (genreId) {
+          newData = await discoverMedia(mediaType, { with_genres: genreId.toString(), page });
         } else {
           newData = await getMediaList(mediaType, "popular", page);
         }
@@ -81,7 +85,7 @@ const MediaList: React.FC<MediaListProps> = ({
     };
 
     loadMore();
-  }, [page, mediaType, relatedTo, filter]);
+  }, [page, mediaType, relatedTo, filter, genreId]);
 
   return (
     <div className="px-6 lg:px-20 flex flex-col gap-10">

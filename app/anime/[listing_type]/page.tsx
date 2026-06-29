@@ -2,16 +2,74 @@ import {
   getPopularAnime,
   getTopRatedAnime,
   getTrendingAnime,
+  getAnimeByGenre,
 } from "@/app/services/anilist.service";
 import { AnimeCategory, type AniListPageResponse } from "@/app/types/anilist";
 import PageHeader from "@/components/common/PageHeader";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import AnimeList from "../_components/AnimeList";
 
 export const dynamic = "force-dynamic";
 
+const ANILIST_GENRES = [
+  "Action",
+  "Adventure",
+  "Comedy",
+  "Drama",
+  "Ecchi",
+  "Fantasy",
+  "Hentai",
+  "Horror",
+  "Mahou Shoujo",
+  "Mecha",
+  "Music",
+  "Mystery",
+  "Psychological",
+  "Romance",
+  "Sci-Fi",
+  "Slice of Life",
+  "Sports",
+  "Supernatural",
+  "Thriller",
+];
+
+function findAniListGenre(slug: string): string | undefined {
+  const normalized = slug.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return ANILIST_GENRES.find(
+    (g) => g.toLowerCase().replace(/[^a-z0-9]/g, "") === normalized,
+  );
+}
+
 interface PageProps {
   params: Promise<{ listing_type: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { listing_type } = await params;
+
+  const typeMap: Record<string, string> = {
+    trending: "Trending Anime",
+    popular: "Most Popular Anime",
+    "top-rated": "Top Rated Anime",
+  };
+
+  const title = typeMap[listing_type];
+  if (title) {
+    return { title };
+  }
+
+  const matchedGenre = findAniListGenre(listing_type);
+  if (matchedGenre) {
+    return {
+      title: `${matchedGenre} Anime`,
+      description: `Explore the best ${matchedGenre.toLowerCase()} anime series on Binge Cloud.`,
+    };
+  }
+
+  return {};
 }
 
 export default async function AnimeListingPage({ params }: PageProps) {
@@ -54,17 +112,30 @@ export default async function AnimeListingPage({ params }: PageProps) {
 
   const config = typeMap[listing_type];
 
-  if (!config) {
-    notFound();
+  if (config) {
+    const initialData = await config.fetcher(1);
+    return (
+      <div className="flex flex-col gap-8 pt-10 pb-12">
+        <PageHeader title={config.title} description={config.description} />
+        <AnimeList initialData={initialData} category={config.category} />
+      </div>
+    );
   }
 
-  const initialData = await config.fetcher(1);
+  const matchedGenre = findAniListGenre(listing_type);
+  if (matchedGenre) {
+    const initialData = await getAnimeByGenre([matchedGenre], undefined, 1);
+    return (
+      <div className="flex flex-col gap-8 pt-10 pb-12">
+        <PageHeader
+          title={`${matchedGenre} Anime`}
+          description={`Discover our curated selection of top-rated ${matchedGenre.toLowerCase()} anime series on Binge Cloud.`}
+        />
+        <AnimeList initialData={initialData} genre={matchedGenre} />
+      </div>
+    );
+  }
 
-  return (
-    <div className="flex flex-col gap-8 pt-10 pb-12">
-      <PageHeader title={config.title} description={config.description} />
-
-      <AnimeList initialData={initialData} category={config.category} />
-    </div>
-  );
+  notFound();
 }
+
