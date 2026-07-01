@@ -1,18 +1,10 @@
 "use client";
 
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { getMediaDetails, getMovieVideos } from "@/app/services/all.service";
-import { getAnimeDetails } from "@/app/services/anilist.service";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { usePlayerStore } from "@/app/store/usePlayerStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
-import { type AniListMediaDetail } from "@/app/types/anilist";
+import { useMediaCardMetadata } from "@/app/hooks/useMediaCardMetadata";
 import { MediaType, UnifiedMediaItem } from "@/app/types/common";
 import { TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
 import {
   Bookmark,
   BookmarkMinus,
@@ -25,9 +17,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React from "react";
 import { FaPlay } from "react-icons/fa";
-import { toast } from "sonner";
 
 interface MovieCardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,182 +34,34 @@ const MovieCard: React.FC<MovieCardProps> = ({
   rank,
   isWatchLaterPage,
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [showHoverCard, setShowHoverCard] = useState(false);
-  const [videoKey, setVideoKey] = useState<string | null>(null);
-  const { isMuted, setIsMuted } = usePlayerStore();
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const { toggleWatchlist, isInWatchlist } = useWatchlistStore();
-  const { handleWatchClick } = useWatchNavigation();
-  const history = useHistoryStore((state) => state.history);
   const router = useRouter();
 
-  useEffect(() => {
-    if (iframeRef.current && isVideoLoaded) {
-      iframeRef.current.contentWindow?.postMessage(
-        JSON.stringify({
-          event: "command",
-          func: isMuted ? "mute" : "unMute",
-          args: [],
-        }),
-        "*",
-      );
-    }
-  }, [isMuted, isVideoLoaded]);
-
-  const currentMediaType = useMemo(() => {
-    if (mediaType) return mediaType;
-    if (movie.media_type) return movie.media_type;
-    return "movie";
-  }, [mediaType, movie.media_type]);
-
-  const isAnime = currentMediaType === "anime";
-  const isTv = currentMediaType === "tv";
-
-  const { data: realTimeDetails } = useQuery({
-    queryKey: ["realTimeDetails", currentMediaType, movie.id],
-    queryFn: async () => {
-      if (isAnime) {
-        return getAnimeDetails(movie.id);
-      } else if (isTv) {
-        return getMediaDetails(movie.id, "tv");
-      }
-      return null;
-    },
-    enabled: !!isWatchLaterPage && (isAnime || isTv),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const latestAiredEp = useMemo(() => {
-    if (!isWatchLaterPage) return null;
-    if (currentMediaType === "anime") {
-      const details = realTimeDetails as AniListMediaDetail | null;
-      if (details) {
-        return details.nextAiringEpisode
-          ? `EP ${details.nextAiringEpisode.episode - 1}`
-          : `EP ${details.episodes}`;
-      }
-      // fallback to stored data
-      return movie.nextAiringEpisode
-        ? `EP ${movie.nextAiringEpisode.episode - 1}`
-        : movie.episodes
-          ? `EP ${movie.episodes}`
-          : null;
-    } else if (currentMediaType === "tv") {
-      const details = realTimeDetails as TMDBMovie | null;
-      if (details?.last_episode_to_air) {
-        return `S${details.last_episode_to_air.season_number} E${details.last_episode_to_air.episode_number}`;
-      }
-      return null;
-    }
-    return null;
-  }, [currentMediaType, realTimeDetails, movie, isWatchLaterPage]);
-
-  const inWatchlist = isInWatchlist(movie.id, currentMediaType);
-
-  const handleWatchlistToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleWatchlist({ ...movie, media_type: currentMediaType });
-    if (inWatchlist) {
-      toast.error(`Removed from Watchlist`);
-    } else {
-      toast.success(`Added to Watchlist`);
-    }
-  };
-
-  const rating = useMemo(() => {
-    if (movie.vote_average !== undefined && movie.vote_average !== null) {
-      return movie.vote_average.toFixed(1);
-    }
-    const score = movie.averageScore as number | undefined;
-    if (score !== undefined && score !== null) {
-      return (score / 10).toFixed(1);
-    }
-    return "0.0";
-  }, [movie]);
-
-  const releaseYear = useMemo(() => {
-    if (currentMediaType === "anime") {
-      return (
-        (movie.seasonYear as number) ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (movie.startDate as any)?.year ||
-        "N/A"
-      ).toString();
-    }
-    const date =
-      (movie.release_date as string) || (movie.first_air_date as string);
-    if (!date) return "N/A";
-    const year = new Date(date).getFullYear();
-    return isNaN(year) ? "N/A" : year.toString();
-  }, [movie, currentMediaType]);
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    if (isWatchLaterPage) return;
-
-    hoverTimeoutRef.current = setTimeout(async () => {
-      setShowHoverCard(true);
-      if (!videoKey) {
-        const type = movie.media_type === "tv" ? "tv" : "movie";
-        const videos = await getMovieVideos(movie.id, type);
-        const trailer =
-          videos.results?.find(
-            (v: { type: string; site: string; key: string }) =>
-              v.type === "Trailer" && v.site === "YouTube",
-          ) || videos.results?.[0];
-        if (trailer) setVideoKey(trailer.key);
-      }
-    }, 600);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setShowHoverCard(false);
-    setIsVideoLoaded(false);
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-  };
-
-  const historyItem = history.find(
-    (h) => h.id === movie.id && h.media_type === currentMediaType,
-  );
-
-  const isResumable = !!historyItem;
-
-  const watchUrl = useMemo(() => {
-    if (!isResumable) {
-      return currentMediaType === "anime"
-        ? `/${currentMediaType}/watch?id=${movie.id}`
-        : `/${currentMediaType}/watch?id=${movie.id}`;
-    }
-
-    if (currentMediaType === "anime") {
-      return `/anime/watch?id=${movie.id}${
-        historyItem.episode ? `&ep=${historyItem.episode}` : ""
-      }${historyItem.server ? `&server=${historyItem.server}` : ""}`;
-    }
-
-    // Movies/TV
-    return `/${currentMediaType}/watch?id=${movie.id}${
-      historyItem.server ? `&server=${historyItem.server}` : ""
-    }${historyItem.season ? `&season=${historyItem.season}` : ""}${
-      historyItem.episode ? `&episode=${historyItem.episode}` : ""
-    }`;
-  }, [isResumable, historyItem, movie.id, currentMediaType]);
-
-  const resumeText = useMemo(() => {
-    if (!isResumable) return "Play Now";
-    if (currentMediaType === "movie") return "Resume Watching";
-    if (currentMediaType === "tv")
-      return `Resume S${historyItem.season} E${historyItem.episode}`;
-    if (currentMediaType === "anime") return `Resume Ep ${historyItem.episode}`;
-    return "Resume";
-  }, [isResumable, historyItem, currentMediaType]);
-
-  const detailUrl = `/${currentMediaType}/detail?id=${movie.id}`;
+  const {
+    currentMediaType,
+    latestAiredEp,
+    hasNoEpisodes,
+    rating,
+    releaseYear,
+    isResumable,
+    watchUrl,
+    resumeText,
+    posterUrl,
+    previewUrl,
+    detailUrl,
+    inWatchlist,
+    isHovered,
+    showHoverCard,
+    videoKey,
+    isVideoLoaded,
+    isMuted,
+    setIsMuted,
+    setIsVideoLoaded,
+    iframeRef,
+    handleWatchlistToggle,
+    handleMouseEnter,
+    handleMouseLeave,
+    handleWatchClick,
+  } = useMediaCardMetadata({ movie, mediaType, isWatchLaterPage });
 
   return (
     <div
@@ -238,16 +81,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
             className="absolute inset-0 z-10 cursor-pointer"
           >
             <Image
-              src={
-                currentMediaType === "anime"
-                  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (movie.coverImage as any)?.extraLarge ||
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (movie.coverImage as any)?.large ||
-                    movie.poster_path ||
-                    ""
-                  : `${TMDB_IMAGE_BASE_URL}/w500${movie.poster_path}`
-              }
+              src={posterUrl}
               alt={movie.title || movie.name || "Movie Poster"}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -264,17 +98,19 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 : "flex opacity-0 group-hover:opacity-100 bg-black/40 backdrop-blur-[2px]",
             )}
           >
-            <div
-              className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer pointer-events-auto"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleWatchClick();
-                router.push(watchUrl);
-              }}
-            >
-              <FaPlay className="text-white text-xl ml-1" />
-            </div>
+            {!hasNoEpisodes && (
+              <div
+                className="w-14 h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer pointer-events-auto"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleWatchClick();
+                  router.push(watchUrl);
+                }}
+              >
+                <FaPlay className="text-white text-xl ml-1" />
+              </div>
+            )}
             {isWatchLaterPage && (
               <div
                 className="w-14 h-14 bg-white/20 hover:bg-red-600/90 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.4)] hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out cursor-pointer pointer-events-auto"
@@ -287,7 +123,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </div>
 
           {/* Mobile Play Button overlay (Bottom Right) */}
-          {isWatchLaterPage && (
+          {isWatchLaterPage && !hasNoEpisodes && (
             <div className="absolute bottom-3 right-3 flex md:hidden items-center z-20">
               <button
                 onClick={(e) => {
@@ -394,16 +230,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
               <>
                 {!isVideoLoaded && (
                   <Image
-                    src={
-                      currentMediaType === "anime"
-                        ? movie.bannerImage ||
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          (movie.coverImage as any)?.extraLarge ||
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          (movie.coverImage as any)?.large ||
-                          ""
-                        : `${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`
-                    }
+                    src={previewUrl}
                     alt="Preview"
                     fill
                     sizes="380px"
@@ -436,16 +263,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
               </>
             ) : (
               <Image
-                src={
-                  currentMediaType === "anime"
-                    ? movie.bannerImage ||
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (movie.coverImage as any)?.extraLarge ||
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (movie.coverImage as any)?.large ||
-                      ""
-                    : `${TMDB_IMAGE_BASE_URL}/original${movie.backdrop_path || movie.poster_path}`
-                }
+                src={previewUrl}
                 alt="Preview"
                 fill
                 sizes="380px"
@@ -459,20 +277,31 @@ const MovieCard: React.FC<MovieCardProps> = ({
           <div className="p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Link href={watchUrl} onClick={handleWatchClick}>
+                {hasNoEpisodes ? (
                   <Button
-                    variant={isResumable ? "premiumBlue" : "premium"}
+                    variant="glass"
                     size="sm"
-                    className="gap-2 px-3"
+                    className="gap-2 px-3 opacity-50 cursor-not-allowed"
+                    disabled
                   >
-                    {isResumable ? (
-                      <Play className="w-3! h-3! fill-current" />
-                    ) : (
-                      <FaPlay className="w-3! h-3!" />
-                    )}
-                    {resumeText}
+                    Upcoming
                   </Button>
-                </Link>
+                ) : (
+                  <Link href={watchUrl} onClick={handleWatchClick}>
+                    <Button
+                      variant={isResumable ? "premiumBlue" : "premium"}
+                      size="sm"
+                      className="gap-2 px-3"
+                    >
+                      {isResumable ? (
+                        <Play className="w-3! h-3! fill-current" />
+                      ) : (
+                        <FaPlay className="w-3! h-3!" />
+                      )}
+                      {resumeText}
+                    </Button>
+                  </Link>
+                )}
                 <Button
                   variant={inWatchlist ? "premium" : "glass"}
                   size="icon-sm"

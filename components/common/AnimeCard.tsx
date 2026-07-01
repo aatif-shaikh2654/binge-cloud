@@ -6,6 +6,7 @@ import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { type AniListMedia } from "@/app/types/anilist";
 import { type MediaType } from "@/app/types/common";
+import GenreBadge from "@/components/common/GenreBadge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Bookmark, Play, Plus } from "lucide-react";
@@ -14,7 +15,6 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
-import GenreBadge from "@/components/common/GenreBadge";
 
 interface AnimeCardProps {
   anime: AniListMedia;
@@ -86,6 +86,8 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
     ? anime.nextAiringEpisode.episode - 1
     : anime.episodes;
 
+  const hasNoEpisodes = !latestEpisode || latestEpisode <= 0;
+
   return (
     <div
       className={cn(
@@ -115,11 +117,13 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
           )}
 
           {/* Play overlay */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/40 backdrop-blur-[2px] z-20">
-            <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out">
-              <FaPlay className="text-white text-xl ml-1" />
+          {!hasNoEpisodes && (
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/40 backdrop-blur-[2px] z-20">
+              <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.6)] transform scale-50 group-hover:scale-100 transition-all duration-500 ease-out">
+                <FaPlay className="text-white text-xl ml-1" />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Latest Episode Badge */}
           {latestEpisode != null && latestEpisode > 0 && (
@@ -171,20 +175,31 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
           <div className="p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Link href={watchUrl} onClick={handleWatchClick}>
+                {hasNoEpisodes ? (
                   <Button
-                    variant={isResumable ? "premiumBlue" : "premium"}
+                    variant="glass"
                     size="sm"
-                    className="gap-2 px-3"
+                    className="gap-2 px-3 opacity-50 cursor-not-allowed"
+                    disabled
                   >
-                    {isResumable ? (
-                      <Play className="w-3! h-3! fill-current" />
-                    ) : (
-                      <FaPlay className="w-3! h-3!" />
-                    )}
-                    {resumeText}
+                    Upcoming
                   </Button>
-                </Link>
+                ) : (
+                  <Link href={watchUrl} onClick={handleWatchClick}>
+                    <Button
+                      variant={isResumable ? "premiumBlue" : "premium"}
+                      size="sm"
+                      className="gap-2 px-3"
+                    >
+                      {isResumable ? (
+                        <Play className="w-3! h-3! fill-current" />
+                      ) : (
+                        <FaPlay className="w-3! h-3!" />
+                      )}
+                      {resumeText}
+                    </Button>
+                  </Link>
+                )}
                 <Button
                   variant={inWatchlist ? "premium" : "glass"}
                   size="icon-sm"
@@ -231,10 +246,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
               {anime.genres.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {anime.genres.slice(0, 3).map((g) => (
-                    <GenreBadge
-                      key={g}
-                      name={g}
-                    />
+                    <GenreBadge key={g} name={g} />
                   ))}
                 </div>
               )}

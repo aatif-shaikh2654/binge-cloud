@@ -1,5 +1,7 @@
 "use client";
 
+import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -24,8 +26,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { useAuth } from "../providers/AuthProvider";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import LoginForm from "./LoginForm";

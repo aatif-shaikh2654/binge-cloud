@@ -21,7 +21,7 @@ const WatchHistorySwiper = ({ filterType }: WatchHistorySwiperProps) => {
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
 
-  const filteredHistory = filterType 
+  const filteredHistory = filterType
     ? history.filter((item) => item.media_type === filterType)
     : history;
 

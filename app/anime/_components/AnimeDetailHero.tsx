@@ -82,6 +82,11 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
     return parts.join("-");
   })();
 
+  const latestEpisode = details.nextAiringEpisode
+    ? details.nextAiringEpisode.episode - 1
+    : details.episodes;
+  const hasNoEpisodes = !latestEpisode || latestEpisode <= 0;
+
   const watchUrl = isResumable
     ? `/anime/watch?id=${details.id}${
         historyItem.episode ? `&ep=${historyItem.episode}` : ""
@@ -203,20 +208,31 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
 
           {/* Actions */}
           <div className="flex flex-wrap items-center justify-start gap-3">
-            <Link onClick={handleWatchClick} href={watchUrl}>
+            {hasNoEpisodes ? (
               <Button
-                variant={isResumable ? "premiumBlue" : "premium"}
+                variant="glass"
                 size="xl"
-                className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6"
+                className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6 opacity-50 cursor-not-allowed"
+                disabled
               >
-                {isResumable ? (
-                  <Play className="w-4 h-4 lg:w-5 lg:h-5 fill-current" />
-                ) : (
-                  <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" />
-                )}
-                {resumeText}
+                Upcoming
               </Button>
-            </Link>
+            ) : (
+              <Link onClick={handleWatchClick} href={watchUrl}>
+                <Button
+                  variant={isResumable ? "premiumBlue" : "premium"}
+                  size="xl"
+                  className="h-12 text-sm px-6 lg:text-base lg:h-12 lg:px-6"
+                >
+                  {isResumable ? (
+                    <Play className="w-4 h-4 lg:w-5 lg:h-5 fill-current" />
+                  ) : (
+                    <FaPlay fill="#000" className="w-4 h-4 lg:w-5 lg:h-5" />
+                  )}
+                  {resumeText}
+                </Button>
+              </Link>
+            )}
             <Button
               variant={inWatchlist ? "premium" : "glass"}
               size="icon-xl"
