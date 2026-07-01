@@ -98,7 +98,7 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
             1536: { slidesPerView: 7.2, spaceBetween: 20 },
             1920: { slidesPerView: 8.2, spaceBetween: 20 },
           }}
-          className="!overflow-visible"
+          className="overflow-visible!"
         >
           {anime.map((item) => (
             <SwiperSlide key={item.id} className="pb-4">

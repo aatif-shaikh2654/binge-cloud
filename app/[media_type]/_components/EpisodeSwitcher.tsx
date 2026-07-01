@@ -82,7 +82,7 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
         side="right"
         className="bg-zinc-950 border-l border-white/10 text-white w-full! md:w-[480px]! p-0 flex flex-col"
       >
-        <SheetHeader className="p-6 pb-4 border-b border-white/5 bg-gradient-to-b from-white/[0.01] to-transparent shrink-0">
+        <SheetHeader className="p-6 pb-4 border-b border-white/5 bg-linear-to-b from-white/1 to-transparent shrink-0">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-white text-xl font-black tracking-tighter flex items-center gap-2.5">
               <div className="p-1.5 bg-blue-600/10 rounded-lg border border-blue-500/20">
@@ -154,7 +154,7 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
                         </span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
                     {currentSeason === selectedSeason &&
                       currentEpisode === episode.episode_number && (

@@ -159,7 +159,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({
                 <SelectItem
                   key={season.id}
                   value={`${season.season_number} Season`}
-                  className="text-[10px] font-black uppercase tracking-widest data-[highlighted]:bg-white data-[highlighted]:text-black! data-[highlighted]:**:text-black! py-3 px-6 transition-all duration-300 rounded-lg cursor-pointer"
+                  className="text-[10px] font-black uppercase tracking-widest data-highlighted:bg-white data-highlighted:text-black! data-highlighted:**:text-black! py-3 px-6 transition-all duration-300 rounded-lg cursor-pointer"
                 >
                   {season.season_number} Season
                 </SelectItem>
@@ -173,7 +173,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({
         <EpisodeSkeleton />
       ) : episodes.length === 0 ? (
         <div className="relative group overflow-hidden border border-white/5 bg-zinc-950 rounded-[2rem] p-12 md:p-24 text-center space-y-6 animate-in fade-in zoom-in-95 duration-700 shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-b from-blue-600/5 to-transparent pointer-events-none" />
           <div className="relative space-y-6">
             <div className="inline-flex p-5 md:p-8 bg-zinc-900 rounded-[2rem] border border-white/10 group-hover:border-blue-500/50 transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">
               <Tv2 className="w-10 h-10 md:w-16 md:h-16 text-blue-500" />

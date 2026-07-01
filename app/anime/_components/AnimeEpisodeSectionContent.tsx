@@ -159,7 +159,7 @@ const AnimeEpisodeSectionContent: React.FC<AnimeEpisodeSectionContentProps> = ({
                   <SelectItem
                     key={i}
                     value={String(i)}
-                    className="text-[10px] font-black uppercase tracking-widest data-[highlighted]:bg-white data-[highlighted]:text-black! data-[highlighted]:**:text-black! py-3 px-6 transition-all duration-300 rounded-lg cursor-pointer"
+                    className="text-[10px] font-black uppercase tracking-widest data-highlighted:bg-white data-highlighted:text-black! data-highlighted:**:text-black! py-3 px-6 transition-all duration-300 rounded-lg cursor-pointer"
                   >
                     {start}–{end}
                   </SelectItem>

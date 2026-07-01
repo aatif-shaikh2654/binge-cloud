@@ -67,14 +67,14 @@ const MovieCard: React.FC<MovieCardProps> = ({
     <div
       className={cn(
         "relative w-full transition-all duration-300",
-        isHovered || showHoverCard ? "z-[500]" : "z-10",
+        isHovered || showHoverCard ? "z-500" : "z-10",
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Base Card Wrapper */}
       <div className="group flex flex-col gap-3 relative">
-        <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20">
+        <div className="relative aspect-2/3 w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20">
           {/* Poster Image Link */}
           <Link
             href={detailUrl}
@@ -186,7 +186,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
         {rank && (
           <div
             className={cn(
-              "absolute -top-5 -left-3 z-[540] pointer-events-none drop-shadow-[0_0_15px_rgba(0,0,0,0.8)] transition-transform duration-300",
+              "absolute -top-5 -left-3 z-540 pointer-events-none drop-shadow-[0_0_15px_rgba(0,0,0,0.8)] transition-transform duration-300",
               (isHovered || showHoverCard) &&
                 "scale-110 -translate-x-2 -translate-y-2",
             )}
@@ -221,7 +221,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
       {/* Hover Card Overlay */}
       {showHoverCard && (
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] bg-card rounded-xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.9)] z-[550] animate-in zoom-in-95 duration-200 border border-white/10"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] bg-card rounded-xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.9)] z-550 animate-in zoom-in-95 duration-200 border border-white/10"
           style={{ transformOrigin: "center" }}
         >
           {/* Video Section */}
@@ -270,7 +270,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 className="object-cover"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-card via-transparent to-transparent" />
           </div>
 
           {/* Content Section */}

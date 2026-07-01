@@ -102,7 +102,7 @@ export default function PersonFilmography({ credits, isLoading }: PersonFilmogra
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-3">
-              <Skeleton className="aspect-[2/3] w-full rounded-xl bg-white/5" />
+              <Skeleton className="aspect-2/3 w-full rounded-xl bg-white/5" />
               <div className="flex flex-col gap-1.5 px-1">
                 <Skeleton className="h-4 w-3/4 bg-white/5 animate-pulse" />
                 <Skeleton className="h-3 w-1/2 bg-white/5 animate-pulse" />
@@ -134,22 +134,22 @@ export default function PersonFilmography({ credits, isLoading }: PersonFilmogra
         }}
         className="w-full"
       >
-        <TabsList className="bg-white/[0.02] border border-white/10 rounded-md mb-8 p-1 w-full sm:w-fit flex items-center! justify-start! gap-1.5 h-[50px]! overflow-x-auto flex-nowrap select-none">
+        <TabsList className="bg-white/2 border border-white/10 rounded-md mb-8 p-1 w-full sm:w-fit flex items-center! justify-start! gap-1.5 h-[50px]! overflow-x-auto flex-nowrap select-none">
           <TabsTrigger
             value="all"
-            className="font-black text-[10px]! md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! cursor-pointer flex items-center justify-center shrink-0"
+            className="font-black text-[10px]! md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/2 data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! cursor-pointer flex items-center justify-center shrink-0"
           >
             All ({allCredits.length})
           </TabsTrigger>
           <TabsTrigger
             value="movies"
-            className="font-black text-[10px]! md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! flex items-center gap-2 cursor-pointer shrink-0"
+            className="font-black text-[10px]! md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/2 data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! flex items-center gap-2 cursor-pointer shrink-0"
           >
             <Film className="w-3.5 h-3.5" /> Movies ({movieCredits.length})
           </TabsTrigger>
           <TabsTrigger
             value="tv"
-            className="font-black text-[10px]! md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/[0.02] data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! flex items-center gap-2 cursor-pointer shrink-0"
+            className="font-black text-[10px]! md:text-xs uppercase tracking-wider px-5 h-full rounded-[8px] transition-all duration-300 text-white/50 hover:text-white/80 hover:bg-white/2 data-active:bg-blue-600! data-active:text-white! data-active:shadow-[0_3px_10px_rgba(37,99,235,0.3)]! flex items-center gap-2 cursor-pointer shrink-0"
           >
             <Tv className="w-3.5 h-3.5" /> TV Shows ({tvCredits.length})
           </TabsTrigger>

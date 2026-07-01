@@ -92,7 +92,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
     <div
       className={cn(
         "relative w-full transition-all duration-300",
-        isHovered ? "z-[150]" : "z-10",
+        isHovered ? "z-150" : "z-10",
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -101,7 +101,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
         href={`/anime/detail?id=${anime.id}`}
         className="group flex flex-col gap-3 cursor-pointer"
       >
-        <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20">
+        <div className="relative aspect-2/3 w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20">
           {coverSrc ? (
             <Image
               src={coverSrc}
@@ -146,7 +146,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
       {/* Hover detail card */}
       {isHovered && !disableHoverCard && (
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] bg-card rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-[300] animate-in zoom-in-95 duration-200"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] bg-card rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-300 animate-in zoom-in-95 duration-200"
           style={{ transformOrigin: "center" }}
         >
           {/* Banner / cover preview */}
@@ -161,7 +161,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
               sizes="320px"
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-card via-card/40 to-transparent" />
 
             {latestEpisode != null && latestEpisode > 0 && (
               <div className="absolute top-2.5 left-3 z-30">

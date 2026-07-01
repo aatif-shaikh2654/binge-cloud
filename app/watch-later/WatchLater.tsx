@@ -54,7 +54,7 @@ const WatchLater = ({ initialWatchlist }: WatchLaterProps) => {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 md:gap-x-6 md:gap-y-10 gap-x-3 gap-y-6">
           {Array.from({ length: 7 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-3">
-              <Skeleton className="aspect-[2/3] w-full rounded-xl" />
+              <Skeleton className="aspect-2/3 w-full rounded-xl" />
               <div className="flex flex-col gap-1.5 px-1">
                 <Skeleton className="h-4 w-3/4" />
                 <Skeleton className="h-3 w-1/2" />

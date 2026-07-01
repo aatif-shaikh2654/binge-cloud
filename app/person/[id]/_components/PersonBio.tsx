@@ -35,7 +35,7 @@ export default function PersonBio({
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-left">
-        <h1 className="text-4xl md:text-6xl lg:text-7xl leading-[130%]! font-black tracking-tighter bg-gradient-to-r from-white via-white/90 to-white/50 bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl leading-[130%]! font-black tracking-tighter bg-linear-to-r from-white via-white/90 to-white/50 bg-clip-text text-transparent">
           {name}
         </h1>
       </div>

@@ -86,7 +86,7 @@ const AnimeRelationsSwiper: React.FC<AnimeRelationsSwiperProps> = ({
             1536: { slidesPerView: 7.2, spaceBetween: 20 },
             1920: { slidesPerView: 8.2, spaceBetween: 20 },
           }}
-          className="!overflow-visible"
+          className="overflow-visible!"
         >
           {animeRelations.map(({ relationType, node }) => {
             const relation = RELATION_LABEL[relationType] ?? relationType;

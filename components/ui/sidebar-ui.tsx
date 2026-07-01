@@ -144,7 +144,7 @@ export function UserDropdownContent({
       side={side}
       align={align}
       sideOffset={sideOffset}
-      className="w-64 bg-zinc-950/90 backdrop-blur-2xl border border-white/10 rounded-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-2 flex flex-col gap-1 z-[110]"
+      className="w-64 bg-zinc-950/90 backdrop-blur-2xl border border-white/10 rounded-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-2 flex flex-col gap-1 z-110"
     >
       <div className="flex flex-col px-3 py-2.5 border-b border-white/5 gap-0.5 select-none text-left">
         <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">

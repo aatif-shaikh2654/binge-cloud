@@ -89,7 +89,7 @@ const CastSlider: React.FC<CastSliderProps> = ({ cast }) => {
               spaceBetween: 24,
             },
           }}
-          className="!overflow-visible"
+          className="overflow-visible!"
         >
           {cast.map((person, index) => (
             <SwiperSlide key={person.id} className="pb-10">

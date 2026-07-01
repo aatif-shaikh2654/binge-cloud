@@ -46,17 +46,17 @@ const AnimeWatch: React.FC<AnimeWatchProps> = ({ id, initialDetails }) => {
   );
 
   return (
-    <div className="fixed inset-0 z-[1000] bg-background">
+    <div className="fixed inset-0 z-1000 bg-background">
       {/* Back */}
       <button
         onClick={() => handleBack(`/anime/detail?id=${id}`)}
-        className="absolute top-6 left-6 z-[100] p-3 bg-zinc-900 border border-white/10 rounded-full text-white hover:bg-zinc-800 transition-all group shadow-2xl"
+        className="absolute top-6 left-6 z-100 p-3 bg-zinc-900 border border-white/10 rounded-full text-white hover:bg-zinc-800 transition-all group shadow-2xl"
       >
         <ArrowLeft className="w-6 h-6 transition-transform group-hover:-translate-x-1" />
       </button>
 
       {/* Controls — top right */}
-      <div className="absolute top-6 right-6 z-[100] flex items-center gap-2">
+      <div className="absolute top-6 right-6 z-100 flex items-center gap-2">
         {/* Episode switcher sheet */}
         <AnimeEpisodeSwitcher
           animeId={id}

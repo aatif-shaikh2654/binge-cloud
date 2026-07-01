@@ -79,7 +79,7 @@ const AnimeCharactersSliderSwiper: React.FC<
             1536: { slidesPerView: 7.2, spaceBetween: 16 },
             1920: { slidesPerView: 8.2, spaceBetween: 16 },
           }}
-          className="!overflow-visible"
+          className="overflow-visible!"
         >
           {characters.map(({ role, node: char, voiceActors }) => {
             const charName =
@@ -97,7 +97,7 @@ const AnimeCharactersSliderSwiper: React.FC<
             return (
               <SwiperSlide key={char.id} className="pb-4">
                 <div className="flex flex-col gap-3 group">
-                  <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-300 group-hover:border-white/20">
+                  <div className="relative aspect-2/3 w-full overflow-hidden rounded-xl border border-white/5 bg-white/5 transition-all duration-300 group-hover:border-white/20">
                     {mainImage ? (
                       <Image
                         src={mainImage}
@@ -125,7 +125,7 @@ const AnimeCharactersSliderSwiper: React.FC<
                       </div>
                     )}
 
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-8">
+                    <div className="absolute bottom-0 inset-x-0 bg-linear-to-t from-black/80 via-black/40 to-transparent p-3 pt-8">
                       <span
                         className={cn(
                           "text-[9px] font-black uppercase tracking-widest",

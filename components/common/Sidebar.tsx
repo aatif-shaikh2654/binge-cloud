@@ -66,7 +66,7 @@ const Sidebar = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "fixed left-0 top-0 hidden h-full flex-col py-8 lg:flex z-[100] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+          "fixed left-0 top-0 hidden h-full flex-col py-8 lg:flex z-100 transition-all duration-300 ease-in-out",
           isHovered
             ? "w-72 bg-sidebar/95 backdrop-blur-3xl"
             : "w-20 bg-sidebar items-center",
@@ -86,11 +86,11 @@ const Sidebar = () => {
             </div>
             <div
               className={cn(
-                "overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]",
+                "overflow-hidden transition-all duration-500 ease-in-out",
                 isHovered ? "w-auto opacity-100 ml-0" : "w-0 opacity-0 -ml-4",
               )}
             >
-              <span className="font-black text-xl tracking-tighter text-white whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
+              <span className="font-black text-xl tracking-tighter text-white whitespace-nowrap bg-clip-text bg-linear-to-r from-white to-white/70">
                 BINGE<span className="text-blue-500">CLOUD</span>
               </span>
             </div>
@@ -165,7 +165,7 @@ const Sidebar = () => {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 w-full h-[70px] bg-sidebar/95 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around lg:hidden z-[100] px-2">
+      <nav className="fixed bottom-0 left-0 w-full h-[70px] bg-sidebar/95 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around lg:hidden z-100 px-2">
         {mobileItems.map((item) => {
           const isActive = item.href ? pathname === item.href : false;
 
@@ -248,7 +248,7 @@ const Sidebar = () => {
       {/* Global Auth Popup Modal */}
       {isAuthOpen && (
         <div
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 z-999 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-300"
           onClick={() => setIsAuthOpen(false)}
         >
           <div

@@ -152,7 +152,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
         )}
 
         {/* Dark Overlays - Reduced layer on video */}
-        <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-background via-background/30 md:via-background/50 to-transparent" />
+        <div className="absolute bottom-0 w-full h-1/2 bg-linear-to-t from-background via-background/30 md:via-background/50 to-transparent" />
       </div>
 
       {videoKey && (
@@ -177,7 +177,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
 
         {/* Poster - More subtle animation */}
         <div className="w-32 md:w-48 lg:w-64 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
-          <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-white/20 group">
+          <div className="relative aspect-2/3 w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-white/20 group">
             {details.poster_path && (
               <ZoomableImage
                 src={`${TMDB_IMAGE_BASE_URL}/w500${details.poster_path}`}
@@ -188,7 +188,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
                 imageClassName="object-cover group-hover:scale-105"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
 

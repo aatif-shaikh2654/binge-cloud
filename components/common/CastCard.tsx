@@ -22,7 +22,7 @@ const CastCard: React.FC<CastCardProps> = ({ person, index }) => {
         animationFillMode: "backwards",
       }}
     >
-      <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20 group-hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]">
+      <div className="relative aspect-4/5 w-full rounded-2xl overflow-hidden border border-white/5 bg-white/5 transition-all duration-500 group-hover:border-white/20 group-hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]">
         {person.profile_path ? (
           <Image
             src={`${TMDB_IMAGE_BASE_URL}/w300${person.profile_path}`}
@@ -36,7 +36,7 @@ const CastCard: React.FC<CastCardProps> = ({ person, index }) => {
             <Users className="w-10 h-10 text-white/10" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-90" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-transparent opacity-90" />
         <div className="absolute bottom-3 left-3 right-3 z-10">
           <p className="text-[10px] md:text-[11px] text-blue-400 font-black uppercase tracking-wider truncate drop-shadow-lg">
             {person.character}

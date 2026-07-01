@@ -28,7 +28,7 @@ const AnimeSearchCard: React.FC<AnimeSearchCardProps> = ({ anime }) => {
       className="group relative flex items-center gap-4 p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all duration-300"
     >
       {/* Thumbnail */}
-      <div className="relative w-20 h-24 sm:h-28 flex-shrink-0 overflow-hidden rounded-xl">
+      <div className="relative w-20 h-24 sm:h-28 shrink-0 overflow-hidden rounded-xl">
         <Image
           src={coverSrc || ""}
           alt={title}

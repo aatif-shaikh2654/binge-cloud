@@ -96,8 +96,8 @@ const AnimeHero: React.FC<AnimeHeroProps> = ({ anime }) => {
                     priority
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-r from-background via-background/70 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent" />
 
                 <div className="absolute inset-0 flex flex-col justify-center px-6 lg:px-20 max-w-4xl z-10">
                   {/* Spotlight Rank */}
@@ -110,7 +110,7 @@ const AnimeHero: React.FC<AnimeHeroProps> = ({ anime }) => {
                   {/* Title and Logo */}
                   <div className="mb-4 flex flex-col gap-4">
                     {item.logo_path && (
-                      <div className="relative w-[200px] lg:w-[320px] aspect-[3/1]">
+                      <div className="relative w-[200px] lg:w-[320px] aspect-3/1">
                         <Image
                           src={`${TMDB_IMAGE_BASE_URL}/original${item.logo_path}`}
                           alt={title}

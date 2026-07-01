@@ -158,15 +158,15 @@ const AnimeSearch = () => {
     <>
       {isExpanded && (
         <div
-          className="fixed inset-0 z-[180] bg-black/40 backdrop-blur-[2px] animate-in fade-in duration-500"
+          className="fixed inset-0 z-180 bg-black/40 backdrop-blur-[2px] animate-in fade-in duration-500"
           onClick={closeSearch}
         />
       )}
-      <div className="absolute top-6 right-4 sm:right-8 z-[200]">
-        <div className="relative z-[300]" ref={containerRef}>
+      <div className="absolute top-6 right-4 sm:right-8 z-200">
+        <div className="relative z-300" ref={containerRef}>
           <div
             className={cn(
-              "flex items-center bg-black/60 backdrop-blur-xl border transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden",
+              "flex items-center bg-black/60 backdrop-blur-xl border transition-all duration-500 ease-in-out overflow-hidden",
               isExpanded
                 ? "w-[calc(100vw-32px)] sm:w-[450px] lg:w-[500px] border-blue-500 ring-2 ring-blue-500 rounded-full shadow-[0_0_30px_rgba(37,99,235,0.4)]"
                 : "w-[44px] h-[44px] border-white/10 hover:border-white/20 rounded-full",
@@ -182,7 +182,7 @@ const AnimeSearch = () => {
                 }
               }}
               className={cn(
-                "flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center transition-all duration-500 rounded-full",
+                "shrink-0 w-[44px] h-[44px] flex items-center justify-center transition-all duration-500 rounded-full",
                 !isExpanded ? "bg-blue-600 text-white" : "text-blue-500",
               )}
             >
@@ -239,7 +239,7 @@ const AnimeSearch = () => {
                       {[...Array(8)].map((_, i) => (
                         <div
                           key={i}
-                          className="aspect-[2/3] bg-white/5 rounded-xl animate-pulse"
+                          className="aspect-2/3 bg-white/5 rounded-xl animate-pulse"
                         />
                       ))}
                     </div>

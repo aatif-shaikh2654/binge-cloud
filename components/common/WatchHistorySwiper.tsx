@@ -82,7 +82,7 @@ const WatchHistorySwiper = ({ filterType }: WatchHistorySwiperProps) => {
             1536: { slidesPerView: 3.8, spaceBetween: 24 },
             1920: { slidesPerView: 4.8, spaceBetween: 24 },
           }}
-          className="!overflow-visible"
+          className="overflow-visible!"
         >
           {filteredHistory.map((item) => (
             <SwiperSlide key={item.id} className="pb-4">

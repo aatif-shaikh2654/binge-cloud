@@ -31,9 +31,9 @@ export const SliderSkeleton = ({ title, className }: SliderSkeletonProps) => (
       {[...Array(9)].map((_, i) => (
         <div
           key={i}
-          className="w-[135px] sm:w-[150px] md:w-[160px] lg:w-[165px] xl:w-[175px] 2xl:w-[185px] flex-shrink-0 flex flex-col gap-3"
+          className="w-[135px] sm:w-[150px] md:w-[160px] lg:w-[165px] xl:w-[175px] 2xl:w-[185px] shrink-0 flex flex-col gap-3"
         >
-          <Skeleton className="aspect-[2/3] w-full rounded-xl" />
+          <Skeleton className="aspect-2/3 w-full rounded-xl" />
           <div className="space-y-2 px-1">
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-3 w-1/2" />

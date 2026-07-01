@@ -156,7 +156,7 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({
 
   const modalContent = isOpen ? (
     <div
-      className="fixed inset-0 z-[99999] bg-black/95 flex items-center justify-center animate-in fade-in zoom-in duration-200 touch-none"
+      className="fixed inset-0 z-99999 bg-black/95 flex items-center justify-center animate-in fade-in zoom-in duration-200 touch-none"
       onClick={handleClose}
       onWheel={handleWheel}
     >

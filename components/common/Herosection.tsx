@@ -103,13 +103,13 @@ const Herosection: React.FC<HerosectionProps> = ({ movies }) => {
                   className="object-cover"
                   priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-r from-background via-background/70 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent" />
 
                 <div className="absolute inset-0 flex flex-col justify-center px-6 lg:px-20 max-w-4xl z-10">
                   <div className="mb-6 min-h-[80px] lg:min-h-[120px] flex items-end">
                     {movie.logo_path ? (
-                      <div className="relative w-[220px] lg:w-[320px] aspect-[3/1]">
+                      <div className="relative w-[220px] lg:w-[320px] aspect-3/1">
                         <Image
                           src={`${TMDB_IMAGE_BASE_URL}/original${movie.logo_path}`}
                           alt={movie.title || movie.name || "Movie Logo"}

@@ -42,7 +42,7 @@ const BravePrompt = () => {
   return (
     <div
       className={cn(
-        "fixed bottom-6 left-6 z-[300] max-w-[320px] w-full transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]",
+        "fixed bottom-6 left-6 z-300 max-w-[320px] w-full transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]",
         isVisible
           ? "translate-y-0 opacity-100"
           : "translate-y-12 opacity-0 pointer-events-none",
@@ -50,7 +50,7 @@ const BravePrompt = () => {
     >
       <div className="relative overflow-hidden rounded-xl bg-zinc-950/90 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 flex items-center gap-4 group">
         {/* Background Glow */}
-        <div className="absolute -top-10 -right-10 w-24 h-24 bg-blue-500/10 blur-[40px] rounded-full pointer-events-none" />
+        <div className="absolute -top-10 -right-10 w-24 h-24 bg-blue-500/10 blur-2xl rounded-full pointer-events-none" />
 
         {/* Logo container */}
         <div className="relative shrink-0 w-14 h-14 bg-white rounded-md p-2.5 shadow-xl transition-transform duration-500 group-hover:scale-110">

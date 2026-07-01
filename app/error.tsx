@@ -45,7 +45,7 @@ export default function Error({
   return (
     <div className="h-[80vh] md:h-screen w-full flex flex-col items-center justify-center bg-background relative overflow-hidden px-6">
       {/* Background gradients for cinematic feel */}
-      <div className="absolute inset-0 bg-gradient-to-b from-red-950/20 via-background to-background pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-red-950/20 via-background to-background pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-600/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center max-w-lg text-center space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">

@@ -113,14 +113,14 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
         ) : (
           <div className="absolute inset-0 bg-background" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent" />
       </div>
 
       {/* Hero content */}
       <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-62 lg:pt-98 flex flex-col items-start text-left lg:flex-row gap-8 lg:gap-20">
         {/* Poster */}
         <div className="w-42 md:w-58 shrink-0 animate-in fade-in slide-in-from-bottom-5 duration-1000">
-          <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-white/20 group">
+          <div className="relative aspect-2/3 w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-white/20 group">
             {posterImage && (
               <ZoomableImage
                 src={posterImage}
@@ -130,7 +130,7 @@ const AnimeDetailHero: React.FC<AnimeDetailHeroProps> = ({ details }) => {
                 imageClassName="object-cover group-hover:scale-105"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
 
