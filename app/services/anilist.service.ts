@@ -50,13 +50,41 @@ const getAnimeBySort = async (
   sort: AniListSort[],
   page: number = 1,
   perPage: number = 20,
+  format?: string,
+  status_in?: string[],
+  genre_in?: string[],
+  seasonYear?: number,
 ): Promise<AniListPageResponse> => {
   const data = await fetchAniList<AniListResponse>(ANIME_PAGE_QUERY, {
     page,
     perPage,
     sort,
+    format,
+    status_in,
+    genre_in,
+    seasonYear,
   });
   return data.data.Page;
+};
+
+export const getFilteredAnime = async (options: {
+  sort: AniListSort[];
+  page?: number;
+  perPage?: number;
+  format?: string;
+  status_in?: string[];
+  genre_in?: string[];
+  seasonYear?: number;
+}): Promise<AniListPageResponse> => {
+  return getAnimeBySort(
+    options.sort,
+    options.page,
+    options.perPage,
+    options.format,
+    options.status_in,
+    options.genre_in,
+    options.seasonYear,
+  );
 };
 
 export const getTrendingAnime = (
@@ -70,6 +98,12 @@ export const getPopularAnime = (
   perPage: number = 20,
 ): Promise<AniListPageResponse> =>
   getAnimeBySort(["POPULARITY_DESC"], page, perPage);
+
+export const getAnimeMovies = (
+  page: number = 1,
+  perPage: number = 20,
+): Promise<AniListPageResponse> =>
+  getAnimeBySort(["POPULARITY_DESC"], page, perPage, "MOVIE");
 
 export const getTopRatedAnime = (
   page: number = 1,

@@ -1,11 +1,13 @@
 "use client";
 
-import { getMediaList, getSimilarMedia, getTrendingMedia, discoverMedia } from "@/app/services/all.service";
+import React, { useCallback, useRef, useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getSimilarMedia, getTrendingMedia, discoverMedia } from "@/app/services/all.service";
 import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
 import MovieCard from "@/components/common/MovieCard";
+import { MediaFilterBar } from "@/components/common/MediaFilterBar";
 import { Loader2 } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface MediaListProps {
   initialData: TMDBResponse<TMDBMovie>;
@@ -22,73 +24,129 @@ const MediaList: React.FC<MediaListProps> = ({
   filter,
   genreId,
 }) => {
-  const [items, setItems] = useState<TMDBMovie[]>(initialData.results || []);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(page < initialData.total_pages);
-  const [isLoading, setIsLoading] = useState(false);
+  // Filter States
+  const [selectedGenre, setSelectedGenre] = useState<string>(genreId ? genreId.toString() : "all");
+  const [selectedYear, setSelectedYear] = useState<string>("all");
+  const [selectedSort, setSelectedSort] = useState<string>(filter === "trending" ? "trending" : "popularity.desc");
+  const [selectedScore, setSelectedScore] = useState<string>("all");
+
+  const defaultSort = filter === "trending" ? "trending" : "popularity.desc";
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteQuery({
+    queryKey: [
+      "media-list",
+      mediaType,
+      relatedTo,
+      filter,
+      genreId,
+      selectedGenre,
+      selectedYear,
+      selectedSort,
+      selectedScore,
+    ],
+    queryFn: async ({ pageParam = 1 }) => {
+      const isDefault =
+        selectedGenre === (genreId ? genreId.toString() : "all") &&
+        selectedYear === "all" &&
+        selectedSort === defaultSort &&
+        selectedScore === "all";
+
+      if (relatedTo) {
+        return getSimilarMedia(relatedTo, mediaType, pageParam);
+      } else if (selectedSort === "trending" && isDefault) {
+        return getTrendingMedia(mediaType as "movie" | "tv", "week", pageParam);
+      } else {
+        const params: any = { page: pageParam };
+        if (selectedGenre !== "all") params.with_genres = selectedGenre;
+        if (selectedYear !== "all") {
+          if (mediaType === "movie") params.primary_release_year = selectedYear;
+          else params.first_air_date_year = selectedYear;
+        }
+        if (selectedScore !== "all") params["vote_average.gte"] = Number(selectedScore);
+        
+        if (selectedSort === "trending") {
+          params.sort_by = "popularity.desc";
+        } else {
+          params.sort_by = selectedSort;
+        }
+
+        return discoverMedia(mediaType, params);
+      }
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.page < lastPage.total_pages) {
+        return lastPage.page + 1;
+      }
+      return undefined;
+    },
+    initialData: () => {
+      const isDefault =
+        selectedGenre === (genreId ? genreId.toString() : "all") &&
+        selectedYear === "all" &&
+        selectedSort === defaultSort &&
+        selectedScore === "all";
+
+      if (isDefault && !relatedTo) {
+        return {
+          pages: [initialData],
+          pageParams: [1],
+        };
+      }
+      return undefined;
+    },
+  });
+
+  const items = data?.pages.flatMap((page) => page.results || []) || [];
 
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const lastItemRef = useCallback(
     (node: HTMLDivElement | null) => {
-      if (isLoading) return;
+      if (isFetchingNextPage) return;
       if (observerRef.current) observerRef.current.disconnect();
 
       observerRef.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && hasMore) {
-            setPage((prevPage) => prevPage + 1);
+          if (entries[0].isIntersecting && hasNextPage) {
+            fetchNextPage();
           }
         },
         {
-          rootMargin: "400px", // Trigger earlier for smoother experience
+          rootMargin: "400px",
         },
       );
 
       if (node) observerRef.current.observe(node);
     },
-    [isLoading, hasMore],
+    [isFetchingNextPage, hasNextPage, fetchNextPage],
   );
-
-  // Load more data when page changes
-  useEffect(() => {
-    if (page === 1) return;
-
-    const loadMore = async () => {
-      setIsLoading(true);
-      try {
-        let newData;
-        if (relatedTo) {
-          newData = await getSimilarMedia(relatedTo, mediaType, page);
-        } else if (filter === "trending") {
-          newData = await getTrendingMedia(mediaType as "movie" | "tv", "week", page);
-        } else if (genreId) {
-          newData = await discoverMedia(mediaType, { with_genres: genreId.toString(), page });
-        } else {
-          newData = await getMediaList(mediaType, "popular", page);
-        }
-        setItems((prev) => {
-          // Filter out potential duplicates just in case
-          const newItems = newData.results || [];
-          const existingIds = new Set(prev.map((i) => i.id));
-          const filteredNewItems = newItems.filter(
-            (i) => !existingIds.has(i.id),
-          );
-          return [...prev, ...filteredNewItems];
-        });
-        setHasMore(page < newData.total_pages);
-      } catch (error) {
-        console.error("Error loading more media:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadMore();
-  }, [page, mediaType, relatedTo, filter, genreId]);
 
   return (
     <div className="px-6 lg:px-20 flex flex-col gap-10">
+      {/* Hide filters on recommendation pages */}
+      {!relatedTo && (
+        <MediaFilterBar
+          mediaType={mediaType}
+          selectedGenre={selectedGenre}
+          setSelectedGenre={setSelectedGenre}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          selectedScore={selectedScore}
+          setSelectedScore={setSelectedScore}
+          selectedSort={selectedSort}
+          setSelectedSort={setSelectedSort}
+          filter={filter}
+        />
+      )}
+
+      {/* Grid List */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 md:gap-x-6 md:gap-y-10 gap-x-4 gap-y-6">
         {items.map((item, index) => (
           <div
@@ -105,7 +163,7 @@ const MediaList: React.FC<MediaListProps> = ({
         ))}
       </div>
 
-      {isLoading && (
+      {(isLoading || isFetchingNextPage) && (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
           <p className="text-white/20 font-bold uppercase tracking-widest text-[9px]">
@@ -114,7 +172,7 @@ const MediaList: React.FC<MediaListProps> = ({
         </div>
       )}
 
-      {!hasMore && items.length > 0 && (
+      {!hasNextPage && items.length > 0 && !isLoading && (
         <div className="flex flex-col items-center gap-4 py-20 opacity-20">
           <div className="h-px w-20 bg-white" />
           <p className="text-[9px] font-bold uppercase tracking-widest">

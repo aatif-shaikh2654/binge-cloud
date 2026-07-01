@@ -9,6 +9,7 @@ import {
   getPopularAnime,
   getTopRatedAnime,
   getTrendingAnime,
+  getAnimeMovies,
 } from "../services/anilist.service";
 
 const WatchHistory = nextDynamic(
@@ -39,6 +40,18 @@ async function PopularAnimeWrapper() {
       title="Most Popular"
       anime={popular}
       seeAllHref="/anime/popular"
+    />
+  );
+}
+
+async function AnimeMoviesWrapper() {
+  const moviesData = await getAnimeMovies(1, 20);
+  const movies = moviesData.media ?? [];
+  return (
+    <AnimeSlider
+      title="Popular Movies"
+      anime={movies}
+      seeAllHref="/anime/movies"
     />
   );
 }
@@ -84,6 +97,10 @@ export default async function AnimePage() {
 
         <Suspense fallback={<SliderSkeleton title="Most Popular" />}>
           <PopularAnimeWrapper />
+        </Suspense>
+
+        <Suspense fallback={<SliderSkeleton title="Popular Movies" />}>
+          <AnimeMoviesWrapper />
         </Suspense>
 
         <Suspense fallback={<SliderSkeleton title="Top Rated" />}>

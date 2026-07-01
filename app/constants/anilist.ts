@@ -34,14 +34,14 @@ export const ANIME_MEDIA_FRAGMENT = `
 `;
 
 export const ANIME_PAGE_QUERY = `
-  query AnimeList($page: Int, $perPage: Int, $sort: [MediaSort], $search: String) {
+  query AnimeList($page: Int, $perPage: Int, $sort: [MediaSort], $search: String, $format: MediaFormat, $status_in: [MediaStatus], $genre_in: [String], $seasonYear: Int) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         hasNextPage
         currentPage
         total
       }
-      media(type: ANIME, sort: $sort, search: $search, isAdult: false) {
+      media(type: ANIME, sort: $sort, search: $search, format: $format, status_in: $status_in, genre_in: $genre_in, seasonYear: $seasonYear, isAdult: false) {
         ${ANIME_MEDIA_FRAGMENT}
       }
     }

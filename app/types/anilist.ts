@@ -20,7 +20,7 @@ export interface AniListStudios {
   nodes: AniListStudio[];
 }
 
-export type AnimeCategory = "trending" | "popular" | "top-rated";
+export type AnimeCategory = "trending" | "popular" | "top-rated" | "movies";
 
 export type AniListStatus =
   | "FINISHED"

@@ -3,6 +3,7 @@ import {
   getTopRatedAnime,
   getTrendingAnime,
   getAnimeByGenre,
+  getAnimeMovies,
 } from "@/app/services/anilist.service";
 import { AnimeCategory, type AniListPageResponse } from "@/app/types/anilist";
 import PageHeader from "@/components/common/PageHeader";
@@ -54,6 +55,7 @@ export async function generateMetadata({
     trending: "Trending Anime",
     popular: "Most Popular Anime",
     "top-rated": "Top Rated Anime",
+    movies: "Popular Anime Movies",
   };
 
   const title = typeMap[listing_type];
@@ -107,6 +109,13 @@ export default async function AnimeListingPage({ params }: PageProps) {
         "Discover the highest-rated anime series as voted by the community. Find top-tier storytelling and animation across all genres.",
       fetcher: getTopRatedAnime,
       category: "top-rated",
+    },
+    movies: {
+      title: "Popular Anime Movies",
+      description:
+        "Explore the best and most popular anime movies of all time on Binge Cloud.",
+      fetcher: getAnimeMovies,
+      category: "movies",
     },
   };
 
