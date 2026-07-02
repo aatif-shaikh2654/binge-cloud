@@ -145,3 +145,25 @@ export const STATUS_LABEL: Record<string, string> = {
   CANCELLED: "Cancelled",
   HIATUS: "Hiatus",
 };
+
+export const ANILIST_GENRES = [
+  "Action",
+  "Adventure",
+  "Comedy",
+  "Drama",
+  "Ecchi",
+  "Fantasy",
+  "Hentai",
+  "Horror",
+  "Mahou Shoujo",
+  "Mecha",
+  "Music",
+  "Mystery",
+  "Psychological",
+  "Romance",
+  "Sci-Fi",
+  "Slice of Life",
+  "Sports",
+  "Supernatural",
+  "Thriller",
+];

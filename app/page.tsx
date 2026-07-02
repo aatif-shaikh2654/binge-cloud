@@ -1,7 +1,7 @@
 import { getHistory } from "@/app/actions";
 import Herosection from "@/components/common/Herosection";
-import { SliderSkeleton } from "@/components/common/SliderSkeleton";
-import { WatchHistorySkeleton } from "@/components/common/WatchHistory";
+import { SliderSkeleton } from "@/components/sliders/SliderSkeleton";
+import { WatchHistorySkeleton } from "@/components/sliders/WatchHistory";
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
 import {
@@ -11,10 +11,13 @@ import {
 } from "./services/all.service";
 
 const WatchHistory = nextDynamic(
-  () => import("@/components/common/WatchHistory"),
+  () => import("@/components/sliders/WatchHistory"),
 );
 const MediaSlider = nextDynamic(
-  () => import("@/components/common/MediaSlider"),
+  () => import("@/components/sliders/MediaSlider"),
+);
+const StreamingPlatforms = nextDynamic(
+  () => import("@/components/sliders/StreamingPlatforms"),
 );
 
 export const dynamic = "force-dynamic";
@@ -90,6 +93,10 @@ export default async function Home() {
       {/* Lazy loaded and progressively streamed below-the-fold */}
       <Suspense fallback={<WatchHistorySkeleton />}>
         <WatchHistoryWrapper />
+      </Suspense>
+
+      <Suspense fallback={<SliderSkeleton title="Streaming Platforms" />}>
+        <StreamingPlatforms />
       </Suspense>
 
       <Suspense fallback={<SliderSkeleton title="Trending" />}>

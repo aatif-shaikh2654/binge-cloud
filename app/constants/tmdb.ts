@@ -34,3 +34,13 @@ export const TMDB_GENRES: Record<number, string> = {
   10767: "Talk",
   10768: "War & Politics",
 };
+
+export const MOVIE_GENRE_IDS = [
+  28, 12, 16, 35, 80, 99, 18, 10751, 14, 36, 27, 10402, 9648, 10749, 878, 10770,
+  53, 10752, 37,
+];
+
+export const TV_GENRE_IDS = [
+  10759, 16, 35, 80, 99, 18, 10751, 10762, 9648, 10763, 10764, 10765, 10766,
+  10767, 10768, 37,
+];

@@ -1,8 +1,8 @@
 import { getHistory } from "@/app/actions";
 import AnimeHero from "@/components/common/AnimeHero";
 import AnimeSearch from "@/components/common/AnimeSearch";
-import { SliderSkeleton } from "@/components/common/SliderSkeleton";
-import { WatchHistorySkeleton } from "@/components/common/WatchHistory";
+import { SliderSkeleton } from "@/components/sliders/SliderSkeleton";
+import { WatchHistorySkeleton } from "@/components/sliders/WatchHistory";
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
 import {
@@ -13,10 +13,10 @@ import {
 } from "../services/anilist.service";
 
 const WatchHistory = nextDynamic(
-  () => import("@/components/common/WatchHistory"),
+  () => import("@/components/sliders/WatchHistory"),
 );
 const AnimeSlider = nextDynamic(
-  () => import("@/components/common/AnimeSlider"),
+  () => import("@/components/sliders/AnimeSlider"),
 );
 
 export const dynamic = "force-dynamic";

@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import React from "react";
 import { FreeMode, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import HistoryCard from "./HistoryCard";
+import HistoryCard from "../common/HistoryCard";
 
 // Import Swiper styles
 import "swiper/css";

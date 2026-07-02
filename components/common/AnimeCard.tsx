@@ -134,7 +134,8 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
               </span>
             </div>
           ) : (
-            latestEpisode != null && latestEpisode > 0 && (
+            latestEpisode != null &&
+            latestEpisode > 0 && (
               <div className="absolute top-2 left-3">
                 <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
                   EP {latestEpisode}
@@ -179,7 +180,8 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, disableHoverCard }) => {
                 </span>
               </div>
             ) : (
-              latestEpisode != null && latestEpisode > 0 && (
+              latestEpisode != null &&
+              latestEpisode > 0 && (
                 <div className="absolute top-2.5 left-3 z-30">
                   <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded tracking-wider uppercase">
                     EP {latestEpisode}

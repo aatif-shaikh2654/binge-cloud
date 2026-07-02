@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { getFilteredAnime } from "@/app/services/anilist.service";
+import { useFilterStore } from "@/app/store/useFilterStore";
 import {
   AnimeCategory,
-  type AniListMedia,
   type AniListPageResponse,
   type AniListSort,
 } from "@/app/types/anilist";
 import AnimeCard from "@/components/common/AnimeCard";
-import { AnimeFilterBar } from "@/components/common/AnimeFilterBar";
+import AnimeFilterFields from "@/components/common/AnimeFilterFields";
+import FilterBarContainer from "@/components/common/FilterBarContainer";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import React, { useCallback, useRef } from "react";
 
 interface AnimeListProps {
   initialData: AniListPageResponse;
@@ -19,7 +20,11 @@ interface AnimeListProps {
   genre?: string;
 }
 
-const AnimeList: React.FC<AnimeListProps> = ({ initialData, category, genre }) => {
+const AnimeList: React.FC<AnimeListProps> = ({
+  initialData,
+  category,
+  genre,
+}) => {
   // Default Sort based on category
   const defaultSort =
     category === "trending"
@@ -28,70 +33,117 @@ const AnimeList: React.FC<AnimeListProps> = ({ initialData, category, genre }) =
         ? "SCORE_DESC"
         : "POPULARITY_DESC";
 
-  // Filter States
-  const [selectedGenre, setSelectedGenre] = useState<string>(genre || "all");
-  const [selectedYear, setSelectedYear] = useState<string>("all");
-  const [selectedFormat, setSelectedFormat] = useState<string>(category === "movies" ? "MOVIE" : "all");
-  const [selectedSort, setSelectedSort] = useState<string>(defaultSort);
+  const {
+    animeSelectedGenres: selectedGenres,
+    setAnimeSelectedGenres: setSelectedGenres,
+    animeSelectedYear: selectedYear,
+    setAnimeSelectedYear: setSelectedYear,
+    animeSelectedFormat: selectedFormat,
+    setAnimeSelectedFormat: setSelectedFormat,
+    animeSelectedSort: selectedSort,
+    setAnimeSelectedSort: setSelectedSort,
+    resetAnimeFilters,
+  } = useFilterStore();
+
+  const prevGenreRef = React.useRef<string | undefined | null>(null);
+  const prevCategoryRef = React.useRef<AnimeCategory | undefined | null>(null);
+
+  // Synchronize dynamic routing parameters into the store
+  React.useEffect(() => {
+    if (genre !== prevGenreRef.current) {
+      if (genre) {
+        setSelectedGenres([genre]);
+      } else {
+        setSelectedGenres([]);
+      }
+      prevGenreRef.current = genre;
+    }
+  }, [genre, setSelectedGenres]);
+
+  React.useEffect(() => {
+    if (category !== prevCategoryRef.current) {
+      if (category === "movies") {
+        setSelectedFormat("MOVIE");
+      } else {
+        setSelectedFormat("all");
+      }
+      prevCategoryRef.current = category;
+    }
+  }, [category, setSelectedFormat]);
 
   const defaultFormat = category === "movies" ? "MOVIE" : "all";
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery({
-    queryKey: [
-      "anime-list",
-      category,
-      genre,
-      selectedGenre,
-      selectedYear,
-      selectedFormat,
-      selectedSort,
-    ],
-    queryFn: async ({ pageParam = 1 }) => {
-      // Construct query options
-      const queryOptions: any = {
-        page: pageParam,
-        sort: [selectedSort as AniListSort],
-      };
+  const hasActiveFilters =
+    selectedGenres.length > 0 ||
+    selectedYear !== "all" ||
+    selectedFormat !== defaultFormat ||
+    selectedSort !== defaultSort;
 
-      if (selectedGenre !== "all") queryOptions.genre_in = [selectedGenre];
-      if (selectedYear !== "all") queryOptions.seasonYear = Number(selectedYear);
-      if (selectedFormat !== "all") queryOptions.format = selectedFormat;
-      if (category === "movies" && selectedFormat === "all") {
-        // If we are on movies route, default to MOVIE format unless specified
-        queryOptions.format = "MOVIE";
-      }
+  const isDefault =
+    (genre
+      ? selectedGenres.length === 1 && selectedGenres[0] === genre
+      : selectedGenres.length === 0) &&
+    selectedYear === "all" &&
+    selectedFormat === defaultFormat &&
+    selectedSort === defaultSort;
 
-      return getFilteredAnime(queryOptions);
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      if (lastPage.pageInfo.hasNextPage) {
-        return lastPage.pageInfo.currentPage + 1;
-      }
-      return undefined;
-    },
-    initialData: () => {
-      const isDefault =
-        selectedGenre === (genre || "all") &&
-        selectedYear === "all" &&
-        selectedFormat === defaultFormat &&
-        selectedSort === defaultSort;
-
-      if (isDefault) {
-        return {
-          pages: [initialData],
-          pageParams: [1],
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: [
+        "anime-list",
+        category,
+        genre,
+        selectedGenres,
+        selectedYear,
+        selectedFormat,
+        selectedSort,
+      ],
+      queryFn: async ({ pageParam = 1 }) => {
+        // Construct query options
+        const queryOptions: Parameters<typeof getFilteredAnime>[0] = {
+          page: pageParam,
+          sort: [selectedSort as AniListSort],
         };
-      }
-      return undefined;
-    },
-  });
+
+        if (selectedGenres.length > 0) {
+          queryOptions.genre_in = selectedGenres;
+        }
+
+        if (selectedYear !== "all")
+          queryOptions.seasonYear = Number(selectedYear);
+        if (selectedFormat !== "all") queryOptions.format = selectedFormat;
+        if (category === "movies" && selectedFormat === "all") {
+          queryOptions.format = "MOVIE";
+        }
+
+        return getFilteredAnime(queryOptions);
+      },
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.pageInfo.hasNextPage) {
+          return lastPage.pageInfo.currentPage + 1;
+        }
+        return undefined;
+      },
+      getPreviousPageParam: (firstPage) => {
+        if (firstPage.pageInfo.currentPage > 1) {
+          return firstPage.pageInfo.currentPage - 1;
+        }
+        return undefined;
+      },
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      // Load initial data on mount without fetching
+      initialData: () => {
+        if (initialData && isDefault) {
+          return {
+            pages: [initialData],
+            pageParams: [1],
+          };
+        }
+        return undefined;
+      },
+    });
 
   const items = data?.pages.flatMap((page) => page.media || []) || [];
 
@@ -121,18 +173,23 @@ const AnimeList: React.FC<AnimeListProps> = ({ initialData, category, genre }) =
   return (
     <div className="px-6 lg:px-20 flex flex-col gap-10">
       {/* Filter Bar */}
-      <AnimeFilterBar
-        selectedGenre={selectedGenre}
-        setSelectedGenre={setSelectedGenre}
-        selectedYear={selectedYear}
-        setSelectedYear={setSelectedYear}
-        selectedFormat={selectedFormat}
-        setSelectedFormat={setSelectedFormat}
-        selectedSort={selectedSort}
-        setSelectedSort={setSelectedSort}
-        defaultSort={defaultSort}
-        defaultFormat={defaultFormat}
-      />
+      <FilterBarContainer
+        hasActiveFilters={hasActiveFilters}
+        onClear={resetAnimeFilters}
+      >
+        <AnimeFilterFields
+          selectedGenres={selectedGenres}
+          setSelectedGenres={setSelectedGenres}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          selectedFormat={selectedFormat}
+          setSelectedFormat={setSelectedFormat}
+          selectedSort={selectedSort}
+          setSelectedSort={setSelectedSort}
+          defaultSort={defaultSort}
+          defaultFormat={defaultFormat}
+        />
+      </FilterBarContainer>
 
       {/* Grid list */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 md:gap-x-6 md:gap-y-10 gap-x-3 gap-y-6">

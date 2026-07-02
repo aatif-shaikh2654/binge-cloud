@@ -4,7 +4,7 @@ import {
   type AniListMedia,
   type AniListMediaDetail,
 } from "@/app/types/anilist";
-import AnimeSlider from "@/components/common/AnimeSlider";
+import AnimeSlider from "@/components/sliders/AnimeSlider";
 import React from "react";
 import AnimeCharactersSlider from "../_components/AnimeCharactersSlider";
 import AnimeDetailHero from "../_components/AnimeDetailHero";

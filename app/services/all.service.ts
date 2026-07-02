@@ -207,6 +207,9 @@ export const discoverMedia = async (
     "vote_average.gte"?: number;
     sort_by?: string;
     include_adult?: boolean;
+    with_watch_providers?: string;
+    watch_region?: string;
+    with_watch_monetization_types?: string;
   },
 ): Promise<TMDBResponse<TMDBMovie>> => {
   return ApiService<TMDBResponse<TMDBMovie>>({

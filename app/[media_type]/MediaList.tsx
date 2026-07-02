@@ -1,13 +1,19 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { getSimilarMedia, getTrendingMedia, discoverMedia } from "@/app/services/all.service";
+import {
+  discoverMedia,
+  getSimilarMedia,
+  getTrendingMedia,
+} from "@/app/services/all.service";
+import { useFilterStore } from "@/app/store/useFilterStore";
 import { type MediaType } from "@/app/types/common";
 import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
+import FilterBarContainer from "@/components/common/FilterBarContainer";
+import MediaFilterFields from "@/components/common/MediaFilterFields";
 import MovieCard from "@/components/common/MovieCard";
-import { MediaFilterBar } from "@/components/common/MediaFilterBar";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import React, { useCallback, useRef } from "react";
 
 interface MediaListProps {
   initialData: TMDBResponse<TMDBMovie>;
@@ -15,6 +21,7 @@ interface MediaListProps {
   relatedTo?: string | number;
   filter?: string;
   genreId?: number;
+  platformId?: string;
 }
 
 const MediaList: React.FC<MediaListProps> = ({
@@ -23,85 +30,149 @@ const MediaList: React.FC<MediaListProps> = ({
   relatedTo,
   filter,
   genreId,
+  platformId,
 }) => {
-  // Filter States
-  const [selectedGenre, setSelectedGenre] = useState<string>(genreId ? genreId.toString() : "all");
-  const [selectedYear, setSelectedYear] = useState<string>("all");
-  const [selectedSort, setSelectedSort] = useState<string>(filter === "trending" ? "trending" : "popularity.desc");
-  const [selectedScore, setSelectedScore] = useState<string>("all");
+  const {
+    selectedGenres,
+    setSelectedGenres,
+    selectedYear,
+    setSelectedYear,
+    selectedSort,
+    setSelectedSort,
+    selectedPlatform,
+    setSelectedPlatform,
+    resetTmdbFilters,
+  } = useFilterStore();
+
+  const prevGenreIdRef = React.useRef<number | undefined | null>(null);
+  const prevPlatformIdRef = React.useRef<string | undefined | null>(null);
+
+  // Synchronize dynamic routing query param props into the store
+  React.useEffect(() => {
+    if (genreId !== prevGenreIdRef.current) {
+      if (genreId) {
+        setSelectedGenres([genreId.toString()]);
+      } else {
+        setSelectedGenres([]);
+      }
+      prevGenreIdRef.current = genreId;
+    }
+  }, [genreId, setSelectedGenres]);
+
+  React.useEffect(() => {
+    if (platformId !== prevPlatformIdRef.current) {
+      if (platformId) {
+        setSelectedPlatform(platformId);
+      } else {
+        setSelectedPlatform("all");
+      }
+      prevPlatformIdRef.current = platformId;
+    }
+  }, [platformId, setSelectedPlatform]);
+
+  React.useEffect(() => {
+    if (filter === "trending") {
+      setSelectedSort("trending");
+    } else if (selectedSort === "trending") {
+      setSelectedSort("popularity.desc");
+    }
+  }, [filter, setSelectedSort, selectedSort]);
 
   const defaultSort = filter === "trending" ? "trending" : "popularity.desc";
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery({
-    queryKey: [
-      "media-list",
-      mediaType,
-      relatedTo,
-      filter,
-      genreId,
-      selectedGenre,
-      selectedYear,
-      selectedSort,
-      selectedScore,
-    ],
-    queryFn: async ({ pageParam = 1 }) => {
-      const isDefault =
-        selectedGenre === (genreId ? genreId.toString() : "all") &&
-        selectedYear === "all" &&
-        selectedSort === defaultSort &&
-        selectedScore === "all";
+  const hasActiveFilters =
+    selectedGenres.length > 0 ||
+    selectedYear !== "all" ||
+    selectedPlatform !== "all" ||
+    selectedSort !== defaultSort;
 
-      if (relatedTo) {
-        return getSimilarMedia(relatedTo, mediaType, pageParam);
-      } else if (selectedSort === "trending" && isDefault) {
-        return getTrendingMedia(mediaType as "movie" | "tv", "week", pageParam);
-      } else {
-        const params: any = { page: pageParam };
-        if (selectedGenre !== "all") params.with_genres = selectedGenre;
-        if (selectedYear !== "all") {
-          if (mediaType === "movie") params.primary_release_year = selectedYear;
-          else params.first_air_date_year = selectedYear;
-        }
-        if (selectedScore !== "all") params["vote_average.gte"] = Number(selectedScore);
-        
-        if (selectedSort === "trending") {
-          params.sort_by = "popularity.desc";
+  const isDefault =
+    (genreId
+      ? selectedGenres.length === 1 && selectedGenres[0] === genreId.toString()
+      : selectedGenres.length === 0) &&
+    selectedYear === "all" &&
+    selectedSort === defaultSort &&
+    selectedPlatform === (platformId || "all");
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: [
+        "media-list",
+        mediaType,
+        relatedTo,
+        filter,
+        genreId,
+        selectedGenres,
+        selectedYear,
+        selectedSort,
+        selectedPlatform,
+      ],
+      queryFn: async ({ pageParam = 1 }) => {
+        if (relatedTo) {
+          return getSimilarMedia(relatedTo, mediaType, pageParam);
+        } else if (selectedSort === "trending" && isDefault) {
+          return getTrendingMedia(
+            mediaType as "movie" | "tv",
+            "week",
+            pageParam,
+          );
         } else {
-          params.sort_by = selectedSort;
+          const params: Parameters<typeof discoverMedia>[1] = {
+            page: pageParam,
+          };
+
+          // Commas represent AND operator in TMDB discover genres parameter
+          if (selectedGenres.length > 0) {
+            params.with_genres = selectedGenres.join(",");
+          }
+
+          if (selectedYear !== "all") {
+            if (mediaType === "movie")
+              params.primary_release_year = selectedYear;
+            else params.first_air_date_year = selectedYear;
+          }
+
+          if (selectedPlatform !== "all") {
+            params.with_watch_providers = selectedPlatform;
+            params.watch_region = "US";
+            params.with_watch_monetization_types = "flatrate";
+          }
+
+          if (selectedSort === "trending") {
+            params.sort_by = "popularity.desc";
+          } else {
+            params.sort_by = selectedSort;
+          }
+
+          return discoverMedia(mediaType, params);
         }
-
-        return discoverMedia(mediaType, params);
-      }
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      if (lastPage.page < lastPage.total_pages) {
-        return lastPage.page + 1;
-      }
-      return undefined;
-    },
-    initialData: () => {
-      const isDefault =
-        selectedGenre === (genreId ? genreId.toString() : "all") &&
-        selectedYear === "all" &&
-        selectedSort === defaultSort &&
-        selectedScore === "all";
-
-      if (isDefault && !relatedTo) {
-        return {
-          pages: [initialData],
-          pageParams: [1],
-        };
-      }
-      return undefined;
-    },
-  });
+      },
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.page < lastPage.total_pages) {
+          return lastPage.page + 1;
+        }
+        return undefined;
+      },
+      getPreviousPageParam: (firstPage) => {
+        if (firstPage.page > 1) {
+          return firstPage.page - 1;
+        }
+        return undefined;
+      },
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      // Load initial data on mount without fetching
+      initialData: () => {
+        if (initialData && isDefault) {
+          return {
+            pages: [initialData],
+            pageParams: [1],
+          };
+        }
+        return undefined;
+      },
+    });
 
   const items = data?.pages.flatMap((page) => page.results || []) || [];
 
@@ -132,18 +203,23 @@ const MediaList: React.FC<MediaListProps> = ({
     <div className="px-6 lg:px-20 flex flex-col gap-10">
       {/* Hide filters on recommendation pages */}
       {!relatedTo && (
-        <MediaFilterBar
-          mediaType={mediaType}
-          selectedGenre={selectedGenre}
-          setSelectedGenre={setSelectedGenre}
-          selectedYear={selectedYear}
-          setSelectedYear={setSelectedYear}
-          selectedScore={selectedScore}
-          setSelectedScore={setSelectedScore}
-          selectedSort={selectedSort}
-          setSelectedSort={setSelectedSort}
-          filter={filter}
-        />
+        <FilterBarContainer
+          hasActiveFilters={hasActiveFilters}
+          onClear={resetTmdbFilters}
+        >
+          <MediaFilterFields
+            mediaType={mediaType}
+            selectedGenres={selectedGenres}
+            setSelectedGenres={setSelectedGenres}
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
+            selectedPlatform={selectedPlatform}
+            setSelectedPlatform={setSelectedPlatform}
+            selectedSort={selectedSort}
+            setSelectedSort={setSelectedSort}
+            filter={filter}
+          />
+        </FilterBarContainer>
       )}
 
       {/* Grid List */}

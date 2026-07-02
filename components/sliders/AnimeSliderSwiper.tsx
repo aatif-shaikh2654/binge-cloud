@@ -1,41 +1,35 @@
 "use client";
 
-import { type TMDBMovie } from "@/app/types/tmdb";
+import { type AniListMedia } from "@/app/types/anilist";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { FreeMode, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import MovieCard from "./MovieCard";
+import AnimeCard from "../common/AnimeCard";
 
-// Import Swiper styles
-import { MediaType } from "@/app/types/common";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 
-interface MediaSliderProps {
-  movies: TMDBMovie[];
+interface AnimeSliderSwiperProps {
+  anime: AniListMedia[];
   title: string;
   className?: string;
-  media_type?: string;
   seeAllHref?: string;
-  showRank?: boolean;
 }
 
-const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
-  movies,
+const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
+  anime,
   title,
   className,
-  media_type,
   seeAllHref,
-  showRank,
 }) => {
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
 
-  if (!movies || movies.length === 0) return null;
+  if (!anime || anime.length === 0) return null;
 
   return (
     <section
@@ -44,7 +38,6 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
         className,
       )}
     >
-      {/* Section Header */}
       <div className="flex items-center justify-between mb-8 pe-8! lg:pe-20!">
         <div className="flex items-center gap-4">
           <div className="w-1.5 h-8 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
@@ -54,9 +47,9 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
         </div>
 
         <div className="flex items-center gap-6">
-          {media_type && (
+          {seeAllHref && (
             <Link
-              href={seeAllHref || `/${media_type}`}
+              href={seeAllHref}
               className="flex items-center gap-2 text-white/40 hover:text-white transition-colors group"
             >
               <span className="text-xs font-black uppercase tracking-widest">
@@ -66,7 +59,6 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
             </Link>
           )}
 
-          {/* Custom Navigation */}
           <div className="hidden md:flex items-center gap-2">
             <button
               ref={setPrevEl}
@@ -84,18 +76,14 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
         </div>
       </div>
 
-      {/* Slider Container */}
       <div className="movie-slider-container lg:pe-20 pe-6">
         <Swiper
           modules={[Navigation, FreeMode]}
-          navigation={{
-            prevEl,
-            nextEl,
-          }}
+          navigation={{ prevEl, nextEl }}
           onBeforeInit={(swiper) => {
-            // @ts-expect-error - swiper navigation params
+            // @ts-expect-error swiper navigation params
             swiper.params.navigation.prevEl = prevEl;
-            // @ts-expect-error - swiper navigation params
+            // @ts-expect-error swiper navigation params
             swiper.params.navigation.nextEl = nextEl;
           }}
           spaceBetween={16}
@@ -112,13 +100,9 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
           }}
           className="overflow-visible!"
         >
-          {movies.map((movie, index) => (
-            <SwiperSlide key={movie.id} className="pb-4 overflow-visible!">
-              <MovieCard
-                movie={movie}
-                mediaType={media_type as MediaType}
-                rank={showRank ? index + 1 : undefined}
-              />
+          {anime.map((item) => (
+            <SwiperSlide key={item.id} className="pb-4">
+              <AnimeCard anime={item} />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -127,4 +111,4 @@ const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
   );
 };
 
-export default MediaSliderSwiper;
+export default AnimeSliderSwiper;

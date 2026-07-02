@@ -1,35 +1,41 @@
 "use client";
 
-import { type AniListMedia } from "@/app/types/anilist";
+import { type TMDBMovie } from "@/app/types/tmdb";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { FreeMode, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import AnimeCard from "./AnimeCard";
+import MovieCard from "../common/MovieCard";
 
+// Import Swiper styles
+import { MediaType } from "@/app/types/common";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 
-interface AnimeSliderSwiperProps {
-  anime: AniListMedia[];
+interface MediaSliderProps {
+  movies: TMDBMovie[];
   title: string;
   className?: string;
+  media_type?: string;
   seeAllHref?: string;
+  showRank?: boolean;
 }
 
-const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
-  anime,
+const MediaSliderSwiper: React.FC<MediaSliderProps> = ({
+  movies,
   title,
   className,
+  media_type,
   seeAllHref,
+  showRank,
 }) => {
   const [prevEl, setPrevEl] = React.useState<HTMLButtonElement | null>(null);
   const [nextEl, setNextEl] = React.useState<HTMLButtonElement | null>(null);
 
-  if (!anime || anime.length === 0) return null;
+  if (!movies || movies.length === 0) return null;
 
   return (
     <section
@@ -38,6 +44,7 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
         className,
       )}
     >
+      {/* Section Header */}
       <div className="flex items-center justify-between mb-8 pe-8! lg:pe-20!">
         <div className="flex items-center gap-4">
           <div className="w-1.5 h-8 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
@@ -47,9 +54,9 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
         </div>
 
         <div className="flex items-center gap-6">
-          {seeAllHref && (
+          {media_type && (
             <Link
-              href={seeAllHref}
+              href={seeAllHref || `/${media_type}`}
               className="flex items-center gap-2 text-white/40 hover:text-white transition-colors group"
             >
               <span className="text-xs font-black uppercase tracking-widest">
@@ -59,6 +66,7 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
             </Link>
           )}
 
+          {/* Custom Navigation */}
           <div className="hidden md:flex items-center gap-2">
             <button
               ref={setPrevEl}
@@ -76,14 +84,18 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
         </div>
       </div>
 
+      {/* Slider Container */}
       <div className="movie-slider-container lg:pe-20 pe-6">
         <Swiper
           modules={[Navigation, FreeMode]}
-          navigation={{ prevEl, nextEl }}
+          navigation={{
+            prevEl,
+            nextEl,
+          }}
           onBeforeInit={(swiper) => {
-            // @ts-expect-error swiper navigation params
+            // @ts-expect-error - swiper navigation params
             swiper.params.navigation.prevEl = prevEl;
-            // @ts-expect-error swiper navigation params
+            // @ts-expect-error - swiper navigation params
             swiper.params.navigation.nextEl = nextEl;
           }}
           spaceBetween={16}
@@ -100,9 +112,13 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
           }}
           className="overflow-visible!"
         >
-          {anime.map((item) => (
-            <SwiperSlide key={item.id} className="pb-4">
-              <AnimeCard anime={item} />
+          {movies.map((movie, index) => (
+            <SwiperSlide key={movie.id} className="pb-4 overflow-visible!">
+              <MovieCard
+                movie={movie}
+                mediaType={media_type as MediaType}
+                rank={showRank ? index + 1 : undefined}
+              />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -111,4 +127,4 @@ const AnimeSliderSwiper: React.FC<AnimeSliderSwiperProps> = ({
   );
 };
 
-export default AnimeSliderSwiper;
+export default MediaSliderSwiper;

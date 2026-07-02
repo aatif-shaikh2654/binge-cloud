@@ -2,8 +2,8 @@
 
 import { getSimilarMedia } from "@/app/services/all.service";
 import { type MediaType } from "@/app/types/common";
-import MediaSlider from "@/components/common/MediaSlider";
-import SliderSkeleton from "@/components/common/SliderSkeleton";
+import MediaSlider from "@/components/sliders/MediaSlider";
+import SliderSkeleton from "@/components/sliders/SliderSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
