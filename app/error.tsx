@@ -55,10 +55,10 @@ export default function Error({
 
         <div className="space-y-3">
           <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
-            Server Error
+            Server is down
           </h1>
           <p className="text-md text-white/60 font-medium leading-relaxed">
-            {errorMessage}
+            We are facing some technical difficulties with our server.
           </p>
         </div>
 

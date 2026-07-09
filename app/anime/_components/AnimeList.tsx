@@ -53,23 +53,29 @@ const AnimeList: React.FC<AnimeListProps> = ({
     if (genre !== prevGenreRef.current) {
       if (genre) {
         setSelectedGenres([genre]);
+        setSelectedSort("POPULARITY_DESC");
+        setSelectedFormat("all");
+        setSelectedYear("all");
       } else {
         setSelectedGenres([]);
       }
       prevGenreRef.current = genre;
     }
-  }, [genre, setSelectedGenres]);
+  }, [genre, setSelectedGenres, setSelectedSort, setSelectedFormat, setSelectedYear]);
 
   React.useEffect(() => {
     if (category !== prevCategoryRef.current) {
+      setSelectedSort(defaultSort);
       if (category === "movies") {
         setSelectedFormat("MOVIE");
       } else {
         setSelectedFormat("all");
       }
+      setSelectedGenres([]);
+      setSelectedYear("all");
       prevCategoryRef.current = category;
     }
-  }, [category, setSelectedFormat]);
+  }, [category, defaultSort, setSelectedSort, setSelectedFormat, setSelectedGenres, setSelectedYear]);
 
   const defaultFormat = category === "movies" ? "MOVIE" : "all";
 

@@ -151,6 +151,9 @@ export const getMediaDetails = async (
   return ApiService<TMDBMovie>({
     method: "GET",
     url: `/${type}/${id}`,
+    params: {
+      append_to_response: "external_ids",
+    },
   });
 };
 

@@ -38,6 +38,11 @@ export interface TMDBMovie {
     air_date: string;
     name: string;
   } | null;
+  imdb_id?: string;
+  external_ids?: {
+    imdb_id?: string;
+    [key: string]: unknown;
+  };
 }
 
 export interface TMDBSeason {

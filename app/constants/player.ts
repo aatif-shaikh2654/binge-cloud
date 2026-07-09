@@ -7,12 +7,13 @@ import { Globe, type LucideIcon } from "lucide-react";
 export interface PlayerServer {
   name: string;
   id: string;
-  movieUrl: (tmdbId: string, startAt?: number) => string;
+  movieUrl: (tmdbId: string, startAt?: number, imdbId?: string) => string;
   tvUrl: (
     tmdbId: string,
     season: number,
     episode: number,
     startAt?: number,
+    imdbId?: string,
   ) => string;
   trackingType?: "vidnest" | "vidsrc" | "vidfast";
   description?: string;
@@ -56,13 +57,6 @@ export const PLAYER_SERVERS: PlayerServer[] = [
   },
   {
     name: "Server 4",
-    id: "server-4",
-    movieUrl: (tmdbId: string) => `https://111movies.com/movie/${tmdbId}`,
-    tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://111movies.com/tv/${tmdbId}/${season}/${episode}`,
-  },
-  {
-    name: "Server 5",
     id: "server-5",
     movieUrl: (tmdbId: string) =>
       `https://player.vidzee.wtf/embed/movie/${tmdbId}`,
@@ -70,7 +64,7 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       `https://player.vidzee.wtf/embed/tv/${tmdbId}/${season}/${episode}`,
   },
   {
-    name: "Server 6",
+    name: "Server 5",
     id: "server-6",
     movieUrl: (tmdbId: string) => `https://player.videasy.net/movie/${tmdbId}`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
@@ -78,14 +72,14 @@ export const PLAYER_SERVERS: PlayerServer[] = [
   },
 
   {
-    name: "Server 7",
+    name: "Server 6",
     id: "server-7",
     movieUrl: (tmdbId: string) => `https://vidlink.pro/movie/${tmdbId}`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
       `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`,
   },
   {
-    name: "Server 8",
+    name: "Server 7",
     id: "server-8",
     movieUrl: (tmdbId: string, startAt?: number) =>
       `https://vidnest.fun/movie/${tmdbId}${startAt ? `?startAt=${startAt}` : ""}`,
@@ -99,13 +93,34 @@ export const PLAYER_SERVERS: PlayerServer[] = [
     trackingType: "vidnest",
   },
   {
-    name: "Server 9",
+    name: "Server 8",
     id: "server-9",
     movieUrl: (tmdbId: string) =>
       `https://streams.iqsmartgames.com/embed/movie/${tmdbId}?key=e11a7debaaa4f5d25b671706ffe4d2acb56efbd4`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
       `https://streams.iqsmartgames.com/embed/tv/${tmdbId}/${season}/${episode}?key=e11a7debaaa4f5d25b671706ffe4d2acb56efbd4`,
     description: "Multi-Language",
+    icon: Globe,
+  },
+  {
+    name: "Server 9",
+    id: "server-10",
+    movieUrl: (tmdbId: string, startAt?: number, imdbId?: string) => {
+      const id = imdbId || tmdbId;
+      const type = imdbId ? "imdb" : "tmdb";
+      return `https://cineverse.modiplay.xyz/embed/${type}/movie?id=${id}`;
+    },
+    tvUrl: (
+      tmdbId: string,
+      season: number,
+      episode: number,
+      startAt?: number,
+      imdbId?: string,
+    ) => {
+      const id = imdbId || tmdbId;
+      const type = imdbId ? "imdb" : "tmdb";
+      return `https://cineverse.modiplay.xyz/embed/${type}/tv?id=${id}&season=${season}&episode=${episode}`;
+    },
     icon: Globe,
   },
 ];

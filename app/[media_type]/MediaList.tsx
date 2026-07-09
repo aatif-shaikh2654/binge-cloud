@@ -46,37 +46,50 @@ const MediaList: React.FC<MediaListProps> = ({
 
   const prevGenreIdRef = React.useRef<number | undefined | null>(null);
   const prevPlatformIdRef = React.useRef<string | undefined | null>(null);
+  const prevFilterRef = React.useRef<string | undefined | null>(null);
 
   // Synchronize dynamic routing query param props into the store
   React.useEffect(() => {
     if (genreId !== prevGenreIdRef.current) {
       if (genreId) {
         setSelectedGenres([genreId.toString()]);
+        setSelectedSort("popularity.desc");
+        setSelectedYear("all");
+        setSelectedPlatform("all");
       } else {
         setSelectedGenres([]);
       }
       prevGenreIdRef.current = genreId;
     }
-  }, [genreId, setSelectedGenres]);
+  }, [genreId, setSelectedGenres, setSelectedSort, setSelectedYear, setSelectedPlatform]);
 
   React.useEffect(() => {
     if (platformId !== prevPlatformIdRef.current) {
       if (platformId) {
         setSelectedPlatform(platformId);
+        setSelectedGenres([]);
+        setSelectedSort("popularity.desc");
+        setSelectedYear("all");
       } else {
         setSelectedPlatform("all");
       }
       prevPlatformIdRef.current = platformId;
     }
-  }, [platformId, setSelectedPlatform]);
+  }, [platformId, setSelectedPlatform, setSelectedGenres, setSelectedSort, setSelectedYear]);
 
   React.useEffect(() => {
-    if (filter === "trending") {
-      setSelectedSort("trending");
-    } else if (selectedSort === "trending") {
-      setSelectedSort("popularity.desc");
+    if (filter !== prevFilterRef.current) {
+      if (filter === "trending") {
+        setSelectedSort("trending");
+      } else {
+        setSelectedSort("popularity.desc");
+      }
+      setSelectedGenres([]);
+      setSelectedYear("all");
+      setSelectedPlatform("all");
+      prevFilterRef.current = filter;
     }
-  }, [filter, setSelectedSort, selectedSort]);
+  }, [filter, setSelectedSort, setSelectedGenres, setSelectedYear, setSelectedPlatform]);
 
   const defaultSort = filter === "trending" ? "trending" : "popularity.desc";
 
