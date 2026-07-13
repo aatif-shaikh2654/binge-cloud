@@ -50,32 +50,31 @@ const AnimeList: React.FC<AnimeListProps> = ({
 
   // Synchronize dynamic routing parameters into the store
   React.useEffect(() => {
-    if (genre !== prevGenreRef.current) {
+    if (genre !== prevGenreRef.current || category !== prevCategoryRef.current) {
       if (genre) {
         setSelectedGenres([genre]);
         setSelectedSort("POPULARITY_DESC");
         setSelectedFormat("all");
         setSelectedYear("all");
+      } else if (category) {
+        setSelectedSort(defaultSort);
+        if (category === "movies") {
+          setSelectedFormat("MOVIE");
+        } else {
+          setSelectedFormat("all");
+        }
+        setSelectedGenres([]);
+        setSelectedYear("all");
       } else {
         setSelectedGenres([]);
+        setSelectedSort(defaultSort);
+        setSelectedFormat("all");
+        setSelectedYear("all");
       }
       prevGenreRef.current = genre;
-    }
-  }, [genre, setSelectedGenres, setSelectedSort, setSelectedFormat, setSelectedYear]);
-
-  React.useEffect(() => {
-    if (category !== prevCategoryRef.current) {
-      setSelectedSort(defaultSort);
-      if (category === "movies") {
-        setSelectedFormat("MOVIE");
-      } else {
-        setSelectedFormat("all");
-      }
-      setSelectedGenres([]);
-      setSelectedYear("all");
       prevCategoryRef.current = category;
     }
-  }, [category, defaultSort, setSelectedSort, setSelectedFormat, setSelectedGenres, setSelectedYear]);
+  }, [genre, category, defaultSort, setSelectedGenres, setSelectedSort, setSelectedFormat, setSelectedYear]);
 
   const defaultFormat = category === "movies" ? "MOVIE" : "all";
 

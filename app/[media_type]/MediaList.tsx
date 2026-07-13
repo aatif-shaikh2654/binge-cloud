@@ -50,46 +50,47 @@ const MediaList: React.FC<MediaListProps> = ({
 
   // Synchronize dynamic routing query param props into the store
   React.useEffect(() => {
-    if (genreId !== prevGenreIdRef.current) {
+    if (
+      genreId !== prevGenreIdRef.current ||
+      platformId !== prevPlatformIdRef.current ||
+      filter !== prevFilterRef.current
+    ) {
       if (genreId) {
         setSelectedGenres([genreId.toString()]);
         setSelectedSort("popularity.desc");
         setSelectedYear("all");
         setSelectedPlatform("all");
-      } else {
-        setSelectedGenres([]);
-      }
-      prevGenreIdRef.current = genreId;
-    }
-  }, [genreId, setSelectedGenres, setSelectedSort, setSelectedYear, setSelectedPlatform]);
-
-  React.useEffect(() => {
-    if (platformId !== prevPlatformIdRef.current) {
-      if (platformId) {
+      } else if (platformId) {
         setSelectedPlatform(platformId);
         setSelectedGenres([]);
         setSelectedSort("popularity.desc");
         setSelectedYear("all");
-      } else {
-        setSelectedPlatform("all");
-      }
-      prevPlatformIdRef.current = platformId;
-    }
-  }, [platformId, setSelectedPlatform, setSelectedGenres, setSelectedSort, setSelectedYear]);
-
-  React.useEffect(() => {
-    if (filter !== prevFilterRef.current) {
-      if (filter === "trending") {
+      } else if (filter === "trending") {
         setSelectedSort("trending");
+        setSelectedGenres([]);
+        setSelectedYear("all");
+        setSelectedPlatform("all");
       } else {
-        setSelectedSort("popularity.desc");
+        setSelectedGenres([]);
+        setSelectedPlatform("all");
+        if (filter !== "trending") {
+          setSelectedSort("popularity.desc");
+        }
+        setSelectedYear("all");
       }
-      setSelectedGenres([]);
-      setSelectedYear("all");
-      setSelectedPlatform("all");
+      prevGenreIdRef.current = genreId;
+      prevPlatformIdRef.current = platformId;
       prevFilterRef.current = filter;
     }
-  }, [filter, setSelectedSort, setSelectedGenres, setSelectedYear, setSelectedPlatform]);
+  }, [
+    genreId,
+    platformId,
+    filter,
+    setSelectedGenres,
+    setSelectedSort,
+    setSelectedYear,
+    setSelectedPlatform,
+  ]);
 
   const defaultSort = filter === "trending" ? "trending" : "popularity.desc";
 
