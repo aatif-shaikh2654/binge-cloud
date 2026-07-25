@@ -1,5 +1,5 @@
 import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
-import { generateToken, setAuthCookie } from "@/app/lib/auth";
+import { generateToken, setAuthCookie, generateRefreshToken, setRefreshTokenCookie } from "@/app/lib/auth";
 import { User } from "@/models/User";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
@@ -34,8 +34,14 @@ export const POST = AsyncWrapper(async (req: Request) => {
     id: user.id,
   });
 
-  // Store in HTTP-only Cookie
+  // Generate Refresh Token
+  const refreshToken = generateRefreshToken({
+    id: user.id,
+  });
+
+  // Store in cookies
   await setAuthCookie(token);
+  await setRefreshTokenCookie(refreshToken);
 
   const userObj = user.toJSON();
 
