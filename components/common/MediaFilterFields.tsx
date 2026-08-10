@@ -25,7 +25,7 @@ import { ChevronDown, X } from "lucide-react";
 import React from "react";
 
 interface MediaFilterFieldsProps {
-  mediaType: MediaType;
+  mediaType: MediaType | "all";
   selectedGenres: string[];
   setSelectedGenres: (genres: string[]) => void;
   selectedYear: string;
@@ -35,6 +35,7 @@ interface MediaFilterFieldsProps {
   selectedSort: string;
   setSelectedSort: (sort: string) => void;
   filter?: string;
+  isBollywood?: boolean;
 }
 
 export const MediaFilterFields: React.FC<MediaFilterFieldsProps> = ({
@@ -48,14 +49,19 @@ export const MediaFilterFields: React.FC<MediaFilterFieldsProps> = ({
   selectedSort,
   setSelectedSort,
   filter,
+  isBollywood = false,
 }) => {
-  const genreIds = mediaType === "movie" ? MOVIE_GENRE_IDS : TV_GENRE_IDS;
+  const genreIds = mediaType === "all"
+    ? Array.from(new Set([...MOVIE_GENRE_IDS, ...TV_GENRE_IDS]))
+    : (mediaType === "movie" ? MOVIE_GENRE_IDS : TV_GENRE_IDS);
   const genres = genreIds
     .map((id) => ({ id, name: TMDB_GENRES[id] }))
     .filter((g) => g.name);
   const years = Array.from({ length: 17 }, (_, i) => (2026 - i).toString());
 
-  const defaultSort = filter === "trending" ? "trending" : "popularity.desc";
+  const defaultSort = isBollywood
+    ? "primary_release_date.desc"
+    : (filter === "trending" ? "trending" : "popularity.desc");
 
   const handleToggleGenre = (genreId: string) => {
     if (selectedGenres.includes(genreId)) {
@@ -247,7 +253,9 @@ export const MediaFilterFields: React.FC<MediaFilterFieldsProps> = ({
               value={
                 mediaType === "movie"
                   ? "primary_release_date.desc"
-                  : "first_air_date.desc"
+                  : mediaType === "tv"
+                    ? "first_air_date.desc"
+                    : "primary_release_date.desc"
               }
             >
               Release Date

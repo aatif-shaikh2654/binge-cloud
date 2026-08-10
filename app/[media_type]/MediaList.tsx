@@ -17,11 +17,12 @@ import React, { useCallback, useRef } from "react";
 
 interface MediaListProps {
   initialData: TMDBResponse<TMDBMovie>;
-  mediaType: MediaType;
+  mediaType: MediaType | "all";
   relatedTo?: string | number;
   filter?: string;
   genreId?: number;
   platformId?: string;
+  isBollywood?: boolean;
 }
 
 const MediaList: React.FC<MediaListProps> = ({
@@ -31,6 +32,7 @@ const MediaList: React.FC<MediaListProps> = ({
   filter,
   genreId,
   platformId,
+  isBollywood = false,
 }) => {
   const {
     selectedGenres,
@@ -120,11 +122,12 @@ const MediaList: React.FC<MediaListProps> = ({
         selectedYear,
         selectedSort,
         selectedPlatform,
+        isBollywood,
       ],
       queryFn: async ({ pageParam = 1 }) => {
         if (relatedTo) {
-          return getSimilarMedia(relatedTo, mediaType, pageParam);
-        } else if (selectedSort === "trending" && isDefault) {
+          return getSimilarMedia(relatedTo, mediaType as MediaType, pageParam);
+        } else if (selectedSort === "trending" && isDefault && !isBollywood) {
           return getTrendingMedia(
             mediaType as "movie" | "tv",
             "week",
@@ -135,30 +138,139 @@ const MediaList: React.FC<MediaListProps> = ({
             page: pageParam,
           };
 
+          if (isBollywood) {
+            params.with_original_language = "hi";
+            params.with_origin_country = "IN";
+          }
+
           // Commas represent AND operator in TMDB discover genres parameter
           if (selectedGenres.length > 0) {
             params.with_genres = selectedGenres.join(",");
           }
 
-          if (selectedYear !== "all") {
-            if (mediaType === "movie")
-              params.primary_release_year = selectedYear;
-            else params.first_air_date_year = selectedYear;
-          }
-
           if (selectedPlatform !== "all") {
             params.with_watch_providers = selectedPlatform;
-            params.watch_region = "US";
+            params.watch_region = isBollywood ? "IN" : "US";
             params.with_watch_monetization_types = "flatrate";
           }
 
-          if (selectedSort === "trending") {
-            params.sort_by = "popularity.desc";
-          } else {
-            params.sort_by = selectedSort;
-          }
+          if (mediaType === "all") {
+            const getParamsForType = (type: "movie" | "tv") => {
+              const typeParams = { ...params };
+              if (isBollywood) {
+                const todayStr = new Date().toISOString().split("T")[0];
+                if (selectedSort === "popularity.desc") {
+                  const threeYearsAgo = new Date();
+                  threeYearsAgo.setFullYear(new Date().getFullYear() - 3);
+                  const threeYearsAgoStr = threeYearsAgo.toISOString().split("T")[0];
+                  if (type === "movie") {
+                    typeParams["primary_release_date.gte"] = threeYearsAgoStr;
+                    typeParams["primary_release_date.lte"] = todayStr;
+                  } else {
+                    typeParams["first_air_date.gte"] = threeYearsAgoStr;
+                    typeParams["first_air_date.lte"] = todayStr;
+                  }
+                } else {
+                  if (type === "movie") {
+                    typeParams["primary_release_date.lte"] = todayStr;
+                  } else {
+                    typeParams["first_air_date.lte"] = todayStr;
+                  }
+                }
+              }
+              if (selectedYear !== "all") {
+                if (type === "movie") typeParams.primary_release_year = selectedYear;
+                else typeParams.first_air_date_year = selectedYear;
+              }
+              if (
+                selectedSort === "release_date.desc" ||
+                selectedSort === "primary_release_date.desc" ||
+                selectedSort === "first_air_date.desc"
+              ) {
+                typeParams.sort_by = type === "movie" ? "primary_release_date.desc" : "first_air_date.desc";
+              } else if (selectedSort === "trending") {
+                typeParams.sort_by = "popularity.desc";
+              } else {
+                typeParams.sort_by = selectedSort;
+              }
+              return typeParams;
+            };
 
-          return discoverMedia(mediaType, params);
+            const [moviesResponse, tvResponse] = await Promise.all([
+              discoverMedia("movie", getParamsForType("movie")),
+              discoverMedia("tv", getParamsForType("tv")),
+            ]);
+
+            const movies = (moviesResponse.results || []).map((item) => ({
+              ...item,
+              media_type: "movie" as const,
+            }));
+            const tvShows = (tvResponse.results || []).map((item) => ({
+              ...item,
+              media_type: "tv" as const,
+            }));
+
+            const combined = [...movies, ...tvShows];
+
+            if (selectedSort === "vote_average.desc") {
+              combined.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+            } else if (
+              selectedSort === "release_date.desc" ||
+              selectedSort === "primary_release_date.desc" ||
+              selectedSort === "first_air_date.desc"
+            ) {
+              combined.sort((a, b) => {
+                const dateA = new Date(a.release_date || a.first_air_date || 0).getTime();
+                const dateB = new Date(b.release_date || b.first_air_date || 0).getTime();
+                return dateB - dateA;
+              });
+            } else {
+              combined.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+            }
+
+            return {
+              page: pageParam,
+              results: combined,
+              total_pages: Math.max(moviesResponse.total_pages, tvResponse.total_pages),
+              total_results: moviesResponse.total_results + tvResponse.total_results,
+            } as TMDBResponse<TMDBMovie>;
+          } else {
+            if (isBollywood) {
+              const todayStr = new Date().toISOString().split("T")[0];
+              if (selectedSort === "popularity.desc") {
+                const threeYearsAgo = new Date();
+                threeYearsAgo.setFullYear(new Date().getFullYear() - 3);
+                const threeYearsAgoStr = threeYearsAgo.toISOString().split("T")[0];
+                if (mediaType === "movie") {
+                  params["primary_release_date.gte"] = threeYearsAgoStr;
+                  params["primary_release_date.lte"] = todayStr;
+                } else if (mediaType === "tv") {
+                  params["first_air_date.gte"] = threeYearsAgoStr;
+                  params["first_air_date.lte"] = todayStr;
+                }
+              } else {
+                if (mediaType === "movie") {
+                  params["primary_release_date.lte"] = todayStr;
+                } else if (mediaType === "tv") {
+                  params["first_air_date.lte"] = todayStr;
+                }
+              }
+            }
+
+            if (selectedYear !== "all") {
+              if (mediaType === "movie")
+                params.primary_release_year = selectedYear;
+              else params.first_air_date_year = selectedYear;
+            }
+
+            if (selectedSort === "trending") {
+              params.sort_by = "popularity.desc";
+            } else {
+              params.sort_by = selectedSort;
+            }
+
+            return discoverMedia(mediaType, params);
+          }
         }
       },
       initialPageParam: 1,
@@ -248,7 +360,7 @@ const MediaList: React.FC<MediaListProps> = ({
               animationFillMode: "backwards",
             }}
           >
-            <MovieCard movie={item} mediaType={mediaType} />
+            <MovieCard movie={item} mediaType={mediaType === "all" ? item.media_type : mediaType} />
           </div>
         ))}
       </div>

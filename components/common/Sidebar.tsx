@@ -10,12 +10,14 @@ import {
   SidebarButton,
   SidebarLink,
   UserDropdownContent,
+  LoggedOutDropdownContent,
 } from "@/components/ui/sidebar-ui";
 import { cn } from "@/lib/utils";
 import {
   Bookmark,
   CircleUser,
   Clock,
+  Film,
   Home,
   Search,
   Sparkles,
@@ -36,6 +38,7 @@ const sidebarItems = [
   { icon: Home, label: "Home", href: "/" },
   { icon: MdOutlineMovie, label: "Movies", href: "/movie" },
   { icon: Tv, label: "Web Series", href: "/tv" },
+  { icon: Film, label: "Bollywood", href: "/bollywood" },
   { icon: Sparkles, label: "Anime", href: "/anime" },
   { icon: Clock, label: "History", href: "/history" },
   { icon: Bookmark, label: "Watch Later", href: "/watch-later" },
@@ -44,8 +47,8 @@ const sidebarItems = [
 const mobileItems = [
   { icon: Home, label: "Home", href: "/" },
   { icon: Search, label: "Search", href: "/search" },
+  { icon: Film, label: "Bollywood", href: "/bollywood" },
   { icon: Sparkles, label: "Anime", href: "/anime" },
-  { icon: Clock, label: "History", href: "/history" },
 ];
 
 const Sidebar = () => {
@@ -227,21 +230,33 @@ const Sidebar = () => {
               align="end"
               sideOffset={12}
               watchlistCount={watchlistCount}
+              historyCount={historyCount}
             />
           </DropdownMenu>
         ) : (
-          <button
-            onClick={() => {
-              setAuthMode("login");
-              setIsAuthOpen(true);
-            }}
-            className="flex flex-col items-center justify-center gap-1 relative px-4 py-2 text-[#8197a4] hover:text-white/80 cursor-pointer outline-none transition-all duration-300"
-          >
-            <CircleUser className="w-5 h-5" />
-            <span className="text-[8px] font-bold uppercase tracking-wider font-sans opacity-60">
-              Log In
-            </span>
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button className="flex flex-col items-center justify-center gap-1 relative px-4 py-2 text-[#8197a4] hover:text-white/80 cursor-pointer outline-none transition-all duration-300">
+                  <CircleUser className="w-5 h-5" />
+                  <span className="text-[8px] font-bold uppercase tracking-wider font-sans opacity-60">
+                    Log In
+                  </span>
+                </button>
+              }
+            />
+            <LoggedOutDropdownContent
+              onLoginClick={() => {
+                setAuthMode("login");
+                setIsAuthOpen(true);
+              }}
+              side="top"
+              align="end"
+              sideOffset={12}
+              historyCount={historyCount}
+              watchlistCount={watchlistCount}
+            />
+          </DropdownMenu>
         )}
       </nav>
 

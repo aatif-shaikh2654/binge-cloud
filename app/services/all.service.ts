@@ -13,7 +13,7 @@ import { ApiService } from "./api.service";
 /**
  * Helper to fetch a movie/show logo path directly from TMDB
  */
-const fetchMovieLogo = async (
+export const fetchMovieLogo = async (
   id: number,
   type: MediaType,
 ): Promise<string | undefined> => {
@@ -213,6 +213,9 @@ export const discoverMedia = async (
     with_watch_providers?: string;
     watch_region?: string;
     with_watch_monetization_types?: string;
+    with_original_language?: string;
+    with_origin_country?: string;
+    [key: string]: unknown;
   },
 ): Promise<TMDBResponse<TMDBMovie>> => {
   return ApiService<TMDBResponse<TMDBMovie>>({

@@ -5,6 +5,7 @@ import { WatchHistorySkeleton } from "@/components/sliders/WatchHistory";
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
 import {
+  discoverMedia,
   getMediaList,
   getTrendingMedia,
   getTrendingMovies,
@@ -80,6 +81,35 @@ async function Top10SeriesWrapper() {
   );
 }
 
+async function BollywoodMoviesWrapper() {
+  const today = new Date();
+  const todayStr = today.toISOString().split("T")[0];
+  const threeYearsAgo = new Date();
+  threeYearsAgo.setFullYear(today.getFullYear() - 3);
+  const threeYearsAgoStr = threeYearsAgo.toISOString().split("T")[0];
+
+  const bollywoodMoviesData = await discoverMedia("movie", {
+    with_original_language: "hi",
+    with_origin_country: "IN",
+    sort_by: "popularity.desc",
+    "primary_release_date.gte": threeYearsAgoStr,
+    "primary_release_date.lte": todayStr,
+    page: 1,
+  });
+  const bollywoodMovies = (bollywoodMoviesData?.results?.slice(0, 20) || []).map((m) => ({
+    ...m,
+    media_type: "movie" as const,
+  }));
+  return (
+    <MediaSlider
+      media_type="movie"
+      title="Latest Bollywood Hits"
+      movies={bollywoodMovies}
+      seeAllHref="/bollywood"
+    />
+  );
+}
+
 export default async function Home() {
   // Eagerly fetch trending movies at the page level to render above-the-fold instantly
   const trendingData = await getTrendingMovies();
@@ -113,6 +143,10 @@ export default async function Home() {
 
       <Suspense fallback={<SliderSkeleton title="Popular TV Series" />}>
         <PopularSeriesWrapper />
+      </Suspense>
+
+      <Suspense fallback={<SliderSkeleton title="Latest Bollywood Hits" />}>
+        <BollywoodMoviesWrapper />
       </Suspense>
 
       <Suspense fallback={<SliderSkeleton title="Top 10 Series" />}>
