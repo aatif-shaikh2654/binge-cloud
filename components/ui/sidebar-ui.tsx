@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Bookmark, Clock, LogIn, LogOut, type LucideIcon } from "lucide-react";
+import { Bookmark, Clock, Download, LogIn, LogOut, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import type { IconType } from "react-icons";
@@ -130,6 +130,8 @@ interface UserDropdownContentProps {
   sideOffset?: number;
   watchlistCount?: number;
   historyCount?: number;
+  onInstallClick?: () => void;
+  showInstall?: boolean;
 }
 
 export function UserDropdownContent({
@@ -140,6 +142,8 @@ export function UserDropdownContent({
   sideOffset,
   watchlistCount,
   historyCount,
+  onInstallClick,
+  showInstall,
 }: UserDropdownContentProps) {
   return (
     <DropdownMenuContent
@@ -178,6 +182,15 @@ export function UserDropdownContent({
           )}
         </DropdownMenuItem>
       </Link>
+      {showInstall && onInstallClick && (
+        <DropdownMenuItem
+          onClick={onInstallClick}
+          className="flex items-center gap-2.5 w-full text-left text-xs font-bold text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 py-2.5 px-3 rounded-xl transition-all duration-300 outline-none cursor-pointer group"
+        >
+          <Download className="size-4 text-blue-400 group-hover:text-blue-300 transition-colors shrink-0" />
+          <span>Install App</span>
+        </DropdownMenuItem>
+      )}
       <DropdownMenuItem
         onClick={onLogout}
         className="flex items-center gap-2.5 w-full text-left text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 py-2.5 px-3 rounded-xl transition-all duration-300 outline-none cursor-pointer group"
@@ -197,6 +210,8 @@ interface LoggedOutDropdownContentProps {
   sideOffset?: number;
   historyCount?: number;
   watchlistCount?: number;
+  onInstallClick?: () => void;
+  showInstall?: boolean;
 }
 
 export function LoggedOutDropdownContent({
@@ -206,6 +221,8 @@ export function LoggedOutDropdownContent({
   sideOffset,
   historyCount,
   watchlistCount,
+  onInstallClick,
+  showInstall,
 }: LoggedOutDropdownContentProps) {
   return (
     <DropdownMenuContent
@@ -229,6 +246,15 @@ export function LoggedOutDropdownContent({
         <LogIn className="size-4 text-white/60 group-hover:text-white transition-colors shrink-0" />
         <span>Log In / Sign Up</span>
       </DropdownMenuItem>
+      {showInstall && onInstallClick && (
+        <DropdownMenuItem
+          onClick={onInstallClick}
+          className="flex items-center gap-2.5 w-full text-left text-xs font-bold text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 py-2.5 px-3 rounded-xl transition-all duration-300 outline-none cursor-pointer group"
+        >
+          <Download className="size-4 text-blue-400 group-hover:text-blue-300 transition-colors shrink-0" />
+          <span>Install App</span>
+        </DropdownMenuItem>
+      )}
       <Link className="lg:hidden" href="/watch-later">
         <DropdownMenuItem className="flex items-center gap-2.5 w-full text-left text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 py-2.5 px-3 rounded-xl transition-all duration-300 outline-none cursor-pointer group">
           <Bookmark className="size-4 transition-colors shrink-0 text-white/60 group-hover:text-white" />
