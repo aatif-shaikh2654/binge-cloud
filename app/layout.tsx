@@ -47,7 +47,6 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
-  manifest: "/favicon/site.webmanifest",
 };
 
 export default function RootLayout({
