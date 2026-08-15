@@ -1,6 +1,8 @@
 "use client";
 
 import { useMediaCardMetadata } from "@/app/hooks/useMediaCardMetadata";
+import { useTVFocus } from "@/app/tv/useTVFocus";
+import { useTVMode } from "@/app/tv/TVModeContext";
 import { MediaType, UnifiedMediaItem } from "@/app/types/common";
 import { TMDBMovie } from "@/app/types/tmdb";
 import { Button } from "@/components/ui/button";
@@ -17,7 +19,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useId } from "react";
 import { FaPlay } from "react-icons/fa";
 
 interface MovieCardProps {
@@ -35,6 +37,11 @@ const MovieCard: React.FC<MovieCardProps> = ({
   isWatchLaterPage,
 }) => {
   const router = useRouter();
+  const { isTVMode } = useTVMode();
+
+  // Stable unique ID for TV spatial navigation registry
+  const reactId = useId();
+  const tvFocusId = `movie-card-${movie.id ?? reactId}-${mediaType ?? ""}`;
 
   const {
     currentMediaType,
@@ -63,14 +70,37 @@ const MovieCard: React.FC<MovieCardProps> = ({
     handleWatchClick,
   } = useMediaCardMetadata({ movie, mediaType, isWatchLaterPage });
 
+  // TV focus: when focused, trigger the hover card (same as mouseEnter);
+  // when unfocused, dismiss it (same as mouseLeave).
+  const { focusProps, isFocused } = useTVFocus({
+    id: tvFocusId,
+    onFocus: () => {
+      if (isTVMode) handleMouseEnter();
+    },
+    onBlur: () => {
+      if (isTVMode) handleMouseLeave();
+    },
+  });
+
+  // On TV, Enter navigates to detail page
+  const handleTVClick = () => {
+    if (isTVMode) {
+      handleWatchClick();
+      router.push(detailUrl);
+    }
+  };
+
   return (
     <div
+      {...(focusProps as React.HTMLAttributes<HTMLDivElement>)}
+      ref={focusProps.ref as React.RefObject<HTMLDivElement>}
       className={cn(
-        "relative w-full transition-all duration-300",
-        isHovered || showHoverCard ? "z-500" : "z-10",
+        "tv-card relative w-full transition-all duration-300",
+        isHovered || showHoverCard || isFocused ? "z-500" : "z-10",
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={isTVMode ? handleTVClick : undefined}
     >
       {/* Base Card Wrapper */}
       <div className="group flex flex-col gap-3 relative">

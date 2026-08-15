@@ -6,11 +6,15 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { TVModeProvider } from "@/app/tv/TVModeContext";
+import { TVNavigationController } from "@/app/tv/TVNavigationController";
+import { TVSidebarNav } from "@/app/tv/TVSidebarNav";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
+import "./tv/tv.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -80,15 +84,22 @@ export default function RootLayout({
           shadow="0 0 10px #2563eb,0 0 5px #2563eb"
         />
         <Toaster />
-        <QueryProvider>
-          <AuthProvider>
-            <Sidebar />
-            <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-          </AuthProvider>
-        </QueryProvider>
+        <TVModeProvider>
+          {/* TV: D-pad keyboard listener (no-op on non-TV) */}
+          <TVNavigationController />
+          <QueryProvider>
+            <AuthProvider>
+              {/* Standard sidebar — hidden on TV via tv.css */}
+              <Sidebar />
+              {/* TV-only sidebar nav — hidden on non-TV via isTVMode check */}
+              <TVSidebarNav />
+              <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </AuthProvider>
+          </QueryProvider>
+        </TVModeProvider>
       </body>
     </html>
   );

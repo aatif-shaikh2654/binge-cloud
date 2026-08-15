@@ -1,0 +1,90 @@
+/**
+ * TV Feature Module — tv.css
+ *
+ * Activated only when `<html data-tv-mode="true">` is present.
+ * All selectors are scoped to [data-tv-mode] to guarantee zero impact
+ * on desktop/mobile rendering.
+ *
+ * Goals:
+ *  1. Larger base font for 10-foot viewing
+ *  2. High-contrast animated focus ring on focused elements
+ *  3. Scale-up transform on focused TV cards
+ *  4. Cursor hidden on TV (remote control, no mouse)
+ *
+ * NOTE: The existing sidebar remains fully visible on TV.
+ * The TVSidebarNav is an additional floating nav rendered alongside it.
+ */
+
+/* ── Global TV overrides ────────────────────────────────────────────────────── */
+
+html[data-tv-mode] {
+  font-size: 118%;
+  cursor: none !important;
+}
+
+html[data-tv-mode] * {
+  cursor: none !important;
+}
+
+/* ── TV Focus Ring ──────────────────────────────────────────────────────────── */
+
+/*
+ * Applied to any element that has [data-tv-focused="true"].
+ * Uses the existing design-system blue (#2563eb).
+ */
+html[data-tv-mode] [data-tv-focused="true"] {
+  outline: none !important;
+  box-shadow:
+    0 0 0 2px rgba(37, 99, 235, 0.9),
+    0 0 20px rgba(37, 99, 235, 0.5),
+    0 0 40px rgba(37, 99, 235, 0.25) !important;
+  border-radius: 12px;
+}
+
+/* ── TV Card Focus scale ────────────────────────────────────────────────────── */
+
+html[data-tv-mode] [data-tv-focused="true"].tv-card {
+  transform: scale(1.06) !important;
+  z-index: 500 !important;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* ── TV Sidebar nav button focus ────────────────────────────────────────────── */
+
+html[data-tv-mode] [data-tv-focused="true"].tv-nav-btn {
+  background: rgba(37, 99, 235, 0.18) !important;
+  border-color: rgba(37, 99, 235, 0.5) !important;
+  transform: scale(1.04) !important;
+}
+
+/* ── TV hero thumbnail focus ────────────────────────────────────────────────── */
+
+html[data-tv-mode] [data-tv-focused="true"].tv-hero-thumb {
+  border-color: white !important;
+  opacity: 1 !important;
+  transform: scale(1.12) !important;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.9),
+    0 0 16px rgba(37, 99, 235, 0.5) !important;
+}
+
+/* ── Focus ring pulse animation ─────────────────────────────────────────────── */
+
+@keyframes tv-focus-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px rgba(37, 99, 235, 0.9),
+      0 0 20px rgba(37, 99, 235, 0.5),
+      0 0 40px rgba(37, 99, 235, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(37, 99, 235, 1),
+      0 0 30px rgba(37, 99, 235, 0.7),
+      0 0 60px rgba(37, 99, 235, 0.35);
+  }
+}
+
+html[data-tv-mode] [data-tv-focused="true"] {
+  animation: tv-focus-pulse 2s ease-in-out infinite !important;
+}

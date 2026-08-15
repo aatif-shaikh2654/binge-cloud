@@ -2,6 +2,8 @@
 
 import { TMDB_GENRES, TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
 import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
+import { useTVFocus } from "@/app/tv/useTVFocus";
+import { useTVMode } from "@/app/tv/TVModeContext";
 import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import { type TMDBMovie } from "@/app/types/tmdb";
@@ -27,6 +29,51 @@ import "swiper/css/effect-fade";
 interface HerosectionProps {
   movies: TMDBMovie[];
 }
+
+// ─── TV hero thumbnail (D-pad focusable) ─────────────────────────────────────
+
+function TVHeroThumb({
+  movie,
+  index,
+  isActive,
+  onSelect,
+}: {
+  movie: TMDBMovie;
+  index: number;
+  isActive: boolean;
+  onSelect: () => void;
+}) {
+  const { isTVMode } = useTVMode();
+  const { focusProps, isFocused } = useTVFocus({
+    id: `hero-thumb-${movie.id}-${index}`,
+    group: 1,
+    onFocus: onSelect, // slide to this movie when focused
+  });
+
+  return (
+    <div
+      {...(focusProps as React.HTMLAttributes<HTMLDivElement>)}
+      ref={focusProps.ref as React.RefObject<HTMLDivElement>}
+      onClick={onSelect}
+      className={cn(
+        "tv-hero-thumb relative w-20 aspect-video rounded-md overflow-hidden cursor-pointer transition-all duration-300 border",
+        isActive
+          ? "border-white! scale-110 z-10"
+          : "border-white/10 opacity-50 hover:opacity-100",
+        isTVMode && isFocused && "border-white! opacity-100 scale-[1.12]",
+      )}
+    >
+      <Image
+        src={`${TMDB_IMAGE_BASE_URL}/w300${movie.backdrop_path}`}
+        alt={movie.title || movie.name || "Thumbnail"}
+        fill
+        sizes="80px"
+        className="object-cover"
+      />
+    </div>
+  );
+}
+
 
 const Herosection: React.FC<HerosectionProps> = ({ movies }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -235,24 +282,13 @@ const Herosection: React.FC<HerosectionProps> = ({ movies }) => {
       {/* Thumbnails */}
       <div className="absolute bottom-10 right-10 z-50 hidden lg:flex items-center gap-3">
         {displayMovies.map((movie, index) => (
-          <div
+          <TVHeroThumb
             key={movie.id}
-            onClick={() => swiperInstance?.slideTo(index)}
-            className={cn(
-              "relative w-20 aspect-video rounded-md overflow-hidden cursor-pointer transition-all duration-300 border",
-              activeIndex === index
-                ? "border-white! scale-110 z-10"
-                : "border-white/10 opacity-50 hover:opacity-100",
-            )}
-          >
-            <Image
-              src={`${TMDB_IMAGE_BASE_URL}/w300${movie.backdrop_path}`}
-              alt={movie.title || movie.name || "Thumbnail"}
-              fill
-              sizes="80px"
-              className="object-cover"
-            />
-          </div>
+            movie={movie}
+            index={index}
+            isActive={activeIndex === index}
+            onSelect={() => swiperInstance?.slideTo(index)}
+          />
         ))}
       </div>
     </section>

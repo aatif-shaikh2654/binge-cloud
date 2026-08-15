@@ -1,5 +1,6 @@
 "use client";
 
+import { usePWAInstall } from "@/app/hooks/usePWAInstall";
 import { useHistoryStore } from "@/app/store/useHistoryStore";
 import { useWatchlistStore } from "@/app/store/useWatchlistStore";
 import {
@@ -7,17 +8,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  LoggedOutDropdownContent,
   SidebarButton,
   SidebarLink,
   UserDropdownContent,
-  LoggedOutDropdownContent,
 } from "@/components/ui/sidebar-ui";
 import { cn } from "@/lib/utils";
 import {
   Bookmark,
   CircleUser,
   Clock,
-  Download,
   Film,
   Home,
   Search,
@@ -28,13 +28,12 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
 import { useAuth } from "../providers/AuthProvider";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
-import { usePWAInstall } from "@/app/hooks/usePWAInstall";
 
 const sidebarItems = [
   { icon: Search, label: "Search", href: "/search" },
@@ -78,19 +77,21 @@ const Sidebar = () => {
 
   const showInstallOption = isInstallable || (isIOS && !isStandalone);
 
-  const handleInstall = async () => {
-    if (isIOS) {
-      setShowIOSPrompt(true);
-    } else {
-      await install();
-    }
-  };
-
   const handleDismissPopup = () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("pwa-install-dismissed", "true");
     }
     setIsDismissed(true);
+  };
+
+  const handleInstall = async () => {
+    if (isIOS) {
+      handleDismissPopup(); // dismiss banner before showing iOS sheet
+      setShowIOSPrompt(true);
+    } else {
+      await install();
+      handleDismissPopup(); // hide banner after native prompt resolves
+    }
   };
 
   const showPopup = showInstallOption && !isDismissed;
@@ -160,19 +161,6 @@ const Sidebar = () => {
               />
             );
           })}
-
-          {/* Install App Button */}
-          {showInstallOption && (
-            <SidebarButton
-              onClick={handleInstall}
-              icon={Download}
-              label="Install App"
-              isHovered={isHovered}
-              className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 mb-2 shrink-0"
-              iconClassName="text-blue-400 group-hover:text-blue-300"
-            />
-          )}
-
           {/* Bottom Account Button / Dropdown */}
           <div className="mt-auto w-full relative">
             {user ? (
@@ -195,7 +183,7 @@ const Sidebar = () => {
                   align="end"
                   sideOffset={16}
                   watchlistCount={watchlistCount}
-                  showInstall={showInstallOption}
+                  showInstall={showPopup}
                   onInstallClick={handleInstall}
                 />
               </DropdownMenu>
@@ -278,7 +266,7 @@ const Sidebar = () => {
               sideOffset={12}
               watchlistCount={watchlistCount}
               historyCount={historyCount}
-              showInstall={showInstallOption}
+              showInstall={showPopup}
               onInstallClick={handleInstall}
             />
           </DropdownMenu>
@@ -304,7 +292,7 @@ const Sidebar = () => {
               sideOffset={12}
               historyCount={historyCount}
               watchlistCount={watchlistCount}
-              showInstall={showInstallOption}
+              showInstall={showPopup}
               onInstallClick={handleInstall}
             />
           </DropdownMenu>
@@ -332,7 +320,7 @@ const Sidebar = () => {
                 Close
               </button>
             </div>
-            
+
             <div className="flex flex-col items-center gap-4 py-2">
               <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-lg border border-white/10 shrink-0">
                 <Image
@@ -344,7 +332,8 @@ const Sidebar = () => {
                 />
               </div>
               <p className="text-zinc-300 text-sm font-semibold leading-relaxed">
-                Add Binge Cloud to your home screen for a full-screen, premium cinematic experience.
+                Add Binge Cloud to your home screen for a full-screen, premium
+                cinematic experience.
               </p>
             </div>
 
@@ -354,7 +343,11 @@ const Sidebar = () => {
                   1
                 </span>
                 <p className="text-xs text-zinc-300 font-medium">
-                  Tap the share button <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-white/10 text-white font-bold font-sans">⎋</span> (at the bottom or top of Safari).
+                  Tap the share button{" "}
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-white/10 text-white font-bold font-sans">
+                    ⎋
+                  </span>{" "}
+                  (at the bottom or top of Safari).
                 </p>
               </div>
               <div className="flex items-start gap-3">
@@ -362,11 +355,18 @@ const Sidebar = () => {
                   2
                 </span>
                 <p className="text-xs text-zinc-300 font-medium">
-                  Scroll down and tap <span className="text-white font-bold">"Add to Home Screen"</span> <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-white/10 text-white font-bold font-sans">➕</span>.
+                  Scroll down and tap{" "}
+                  <span className="text-white font-bold">
+                    "Add to Home Screen"
+                  </span>{" "}
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-white/10 text-white font-bold font-sans">
+                    ➕
+                  </span>
+                  .
                 </p>
               </div>
             </div>
-            
+
             <button
               onClick={() => setShowIOSPrompt(false)}
               className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-3 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(37,99,235,0.4)] cursor-pointer"
@@ -380,7 +380,6 @@ const Sidebar = () => {
       {/* PWA Install Promo Top-Right Popup */}
       {showPopup && (
         <div className="fixed top-4 left-4 right-4 sm:top-6 sm:right-6 sm:left-auto z-[99] w-auto sm:w-80 bg-zinc-950/90 backdrop-blur-2xl border border-white/10 hover:border-blue-500/20 rounded-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-5 flex flex-col gap-4 transition-all duration-500 animate-in slide-in-from-top-6 fade-in duration-500">
-          
           {/* Header row: App Logo & Close Button */}
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
@@ -403,7 +402,7 @@ const Sidebar = () => {
                 </p>
               </div>
             </div>
-            
+
             {/* Close Button */}
             <button
               onClick={handleDismissPopup}
