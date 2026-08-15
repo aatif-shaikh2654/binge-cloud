@@ -105,9 +105,11 @@ const Player: React.FC<PlayerProps> = ({
 
   const imdbId = details?.external_ids?.imdb_id || details?.imdb_id;
 
+  const showTitle = details?.name || details?.title || undefined;
+
   const videoUrl =
     tmdbType === "tv"
-      ? currentServer.tvUrl(id, season, episode, initialStartTime || undefined, imdbId)
+      ? currentServer.tvUrl(id, season, episode, initialStartTime || undefined, imdbId, showTitle)
       : currentServer.movieUrl(id, initialStartTime || undefined, imdbId);
 
   // Reset video loaded state when URL changes (Sync state with URL during render)

@@ -14,6 +14,7 @@ export interface PlayerServer {
     episode: number,
     startAt?: number,
     imdbId?: string,
+    title?: string,
   ) => string;
   trackingType?: "vidnest" | "vidsrc" | "vidfast";
   description?: string;
@@ -35,10 +36,25 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       episode: number,
       startAt?: number,
       imdbId?: string,
+      title?: string,
     ) => {
+      if (title) {
+        // Slug-based URL: /embed/{title-slug}-s{SS}e{EE}
+        const slug = title
+          .toLowerCase()
+          .replace(/['\u2019\u2018`]/g, "-") // apostrophes → hyphens (e.g. "India's" → "india-s")
+          .replace(/[^a-z0-9\s-]/g, "")      // strip remaining special chars
+          .trim()
+          .replace(/\s+/g, "-")              // spaces → hyphens
+          .replace(/-+/g, "-");              // collapse consecutive hyphens
+        const s = String(season - 1).padStart(2, "0"); // cineverse is 0-indexed (TMDB s1 → s00)
+        const e = String(episode).padStart(2, "0");
+        return `https://cineverse.modiplay.xyz/embed/${slug}-s${s}e${e}`;
+      }
+      // Fallback to ID-based URL (movies still use this)
       const id = imdbId || tmdbId;
       const type = imdbId ? "imdb" : "tmdb";
-      return `https://cineverse.modiplay.xyz/embed/${type}/tv?id=${id}&season=${season}&episode=${episode}`;
+      return `https://cineverse.modiplay.xyz/embed/${type}/tv?id=${id}&s=${season}&e=${episode}`;
     },
     icon: Globe,
   },
