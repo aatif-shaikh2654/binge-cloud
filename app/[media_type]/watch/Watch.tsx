@@ -35,8 +35,10 @@ const Watch: React.FC<WatchProps> = ({ id, tmdbType, seasons, details }) => {
   const currentServer =
     PLAYER_SERVERS.find((s) => s.id === serverId) || PLAYER_SERVERS[0];
 
-  const season = Number(searchParams.get("season")) || 1;
-  const episode = Number(searchParams.get("episode")) || 1;
+  const seasonParam = searchParams.get("season");
+  const season = seasonParam !== null ? Number(seasonParam) : 1;
+  const episodeParam = searchParams.get("episode");
+  const episode = episodeParam !== null ? Number(episodeParam) : 1;
 
   const handleServerChange = (server: PlayerServer) => {
     const newParams = new URLSearchParams(searchParams.toString());

@@ -38,16 +38,16 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       imdbId?: string,
       title?: string,
     ) => {
-      if (title) {
-        // Slug-based URL: /embed/{title-slug}-s{SS}e{EE}
+      if (season === 0 && title) {
+        // Slug-based URL only for Season 0 (Specials): /embed/{title-slug}-s{SS}e{EE}
         const slug = title
           .toLowerCase()
           .replace(/['\u2019\u2018`]/g, "-") // apostrophes → hyphens (e.g. "India's" → "india-s")
-          .replace(/[^a-z0-9\s-]/g, "")      // strip remaining special chars
+          .replace(/[^a-z0-9\s-]/g, "") // strip remaining special chars
           .trim()
-          .replace(/\s+/g, "-")              // spaces → hyphens
-          .replace(/-+/g, "-");              // collapse consecutive hyphens
-        const s = String(season - 1).padStart(2, "0"); // cineverse is 0-indexed (TMDB s1 → s00)
+          .replace(/\s+/g, "-") // spaces → hyphens
+          .replace(/-+/g, "-"); // collapse consecutive hyphens
+        const s = String(season).padStart(2, "0"); // season 0 → s00
         const e = String(episode).padStart(2, "0");
         return `https://cineverse.modiplay.xyz/embed/${slug}-s${s}e${e}`;
       }
