@@ -13,26 +13,23 @@ export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const isIOS = typeof window !== "undefined"
+    ? /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window)
+    : false;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     // Check if already installed / standalone
     const checkStandalone = () => {
+      const nav = window.navigator as Navigator & { standalone?: boolean };
       const isStandaloneMode =
         window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as any).standalone === true;
+        nav.standalone === true;
       setIsStandalone(isStandaloneMode);
     };
 
     checkStandalone();
-
-    // Check if iOS
-    const isIOSDevice =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-      !(window as any).MSStream;
-    setIsIOS(isIOSDevice);
 
     const handleBeforeInstallPrompt = (e: Event) => {
       // Prevent the mini-infobar from appearing on mobile

@@ -28,7 +28,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
 import { useAuth } from "../providers/AuthProvider";
 import ForgotPasswordForm from "./ForgotPasswordForm";
@@ -66,14 +66,10 @@ const Sidebar = () => {
 
   const { isInstallable, isStandalone, isIOS, install } = usePWAInstall();
   const [showIOSPrompt, setShowIOSPrompt] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(true); // default to true to avoid hydration mismatch
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const dismissed = localStorage.getItem("pwa-install-dismissed");
-      setIsDismissed(dismissed === "true");
-    }
-  }, []);
+  const [isDismissed, setIsDismissed] = useState(() => {
+    if (typeof window === "undefined") return true; // default to avoid hydration mismatch
+    return localStorage.getItem("pwa-install-dismissed") === "true";
+  });
 
   const showInstallOption = isInstallable || (isIOS && !isStandalone);
 
@@ -357,7 +353,7 @@ const Sidebar = () => {
                 <p className="text-xs text-zinc-300 font-medium">
                   Scroll down and tap{" "}
                   <span className="text-white font-bold">
-                    "Add to Home Screen"
+                    &quot;Add to Home Screen&quot;
                   </span>{" "}
                   <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-white/10 text-white font-bold font-sans">
                     ➕

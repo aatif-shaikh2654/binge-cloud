@@ -94,7 +94,6 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
 
           <div className="flex gap-2 overflow-x-auto pb-2 pt-3.5 no-scrollbar">
             {seasons
-              .filter((s) => s.season_number > 0)
               .map((season) => (
                 <button
                   key={season.id}
@@ -105,7 +104,7 @@ const EpisodeSwitcher: React.FC<EpisodeSwitcherProps> = ({
                       : "bg-zinc-900 border-white/5 text-white/40 hover:text-white hover:bg-zinc-800"
                   }`}
                 >
-                  Season {season.season_number}
+                  {season.season_number === 0 ? "Specials" : `Season ${season.season_number}`}
                 </button>
               ))}
           </div>

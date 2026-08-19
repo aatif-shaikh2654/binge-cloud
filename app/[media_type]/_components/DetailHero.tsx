@@ -17,12 +17,11 @@ import {
   Plus,
   Star,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
-import { CiVolumeHigh, CiVolumeMute } from "react-icons/ci";
+import React, { useEffect, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
+import HeroBackdrop from "./HeroBackdrop";
 import GenreBadge from "@/components/common/GenreBadge";
 
 interface DetailHeroProps {
@@ -36,24 +35,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
   const { handleWatchClick } = useWatchNavigation();
   const history = useHistoryStore((state) => state.history);
 
-  const [videoKey, setVideoKey] = useState<string | null>(null);
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  const toggleMute = () => {
-    if (iframeRef.current && iframeRef.current.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        JSON.stringify({
-          event: "command",
-          func: isMuted ? "unMute" : "mute",
-          args: [],
-        }),
-        "*",
-      );
-      setIsMuted(!isMuted);
-    }
-  };
+  const [videoKeys, setVideoKeys] = useState<string[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -61,13 +43,21 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
       try {
         const type = tmdbType === "tv" ? "tv" : "movie";
         const videos = await getMovieVideos(details.id, type);
-        const trailer =
-          videos.results?.find(
+        const youtubeVideos: { type: string; site: string; key: string }[] =
+          videos.results?.filter(
             (v: { type: string; site: string; key: string }) =>
-              v.type === "Trailer" && v.site === "YouTube",
-          ) || videos.results?.[0];
-        if (trailer && isMounted) {
-          setVideoKey(trailer.key);
+              v.site === "YouTube",
+          ) || [];
+        // Prioritise trailers, then teasers, then anything else
+        const sorted = [
+          ...youtubeVideos.filter((v) => v.type === "Trailer"),
+          ...youtubeVideos.filter((v) => v.type === "Teaser"),
+          ...youtubeVideos.filter(
+            (v) => v.type !== "Trailer" && v.type !== "Teaser",
+          ),
+        ];
+        if (sorted.length > 0 && isMounted) {
+          setVideoKeys(sorted.map((v) => v.key));
         }
       } catch (error) {
         console.error("Error fetching video:", error);
@@ -121,56 +111,7 @@ const DetailHero: React.FC<DetailHeroProps> = ({ details, tmdbType }) => {
 
   return (
     <>
-      {/* Cinematic Background Backdrop */}
-      <div className="absolute inset-0 w-full h-[58vh] md:h-[80vh] lg:h-screen overflow-hidden bg-background">
-        {/* Base Image */}
-        {details.backdrop_path || details.poster_path ? (
-          <Image
-            src={`${TMDB_IMAGE_BASE_URL}/original${details.backdrop_path || details.poster_path}`}
-            alt={details.title || details.name || "Backdrop"}
-            fill
-            sizes="100vw"
-            className="object-cover opacity-50 md:opacity-40 blur-none md:blur-[1px] scale-105 animate-in fade-in duration-1000"
-            priority
-          />
-        ) : null}
-
-        {/* Video Layer */}
-        {videoKey && (
-          <div className="absolute w-full h-full pointer-events-none">
-            <iframe
-              ref={iframeRef}
-              src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${videoKey}&enablejsapi=1&disablekb=1&iv_load_policy=3&playsinline=1&fs=0&vq=hd1080`}
-              className={cn(
-                "w-full h-full scale-[2.5] md:scale-[1.8] lg:scale-[1.5] transition-opacity duration-1000",
-                isVideoLoaded ? "opacity-100" : "opacity-0",
-              )}
-              onLoad={() => setIsVideoLoaded(true)}
-              allow="autoplay; encrypted-media"
-            />
-          </div>
-        )}
-
-        {/* Dark Overlays - Reduced layer on video */}
-        <div className="absolute bottom-0 w-full h-1/2 bg-linear-to-t from-background via-background/30 md:via-background/50 to-transparent" />
-      </div>
-
-      {videoKey && (
-        <div className="absolute md:top-10 md:right-8 top-7 right-6 z-50">
-          <Button
-            variant="glass"
-            size="icon-xl"
-            className="size-12 lg:size-16 transition-all duration-300 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border-white/20"
-            onClick={toggleMute}
-          >
-            {isMuted ? (
-              <CiVolumeMute className="w-5! h-5! lg:w-7! lg:h-7! text-white" />
-            ) : (
-              <CiVolumeHigh className="w-5! h-5! lg:w-7! lg:h-7! text-white" />
-            )}
-          </Button>
-        </div>
-      )}
+      <HeroBackdrop details={details} videoKeys={videoKeys} />
       {/* Hero Section: Poster & Main Info */}
       <div className="relative z-10 container mx-auto px-6 lg:px-20 pt-[45vh] md:pt-[60vh] lg:pt-[642px] flex flex-col items-start text-left lg:flex-row gap-8 lg:gap-20 min-h-[75vh] md:min-h-[90vh] lg:min-h-[95vh] pb-10">
         {/* Mute Button (Top Right) */}

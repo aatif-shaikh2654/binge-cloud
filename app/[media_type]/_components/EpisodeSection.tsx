@@ -10,7 +10,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -82,12 +81,9 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({
   );
 
   const [selectedSeason, setSelectedSeason] = useState(() => {
-    if (historyItem?.season) return historyItem.season;
+    if (historyItem?.season != null) return historyItem.season; // != null handles season 0
     if (!seasons || seasons.length === 0) return 1;
-    const firstSeason = seasons.find((s) => s.season_number > 0);
-    return firstSeason
-      ? firstSeason.season_number
-      : seasons[0]?.season_number || 1;
+    return seasons[0]?.season_number ?? 1;
   });
 
   const [prevHistorySeason, setPrevHistorySeason] = useState(
@@ -95,7 +91,7 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({
   );
   if (historyItem?.season !== prevHistorySeason) {
     setPrevHistorySeason(historyItem?.season);
-    if (historyItem?.season) {
+    if (historyItem?.season != null) { // != null handles season 0
       setSelectedSeason(historyItem.season);
     }
   }
@@ -141,13 +137,11 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({
         {/* Season Selector */}
         <div className="flex flex-wrap gap-2">
           <Select
-            value={`${selectedSeason} Season`}
-            onValueChange={(value) =>
-              setSelectedSeason(parseInt(value as string))
-            }
+            value={String(selectedSeason)}
+            onValueChange={(value) => value != null && setSelectedSeason(parseInt(value))}
           >
             <SelectTrigger className="w-[180px] bg-black border-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] h-11 rounded-full px-6 transition-all hover:bg-zinc-900 hover:border-blue-500/30 shadow-lg">
-              <SelectValue placeholder="Select Season" />
+              {selectedSeason === 0 ? "Specials" : `Season ${selectedSeason}`}
             </SelectTrigger>
             <SelectContent
               side="bottom"
@@ -158,10 +152,10 @@ const EpisodeSection: React.FC<EpisodeSectionProps> = ({
               {seasons.map((season) => (
                 <SelectItem
                   key={season.id}
-                  value={`${season.season_number} Season`}
+                  value={String(season.season_number)}
                   className="text-[10px] font-black uppercase tracking-widest data-highlighted:bg-white data-highlighted:text-black! data-highlighted:**:text-black! py-3 px-6 transition-all duration-300 rounded-lg cursor-pointer"
                 >
-                  {season.season_number} Season
+                  {season.season_number === 0 ? "Specials" : `Season ${season.season_number}`}
                 </SelectItem>
               ))}
             </SelectContent>
