@@ -59,9 +59,7 @@ export const MediaFilterFields: React.FC<MediaFilterFieldsProps> = ({
     .filter((g) => g.name);
   const years = Array.from({ length: 17 }, (_, i) => (2026 - i).toString());
 
-  const defaultSort = isBollywood
-    ? "primary_release_date.desc"
-    : (filter === "trending" ? "trending" : "popularity.desc");
+  const defaultSort = filter === "trending" ? "trending" : "popularity.desc";
 
   const handleToggleGenre = (genreId: string) => {
     if (selectedGenres.includes(genreId)) {
