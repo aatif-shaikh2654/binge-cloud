@@ -1,12 +1,12 @@
 "use client";
 
-import { TMDB_GENRES, TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
-import { type TMDBMovie } from "@/app/types/tmdb";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { TMDB_GENRES, TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { useWatchlistStore } from "@/features/watchlist/store/useWatchlistStore";
+import { type TMDBMovie } from "@/features/media/types/tmdb";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { Bookmark, Calendar, Play, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,12 +15,12 @@ import { FaPlay } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 import { toast } from "sonner";
 import type { Swiper as SwiperType } from "swiper";
-import GenreBadge from "@/components/common/GenreBadge";
+import GenreBadge from "@/features/media/components/GenreBadge";
 import { Autoplay, EffectFade } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
-import { MediaType } from "@/app/types/common";
+import { MediaType } from "@/shared/types/common";
 import "swiper/css";
 import "swiper/css/effect-fade";
 

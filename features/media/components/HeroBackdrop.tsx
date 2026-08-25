@@ -1,8 +1,8 @@
 "use client";
 
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { type TMDBMovie } from "@/app/types/tmdb";
-import { cn } from "@/lib/utils";
+import { TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { type TMDBMovie } from "@/features/media/types/tmdb";
+import { cn } from "@/shared/lib/utils";
 import Image from "next/image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CiVolume, CiVolumeHigh, CiVolumeMute } from "react-icons/ci";

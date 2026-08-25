@@ -1,11 +1,11 @@
 "use client";
 
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { getMediaDetails } from "@/app/services/all.service";
-import { getAnimeDetails } from "@/app/services/anilist.service";
-import { HistoryItem, useHistoryStore } from "@/app/store/useHistoryStore";
-import { type AniListMediaDetail } from "@/app/types/anilist";
-import { type TMDBMovie } from "@/app/types/tmdb";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { getMediaDetails } from "@/features/media/services/all.service";
+import { getAnimeDetails } from "@/features/anime/services/anilist.service";
+import { HistoryItem, useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { type AniListMediaDetail } from "@/features/anime/types/anilist";
+import { type TMDBMovie } from "@/features/media/types/tmdb";
 import { useQuery } from "@tanstack/react-query";
 import { Info, Play, X } from "lucide-react";
 import Image from "next/image";

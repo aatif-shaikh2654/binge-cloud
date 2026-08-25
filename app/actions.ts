@@ -1,8 +1,8 @@
 "use server";
 
-import { withAuthAndDB } from "@/app/lib/action-wrapper";
-import { History } from "@/models/History";
-import { Watchlist } from "@/models/Watchlist";
+import { withAuthAndDB } from "@/shared/lib/action-wrapper";
+import { History } from "@/features/history/server/History";
+import { Watchlist } from "@/features/watchlist/server/Watchlist";
 
 export const getWatchlist = withAuthAndDB(async (userId) => {
   return await Watchlist.find({ userId }).sort({ createdAt: -1 });

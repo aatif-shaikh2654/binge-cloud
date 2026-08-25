@@ -3,11 +3,11 @@ import {
   getMediaList,
   getSimilarMedia,
   getTrendingMedia,
-} from "@/app/services/all.service";
-import PageHeader from "@/components/common/PageHeader";
+} from "@/features/media/services/all.service";
+import PageHeader from "@/shared/components/layout/PageHeader";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import MediaList from "./MediaList";
+import { MediaList } from "@/features/media";
 
 export async function generateMetadata({
   params,

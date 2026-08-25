@@ -1,8 +1,8 @@
-import { getMediaDetails } from "@/app/services/all.service";
-import { type MediaType } from "@/app/types/common";
+import { getMediaDetails } from "@/features/media/services/all.service";
+import { type MediaType } from "@/shared/types/common";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Detail from "./Detail";
+import { Detail } from "@/features/media";
 
 export const dynamic = "force-dynamic";
 

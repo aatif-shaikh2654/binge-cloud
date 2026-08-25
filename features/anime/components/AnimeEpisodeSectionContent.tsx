@@ -1,19 +1,19 @@
 "use client";
 
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
 import {
   type AniListNextAiringEpisode,
   type AniListStreamingEpisode,
-} from "@/app/types/anilist";
+} from "@/features/anime/types/anilist";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/select";
+import { cn } from "@/shared/lib/utils";
 import { Calendar, Play } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";

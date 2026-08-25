@@ -1,19 +1,19 @@
 "use client";
 
 import React from "react";
-import { type TMDBMovie, type TMDBCreditsResponse } from "@/app/types/tmdb";
-import { type MediaType } from "@/app/types/common";
-import EpisodeSection from "../_components/EpisodeSection";
-import DetailHero from "../_components/DetailHero";
+import { type TMDBMovie, type TMDBCreditsResponse } from "@/features/media/types/tmdb";
+import { type MediaType } from "@/shared/types/common";
+import EpisodeSection from "./EpisodeSection";
+import DetailHero from "./DetailHero";
 import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
-import { getMediaCredits } from "@/app/services/all.service";
+import { getMediaCredits } from "@/features/media/services/all.service";
 
-const CastSlider = dynamic(() => import("../_components/CastSlider"), {
+const CastSlider = dynamic(() => import("./CastSlider"), {
   ssr: false,
 });
 
-const RelatedMedia = dynamic(() => import("../_components/RelatedMedia"), {
+const RelatedMedia = dynamic(() => import("./RelatedMedia"), {
   ssr: false,
 });
 

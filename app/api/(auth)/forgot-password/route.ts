@@ -1,6 +1,6 @@
-import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
-import { sendMail } from "@/app/lib/mail";
-import { User } from "@/models/User";
+import { AsyncWrapper, ErrorHandler } from "@/shared/lib/api-handler";
+import { sendMail } from "@/features/auth/server/mail";
+import { User } from "@/features/auth/server/User";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 

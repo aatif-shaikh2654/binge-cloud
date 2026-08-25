@@ -1,16 +1,16 @@
 "use client";
 
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import HistoryCard from "@/components/common/HistoryCard";
-import PageHeader from "@/components/common/PageHeader";
-import { Button } from "@/components/ui/button";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import HistoryCard from "@/features/history/components/HistoryCard";
+import PageHeader from "@/shared/components/layout/PageHeader";
+import { Button } from "@/shared/components/ui/button";
 import { Clock, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/components/providers/AuthProvider";
-import { getHistory } from "@/app/services/history.service";
+import { useAuth } from "@/shared/providers/AuthProvider";
+import { getHistory } from "@/features/history/services/history.service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 interface HistoryGridProps {
   initialHistory?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any

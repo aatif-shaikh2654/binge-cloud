@@ -1,7 +1,7 @@
 "use client";
 
-import { type AniListCharacterEdge } from "@/app/types/anilist";
-import { Skeleton } from "@/components/ui/skeleton";
+import { type AniListCharacterEdge } from "@/features/anime/types/anilist";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import dynamic from "next/dynamic";
 
 interface AnimeCharactersSliderProps {

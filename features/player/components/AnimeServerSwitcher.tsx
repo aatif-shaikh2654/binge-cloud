@@ -1,16 +1,16 @@
 "use client";
 
-import { ANIME_SERVERS, type AnimeServer } from "@/app/constants/anime";
-import { buttonVariants } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ANIME_SERVERS, type AnimeServer } from "@/features/anime/constants/anime";
+import { buttonVariants } from "@/shared/components/ui/button";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/sheet";
+import { cn } from "@/shared/lib/utils";
 import { Server } from "lucide-react";
 import React, { useState } from "react";
 

@@ -1,16 +1,16 @@
 "use client";
 
-import { useDebounce } from "@/app/hooks/useDebounce";
+import { useDebounce } from "@/shared/hooks/useDebounce";
 import {
   discoverMedia,
   getTrendingMovies,
   searchMedia,
-} from "@/app/services/all.service";
-import { type MediaType } from "@/app/types/common";
-import { TMDBMovie } from "@/app/types/tmdb";
-import MovieCard from "@/components/common/MovieCard";
-import PageHeader from "@/components/common/PageHeader";
-import { cn } from "@/lib/utils";
+} from "@/features/media/services/all.service";
+import { type MediaType } from "@/shared/types/common";
+import { TMDBMovie } from "@/features/media/types/tmdb";
+import MovieCard from "@/features/media/components/MovieCard";
+import PageHeader from "@/shared/components/layout/PageHeader";
+import { cn } from "@/shared/lib/utils";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   Loader2,
@@ -19,7 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import FilterPanel from "./_components/FilterPanel";
+import FilterPanel from "./FilterPanel";
 
 const CONTENT_TYPES = [
   { id: "all", label: "All" },

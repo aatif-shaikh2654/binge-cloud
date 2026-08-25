@@ -1,7 +1,7 @@
 "use client";
 
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { type TMDBCast } from "@/app/types/tmdb";
+import { TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { type TMDBCast } from "@/features/media/types/tmdb";
 import { Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

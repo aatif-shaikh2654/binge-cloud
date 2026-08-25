@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";

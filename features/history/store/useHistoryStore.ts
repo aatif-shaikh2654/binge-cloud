@@ -1,7 +1,7 @@
 import {
   addToHistory as apiAddToHistory,
   removeFromHistory as apiRemoveFromHistory,
-} from "@/app/services/history.service";
+} from "@/features/history/services/history.service";
 import { del, get, set } from "idb-keyval";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";

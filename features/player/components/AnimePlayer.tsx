@@ -1,9 +1,9 @@
 "use client";
 
-import { type AnimeServer } from "@/app/constants/anime";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { type AniListMediaDetail } from "@/app/types/anilist";
-import { cn } from "@/lib/utils";
+import { type AnimeServer } from "@/features/anime/constants/anime";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { type AniListMediaDetail } from "@/features/anime/types/anilist";
+import { cn } from "@/shared/lib/utils";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";

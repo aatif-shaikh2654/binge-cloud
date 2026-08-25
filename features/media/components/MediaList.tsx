@@ -4,13 +4,13 @@ import {
   discoverMedia,
   getSimilarMedia,
   getTrendingMedia,
-} from "@/app/services/all.service";
-import { useFilterStore } from "@/app/store/useFilterStore";
-import { type MediaType } from "@/app/types/common";
-import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
-import FilterBarContainer from "@/components/common/FilterBarContainer";
-import MediaFilterFields from "@/components/common/MediaFilterFields";
-import MovieCard from "@/components/common/MovieCard";
+} from "@/features/media/services/all.service";
+import { useFilterStore } from "@/features/search/store/useFilterStore";
+import { type MediaType } from "@/shared/types/common";
+import { type TMDBMovie, type TMDBResponse } from "@/features/media/types/tmdb";
+import FilterBarContainer from "@/features/search/components/FilterBarContainer";
+import MediaFilterFields from "@/features/search/components/MediaFilterFields";
+import MovieCard from "@/features/media/components/MovieCard";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import React, { useCallback, useRef } from "react";

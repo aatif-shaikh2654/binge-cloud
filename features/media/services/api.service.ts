@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig, Method } from "axios";
-import axiosInstance, { tmdbInstance } from "./axios";
+import axiosInstance, { tmdbInstance } from "@/shared/lib/axios";
 
 export interface ApiResponse<T> {
   data: T;

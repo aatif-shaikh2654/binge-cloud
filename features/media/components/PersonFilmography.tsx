@@ -1,11 +1,11 @@
 "use client";
 
-import { type TMDBPersonCredits } from "@/app/types/tmdb";
-import MovieCard from "@/components/common/MovieCard";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { type TMDBPersonCredits } from "@/features/media/types/tmdb";
+import MovieCard from "@/features/media/components/MovieCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { Film, Loader2, Tv } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 interface PersonFilmographyProps {
   credits?: TMDBPersonCredits;

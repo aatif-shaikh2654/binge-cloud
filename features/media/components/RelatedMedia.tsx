@@ -1,9 +1,9 @@
 "use client";
 
-import { getSimilarMedia } from "@/app/services/all.service";
-import { type MediaType } from "@/app/types/common";
-import MediaSlider from "@/components/sliders/MediaSlider";
-import SliderSkeleton from "@/components/sliders/SliderSkeleton";
+import { getSimilarMedia } from "@/features/media/services/all.service";
+import { type MediaType } from "@/shared/types/common";
+import MediaSlider from "@/features/media/components/MediaSlider";
+import SliderSkeleton from "@/shared/components/sliders/SliderSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 

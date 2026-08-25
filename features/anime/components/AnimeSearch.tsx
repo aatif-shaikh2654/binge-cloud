@@ -1,8 +1,8 @@
 "use client";
 
-import { useDebounce } from "@/app/hooks/useDebounce";
-import { searchAnime } from "@/app/services/anilist.service";
-import { cn } from "@/lib/utils";
+import { useDebounce } from "@/shared/hooks/useDebounce";
+import { searchAnime } from "@/features/anime/services/anilist.service";
+import { cn } from "@/shared/lib/utils";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";

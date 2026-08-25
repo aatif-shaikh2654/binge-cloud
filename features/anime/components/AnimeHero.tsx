@@ -1,12 +1,12 @@
 "use client";
 
-import { FORMAT_LABEL, STATUS_LABEL } from "@/app/constants/anilist";
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { type AniListMedia } from "@/app/types/anilist";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { FORMAT_LABEL, STATUS_LABEL } from "@/features/anime/constants/anilist";
+import { TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { type AniListMedia } from "@/features/anime/types/anilist";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { Calendar, Play, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 import type { Swiper as SwiperType } from "swiper";
-import GenreBadge from "@/components/common/GenreBadge";
+import GenreBadge from "@/features/media/components/GenreBadge";
 import { Autoplay, EffectFade } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 

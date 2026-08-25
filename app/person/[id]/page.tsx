@@ -1,7 +1,7 @@
-import { getPersonDetails } from "@/app/services/all.service";
+import { getPersonDetails } from "@/features/media/services/all.service";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import PersonDetails from "./PersonDetails";
+import { PersonDetails } from "@/features/media";
 
 export const dynamic = "force-dynamic";
 

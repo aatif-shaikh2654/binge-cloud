@@ -1,12 +1,12 @@
 "use client";
 
-import { resolveEpisodeCount } from "@/app/anime/_components/AnimeEpisodeSectionContent";
-import AnimeEpisodeSwitcher from "@/app/anime/_components/AnimeEpisodeSwitcher";
-import AnimePlayer from "@/app/anime/_components/AnimePlayer";
-import AnimeServerSwitcher from "@/app/anime/_components/AnimeServerSwitcher";
-import { ANIME_SERVERS } from "@/app/constants/anime";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { type AniListMediaDetail } from "@/app/types/anilist";
+import { resolveEpisodeCount } from "@/features/anime/components/AnimeEpisodeSectionContent";
+import AnimeEpisodeSwitcher from "@/features/anime/components/AnimeEpisodeSwitcher";
+import AnimePlayer from "@/features/player/components/AnimePlayer";
+import AnimeServerSwitcher from "@/features/player/components/AnimeServerSwitcher";
+import { ANIME_SERVERS } from "@/features/anime/constants/anime";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { type AniListMediaDetail } from "@/features/anime/types/anilist";
 import { ArrowLeft } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback } from "react";

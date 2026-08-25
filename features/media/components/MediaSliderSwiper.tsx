@@ -1,11 +1,11 @@
 "use client";
 
-import { MediaType } from "@/app/types/common";
-import { type TMDBMovie } from "@/app/types/tmdb";
+import { MediaType } from "@/shared/types/common";
+import { type TMDBMovie } from "@/features/media/types/tmdb";
 import React from "react";
 import { SwiperSlide } from "swiper/react";
-import MovieCard from "../common/MovieCard";
-import BaseSwiperSlider from "./BaseSwiperSlider";
+import MovieCard from "./MovieCard";
+import BaseSwiperSlider from "@/shared/components/sliders/BaseSwiperSlider";
 
 interface MediaSliderProps {
   movies: TMDBMovie[];

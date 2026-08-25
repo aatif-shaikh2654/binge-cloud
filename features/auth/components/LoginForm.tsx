@@ -1,17 +1,17 @@
 "use client";
 
-import { login } from "@/app/services/auth.service";
-import { LoginPayload } from "@/app/types/user";
-import { useAuth } from "@/components/providers/AuthProvider";
-import { Button } from "@/components/ui/button";
+import { login } from "@/features/auth/services/auth.service";
+import { LoginPayload } from "@/features/auth/types/user";
+import { useAuth } from "@/shared/providers/AuthProvider";
+import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@/shared/components/ui/card";
+import { Input } from "@/shared/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, X } from "lucide-react";

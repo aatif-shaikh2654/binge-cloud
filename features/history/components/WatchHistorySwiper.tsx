@@ -1,9 +1,9 @@
 "use client";
 
-import { useHistoryStore } from "@/app/store/useHistoryStore";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
 import { SwiperSlide } from "swiper/react";
-import HistoryCard from "../common/HistoryCard";
-import BaseSwiperSlider from "./BaseSwiperSlider";
+import HistoryCard from "./HistoryCard";
+import BaseSwiperSlider from "@/shared/components/sliders/BaseSwiperSlider";
 
 interface WatchHistorySwiperProps {
   filterType?: "anime" | "movie" | "tv";

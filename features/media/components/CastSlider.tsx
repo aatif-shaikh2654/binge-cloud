@@ -1,8 +1,8 @@
 "use client";
 
-import { type TMDBCast } from "@/app/types/tmdb";
-import CastCard from "@/components/common/CastCard";
-import BaseSwiperSlider from "@/components/sliders/BaseSwiperSlider";
+import { type TMDBCast } from "@/features/media/types/tmdb";
+import CastCard from "@/features/media/components/CastCard";
+import BaseSwiperSlider from "@/shared/components/sliders/BaseSwiperSlider";
 import React from "react";
 import { SwiperSlide } from "swiper/react";
 

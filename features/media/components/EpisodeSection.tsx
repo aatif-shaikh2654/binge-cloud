@@ -1,18 +1,18 @@
 "use client";
 
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { getSeasonDetails } from "@/app/services/all.service";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { TMDBEpisode, type TMDBSeason } from "@/app/types/tmdb";
+import { TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { getSeasonDetails } from "@/features/media/services/all.service";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { TMDBEpisode, type TMDBSeason } from "@/features/media/types/tmdb";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/select";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { cn } from "@/shared/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, Play, Star, Tv2 } from "lucide-react";
 import Image from "next/image";

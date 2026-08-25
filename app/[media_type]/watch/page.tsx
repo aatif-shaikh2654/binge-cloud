@@ -1,8 +1,8 @@
-import { getMediaDetails } from "@/app/services/all.service";
-import { type MediaType } from "@/app/types/common";
+import { getMediaDetails } from "@/features/media/services/all.service";
+import { type MediaType } from "@/shared/types/common";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Watch from "./Watch";
+import { Watch } from "@/features/media";
 
 export async function generateMetadata({
   params,

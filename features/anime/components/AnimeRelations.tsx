@@ -1,7 +1,7 @@
 "use client";
 
-import { type AniListRelationEdge } from "@/app/types/anilist";
-import { Skeleton } from "@/components/ui/skeleton";
+import { type AniListRelationEdge } from "@/features/anime/types/anilist";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import dynamic from "next/dynamic";
 
 interface AnimeRelationsProps {

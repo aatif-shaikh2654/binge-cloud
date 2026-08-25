@@ -1,17 +1,17 @@
 "use client";
 
-import { type PlayerServer } from "@/app/constants/player";
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { type MediaType } from "@/app/types/common";
-import { type TMDBMovie, type TMDBSeason } from "@/app/types/tmdb";
-import { cn } from "@/lib/utils";
+import { type PlayerServer } from "@/features/player/constants/player";
+import { TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { type MediaType } from "@/shared/types/common";
+import { type TMDBMovie, type TMDBSeason } from "@/features/media/types/tmdb";
+import { cn } from "@/shared/lib/utils";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import { VidnestServer } from "../servers/VidnestServer";
-import { VidsrcServer } from "../servers/VidsrcServer";
-import { VidfastServer } from "../servers/VidfastServer";
+import { VidnestServer } from "./VidnestServer";
+import { VidsrcServer } from "./VidsrcServer";
+import { VidfastServer } from "./VidfastServer";
 
 const TRACKING_COMPONENTS = {
   vidnest: VidnestServer,

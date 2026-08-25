@@ -1,21 +1,21 @@
 "use client";
 
-import { FORMAT_LABEL, STATUS_LABEL } from "@/app/constants/anilist";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
-import { type AniListMediaDetail } from "@/app/types/anilist";
-import { type MediaType } from "@/app/types/common";
-import ZoomableImage from "@/components/common/ZoomableImage";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { FORMAT_LABEL, STATUS_LABEL } from "@/features/anime/constants/anilist";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { useWatchlistStore } from "@/features/watchlist/store/useWatchlistStore";
+import { type AniListMediaDetail } from "@/features/anime/types/anilist";
+import { type MediaType } from "@/shared/types/common";
+import ZoomableImage from "@/shared/components/feedback/ZoomableImage";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { Bookmark, ChevronDown, ChevronUp, Play, Plus, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
-import GenreBadge from "@/components/common/GenreBadge";
+import GenreBadge from "@/features/media/components/GenreBadge";
 
 interface AnimeDetailHeroProps {
   details: AniListMediaDetail;

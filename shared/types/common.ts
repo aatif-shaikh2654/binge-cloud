@@ -1,4 +1,4 @@
-import { type AniListCoverImage } from "./anilist";
+import { type AniListCoverImage } from "@/features/anime/types/anilist";
 
 export interface RefreshResponse {
   accessToken: string;

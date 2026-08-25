@@ -1,18 +1,18 @@
 "use client";
 
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { useWatchlistStore } from "@/features/watchlist/store/useWatchlistStore";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/shared/components/ui/dropdown-menu";
 import {
   SidebarButton,
   SidebarLink,
   UserDropdownContent,
   LoggedOutDropdownContent,
-} from "@/components/ui/sidebar-ui";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/sidebar-ui";
+import { cn } from "@/shared/lib/utils";
 import {
   Bookmark,
   CircleUser,
@@ -30,11 +30,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineMovie } from "react-icons/md";
-import { useAuth } from "../providers/AuthProvider";
-import ForgotPasswordForm from "./ForgotPasswordForm";
-import LoginForm from "./LoginForm";
-import SignupForm from "./SignupForm";
-import { usePWAInstall } from "@/app/hooks/usePWAInstall";
+import { useAuth } from "@/shared/providers/AuthProvider";
+import { ForgotPasswordForm } from "@/features/auth";
+import { LoginForm } from "@/features/auth";
+import { SignupForm } from "@/features/auth";
+import { usePWAInstall } from "@/shared/hooks/usePWAInstall";
 
 const sidebarItems = [
   { icon: Search, label: "Search", href: "/search" },

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import * as React from "react";
 
 export interface InputProps extends React.ComponentProps<"input"> {

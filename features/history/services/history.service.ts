@@ -1,5 +1,5 @@
-import { ApiService } from "./api.service";
-import { HistoryItem } from "@/app/store/useHistoryStore";
+import { ApiService } from "@/shared/lib/api-service";
+import { HistoryItem } from "@/features/history/store/useHistoryStore";
 
 export const getHistory = async () => {
   return await ApiService<HistoryItem[]>({

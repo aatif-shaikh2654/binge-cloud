@@ -3,15 +3,15 @@
 import {
   type AniListMedia,
   type AniListMediaDetail,
-} from "@/app/types/anilist";
-import AnimeSlider from "@/components/sliders/AnimeSlider";
+} from "@/features/anime/types/anilist";
+import AnimeSlider from "@/features/anime/components/AnimeSlider";
 import React from "react";
-import AnimeCharactersSlider from "../_components/AnimeCharactersSlider";
-import AnimeDetailHero from "../_components/AnimeDetailHero";
-import AnimeEpisodeSectionContent from "../_components/AnimeEpisodeSectionContent";
-import AnimeRelations from "../_components/AnimeRelations";
+import AnimeCharactersSlider from "./AnimeCharactersSlider";
+import AnimeDetailHero from "./AnimeDetailHero";
+import AnimeEpisodeSectionContent from "./AnimeEpisodeSectionContent";
+import AnimeRelations from "./AnimeRelations";
 import { useQuery } from "@tanstack/react-query";
-import { getAnimeByGenre } from "@/app/services/anilist.service";
+import { getAnimeByGenre } from "@/features/anime/services/anilist.service";
 
 interface AnimeDetailProps {
   details: AniListMediaDetail;

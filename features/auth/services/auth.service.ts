@@ -1,5 +1,5 @@
 import { ForgotPasswordPayload, LoginPayload, LoginResponse, ResetPasswordPayload, SignupPayload, SignupResponse, User } from "../types/user";
-import { ApiService } from "./api.service";
+import { ApiService } from "@/shared/lib/api-service";
 
 export const signup = (payload: SignupPayload): Promise<SignupResponse> => {
   return ApiService<SignupResponse, SignupPayload>({

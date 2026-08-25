@@ -1,5 +1,5 @@
-import { ApiService } from "./api.service";
-import { WatchlistItem } from "@/app/store/useWatchlistStore";
+import { ApiService } from "@/shared/lib/api-service";
+import { WatchlistItem } from "@/features/watchlist/store/useWatchlistStore";
 
 export const getWatchlist = async () => {
   return await ApiService<WatchlistItem[]>({

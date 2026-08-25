@@ -1,12 +1,12 @@
 "use client";
 
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
-import MovieCard from "@/components/common/MovieCard";
-import PageHeader from "@/components/common/PageHeader";
-import { useAuth } from "@/components/providers/AuthProvider";
-import { getWatchlist } from "@/app/services/watchlist.service";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useWatchlistStore } from "@/features/watchlist/store/useWatchlistStore";
+import MovieCard from "@/features/media/components/MovieCard";
+import PageHeader from "@/shared/components/layout/PageHeader";
+import { useAuth } from "@/shared/providers/AuthProvider";
+import { getWatchlist } from "@/features/watchlist/services/watchlist.service";
+import { Button } from "@/shared/components/ui/button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
 import Link from "next/link";

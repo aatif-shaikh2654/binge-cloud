@@ -1,8 +1,8 @@
 "use client";
 
-import { type AniListCharacterEdge } from "@/app/types/anilist";
-import BaseSwiperSlider from "@/components/sliders/BaseSwiperSlider";
-import { cn } from "@/lib/utils";
+import { type AniListCharacterEdge } from "@/features/anime/types/anilist";
+import BaseSwiperSlider from "@/shared/components/sliders/BaseSwiperSlider";
+import { cn } from "@/shared/lib/utils";
 import Image from "next/image";
 import React from "react";
 import { SwiperSlide } from "swiper/react";

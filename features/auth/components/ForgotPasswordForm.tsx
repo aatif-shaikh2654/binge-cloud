@@ -1,16 +1,16 @@
 "use client";
 
-import { forgotPassword } from "@/app/services/auth.service";
-import { ForgotPasswordPayload } from "@/app/types/user";
-import { Button } from "@/components/ui/button";
+import { forgotPassword } from "@/features/auth/services/auth.service";
+import { ForgotPasswordPayload } from "@/features/auth/types/user";
+import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@/shared/components/ui/card";
+import { Input } from "@/shared/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Loader2, Mail, X } from "lucide-react";

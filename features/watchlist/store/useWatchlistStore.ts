@@ -1,8 +1,8 @@
-import { MediaType, UnifiedMediaItem } from "@/app/types/common";
+import { MediaType, UnifiedMediaItem } from "@/shared/types/common";
 import { del, get, set } from "idb-keyval";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { addToWatchlist as apiAddToWatchlist, removeFromWatchlist as apiRemoveFromWatchlist } from "@/app/services/watchlist.service";
+import { addToWatchlist as apiAddToWatchlist, removeFromWatchlist as apiRemoveFromWatchlist } from "@/features/watchlist/services/watchlist.service";
 
 
 export type WatchlistItem = UnifiedMediaItem;

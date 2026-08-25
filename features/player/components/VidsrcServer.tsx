@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { type TMDBSeason } from "@/app/types/tmdb";
-import { type MediaType } from "@/app/types/common";
+import { type TMDBSeason } from "@/features/media/types/tmdb";
+import { type MediaType } from "@/shared/types/common";
 
 interface VidsrcServerProps {
   id: string;

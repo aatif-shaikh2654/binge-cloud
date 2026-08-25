@@ -1,4 +1,4 @@
-import connectToDatabase from "@/lib/db";
+import connectToDatabase from "@/shared/lib/db";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextRequest, NextResponse } from "next/server";

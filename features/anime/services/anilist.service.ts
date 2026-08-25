@@ -3,14 +3,14 @@ import {
   ANIME_GENRE_QUERY,
   ANIME_PAGE_QUERY,
   ANILIST_ENDPOINT,
-} from "@/app/constants/anilist";
+} from "@/features/anime/constants/anilist";
 import {
   type AniListDetailResponse,
   type AniListMediaDetail,
   type AniListPageResponse,
   type AniListResponse,
   type AniListSort,
-} from "@/app/types/anilist";
+} from "@/features/anime/types/anilist";
 
 const fetchAniList = async <T extends AniListResponse | AniListDetailResponse>(
   query: string,

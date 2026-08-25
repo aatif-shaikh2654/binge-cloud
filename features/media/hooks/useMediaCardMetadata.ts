@@ -1,13 +1,15 @@
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { getMediaDetails, getMovieVideos } from "@/app/services/all.service";
-import { getAnimeDetails } from "@/app/services/anilist.service";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { usePlayerStore } from "@/app/store/usePlayerStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
-import { type AniListMediaDetail } from "@/app/types/anilist";
-import { type MediaType } from "@/app/types/common";
-import { type TMDBMovie } from "@/app/types/tmdb";
+"use client";
+
+import { TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { getMediaDetails, getMovieVideos } from "@/features/media/services/all.service";
+import { getAnimeDetails } from "@/features/anime/services/anilist.service";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { usePlayerStore } from "@/features/player/store/usePlayerStore";
+import { useWatchlistStore } from "@/features/watchlist/store/useWatchlistStore";
+import { type AniListMediaDetail } from "@/features/anime/types/anilist";
+import { type MediaType } from "@/shared/types/common";
+import { type TMDBMovie } from "@/features/media/types/tmdb";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";

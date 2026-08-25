@@ -5,7 +5,7 @@ import { Swiper } from "swiper/react";
 import { FreeMode, Navigation, Mousewheel } from "swiper/modules";
 import { ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 
 import "swiper/css";
 import "swiper/css/free-mode";

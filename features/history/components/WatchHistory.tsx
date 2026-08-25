@@ -1,7 +1,7 @@
 "use client";
 
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import dynamic from "next/dynamic";
 
 export const WatchHistorySkeleton = () => (
@@ -23,8 +23,8 @@ export const WatchHistorySkeleton = () => (
   </section>
 );
 
-import { useAuth } from "@/components/providers/AuthProvider";
-import { getHistory } from "@/app/services/history.service";
+import { useAuth } from "@/shared/providers/AuthProvider";
+import { getHistory } from "@/features/history/services/history.service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 

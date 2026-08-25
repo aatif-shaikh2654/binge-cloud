@@ -1,5 +1,5 @@
-import { getUserFromCookies } from "@/app/lib/auth";
-import connectToDatabase from "@/lib/db";
+import { getUserFromCookies } from "@/features/auth/server/auth";
+import connectToDatabase from "@/shared/lib/db";
 
 /**
  * A middleware-like wrapper for Next.js Server Actions or server-side functions.

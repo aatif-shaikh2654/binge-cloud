@@ -1,26 +1,26 @@
 "use client";
 
-import { PLATFORMS } from "@/app/constants/platforms";
+import { PLATFORMS } from "@/features/media/constants/platforms";
 import {
   MOVIE_GENRE_IDS,
   TMDB_GENRES,
   TV_GENRE_IDS,
-} from "@/app/constants/tmdb";
-import { type MediaType } from "@/app/types/common";
+} from "@/features/media/constants/tmdb";
+import { type MediaType } from "@/shared/types/common";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/shared/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/select";
+import { cn } from "@/shared/lib/utils";
 import { ChevronDown, X } from "lucide-react";
 import React from "react";
 
@@ -49,7 +49,6 @@ export const MediaFilterFields: React.FC<MediaFilterFieldsProps> = ({
   selectedSort,
   setSelectedSort,
   filter,
-  isBollywood = false,
 }) => {
   const genreIds = mediaType === "all"
     ? Array.from(new Set([...MOVIE_GENRE_IDS, ...TV_GENRE_IDS]))

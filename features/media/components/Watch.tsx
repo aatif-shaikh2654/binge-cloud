@@ -1,9 +1,9 @@
 "use client";
 
-import { PLAYER_SERVERS, type PlayerServer } from "@/app/constants/player";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { type MediaType } from "@/app/types/common";
-import { type TMDBMovie, type TMDBSeason } from "@/app/types/tmdb";
+import { PLAYER_SERVERS, type PlayerServer } from "@/features/player/constants/player";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { type MediaType } from "@/shared/types/common";
+import { type TMDBMovie, type TMDBSeason } from "@/features/media/types/tmdb";
 import { ArrowLeft } from "lucide-react";
 import {
   useParams,
@@ -12,9 +12,9 @@ import {
   useSearchParams,
 } from "next/navigation";
 import React from "react";
-import EpisodeSwitcher from "../_components/EpisodeSwitcher";
-import Player from "../_components/Player";
-import ServerSwitcher from "../_components/ServerSwitcher";
+import EpisodeSwitcher from "./EpisodeSwitcher";
+import Player from "@/features/player/components/Player";
+import ServerSwitcher from "@/features/player/components/ServerSwitcher";
 
 interface WatchProps {
   id: string;

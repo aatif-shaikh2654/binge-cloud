@@ -1,14 +1,14 @@
 "use client";
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { getMovieVideos } from "@/app/services/all.service";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
-import { type MediaType } from "@/app/types/common";
-import { type TMDBMovie } from "@/app/types/tmdb";
-import ZoomableImage from "@/components/common/ZoomableImage";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { getMovieVideos } from "@/features/media/services/all.service";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { useWatchlistStore } from "@/features/watchlist/store/useWatchlistStore";
+import { type MediaType } from "@/shared/types/common";
+import { type TMDBMovie } from "@/features/media/types/tmdb";
+import ZoomableImage from "@/shared/components/feedback/ZoomableImage";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import {
   Bookmark,
   ChevronDown,
@@ -22,7 +22,7 @@ import React, { useEffect, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { toast } from "sonner";
 import HeroBackdrop from "./HeroBackdrop";
-import GenreBadge from "@/components/common/GenreBadge";
+import GenreBadge from "@/features/media/components/GenreBadge";
 
 interface DetailHeroProps {
   details: TMDBMovie;

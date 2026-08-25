@@ -1,14 +1,14 @@
 "use client";
 
-import { FORMAT_LABEL, STATUS_LABEL } from "@/app/constants/anilist";
-import { useWatchNavigation } from "@/app/hooks/useWatchNavigation";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
-import { type AniListMedia } from "@/app/types/anilist";
-import { type MediaType } from "@/app/types/common";
-import GenreBadge from "@/components/common/GenreBadge";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { FORMAT_LABEL, STATUS_LABEL } from "@/features/anime/constants/anilist";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { useWatchlistStore } from "@/features/watchlist/store/useWatchlistStore";
+import { type AniListMedia } from "@/features/anime/types/anilist";
+import { type MediaType } from "@/shared/types/common";
+import GenreBadge from "@/features/media/components/GenreBadge";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { Bookmark, Play, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

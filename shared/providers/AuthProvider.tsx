@@ -1,14 +1,14 @@
 "use client";
 
-import { getUser, logout as logoutService } from "@/app/services/auth.service";
-import { User } from "@/app/types/user";
+import { getUser, logout as logoutService } from "@/features/auth/services/auth.service";
+import { User } from "@/features/auth/types/user";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { getHistory, syncHistory } from "@/app/services/history.service";
-import { getWatchlist, syncWatchlist } from "@/app/services/watchlist.service";
-import { useHistoryStore } from "@/app/store/useHistoryStore";
-import { useWatchlistStore } from "@/app/store/useWatchlistStore";
+import { getHistory, syncHistory } from "@/features/history/services/history.service";
+import { getWatchlist, syncWatchlist } from "@/features/watchlist/services/watchlist.service";
+import { useHistoryStore } from "@/features/history/store/useHistoryStore";
+import { useWatchlistStore } from "@/features/watchlist/store/useWatchlistStore";
 
 interface AuthContextType {
   user: User | null;

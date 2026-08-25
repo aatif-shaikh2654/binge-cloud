@@ -1,8 +1,8 @@
 "use client";
 
-import { getTrendingMovies } from "@/app/services/all.service";
-import { type TMDBMovie, type TMDBResponse } from "@/app/types/tmdb";
-import MovieCard from "@/components/common/MovieCard";
+import { getTrendingMovies } from "@/features/media/services/all.service";
+import { type TMDBMovie, type TMDBResponse } from "@/features/media/types/tmdb";
+import MovieCard from "@/features/media/components/MovieCard";
 import { Loader2 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 

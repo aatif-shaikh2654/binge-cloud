@@ -2,7 +2,7 @@
  * Type definitions for TMDB API entities
  */
 
-import { type MediaType } from "./common";
+import { type MediaType } from "@/shared/types/common";
 
 export interface TMDBMovie {
   id: number;

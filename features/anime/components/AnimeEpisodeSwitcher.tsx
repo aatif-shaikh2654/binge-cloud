@@ -1,17 +1,17 @@
 "use client";
 
-import { getAnimeDetails } from "@/app/services/anilist.service";
-import { type AniListMediaDetail } from "@/app/types/anilist";
-import { buttonVariants } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { getAnimeDetails } from "@/features/anime/services/anilist.service";
+import { type AniListMediaDetail } from "@/features/anime/types/anilist";
+import { buttonVariants } from "@/shared/components/ui/button";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/sheet";
+import { cn } from "@/shared/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { List, Play } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";

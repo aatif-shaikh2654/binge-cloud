@@ -1,5 +1,5 @@
-import { ANILIST_ENDPOINT } from "@/app/constants/anilist";
-import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
+import { ANILIST_ENDPOINT } from "@/features/anime/constants/anilist";
+import { AsyncWrapper, ErrorHandler } from "@/shared/lib/api-handler";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

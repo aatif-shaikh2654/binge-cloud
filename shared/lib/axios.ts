@@ -5,8 +5,8 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 import { toast } from "sonner";
-import { TMDB_BASE_URL } from "../constants/tmdb";
-import { ApiError } from "../types/common";
+import { TMDB_BASE_URL } from "@/features/media/constants/tmdb";
+import { ApiError } from "@/shared/types/common";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: "/",

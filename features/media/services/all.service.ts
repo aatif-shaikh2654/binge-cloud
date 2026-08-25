@@ -1,4 +1,4 @@
-import { type MediaType } from "@/app/types/common";
+import { type MediaType } from "@/shared/types/common";
 import {
   type TMDBCreditsResponse,
   type TMDBImageResponse,
@@ -7,8 +7,8 @@ import {
   type TMDBSeasonDetails,
   type TMDBPerson,
   type TMDBPersonCredits,
-} from "@/app/types/tmdb";
-import { ApiService } from "./api.service";
+} from "@/features/media/types/tmdb";
+import { ApiService } from "@/shared/lib/api-service";
 
 /**
  * Helper to fetch a movie/show logo path directly from TMDB

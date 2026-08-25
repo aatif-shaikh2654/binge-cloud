@@ -1,10 +1,10 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { discoverMedia } from "@/app/services/all.service";
-import PageHeader from "@/components/common/PageHeader";
-import MediaList from "@/app/[media_type]/MediaList";
+import { discoverMedia } from "@/features/media/services/all.service";
+import PageHeader from "@/shared/components/layout/PageHeader";
+import MediaList from "@/features/media/components/MediaList";
 import type { Metadata } from "next";
-import { PLATFORMS } from "@/app/constants/platforms";
+import { PLATFORMS } from "@/features/media/constants/platforms";
 
 interface PageProps {
   params: Promise<{ platform_slug: string }>;

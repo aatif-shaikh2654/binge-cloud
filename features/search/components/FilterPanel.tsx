@@ -2,16 +2,16 @@
 
 import React from "react";
 import { FilterX } from "lucide-react";
-import { TMDB_GENRES } from "@/app/constants/tmdb";
-import { cn } from "@/lib/utils";
+import { TMDB_GENRES } from "@/features/media/constants/tmdb";
+import { cn } from "@/shared/lib/utils";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { type SearchFilters } from "../Search";
+} from "@/shared/components/ui/select";
+import { type SearchFilters } from "./Search";
 
 interface FilterPanelProps {
   filters: SearchFilters;

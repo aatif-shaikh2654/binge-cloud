@@ -1,8 +1,8 @@
 "use client";
 
-import { AniListMedia, type AniListRelationEdge } from "@/app/types/anilist";
-import AnimeCard from "@/components/common/AnimeCard";
-import BaseSwiperSlider from "@/components/sliders/BaseSwiperSlider";
+import { AniListMedia, type AniListRelationEdge } from "@/features/anime/types/anilist";
+import AnimeCard from "@/features/anime/components/AnimeCard";
+import BaseSwiperSlider from "@/shared/components/sliders/BaseSwiperSlider";
 import React from "react";
 import { SwiperSlide } from "swiper/react";
 

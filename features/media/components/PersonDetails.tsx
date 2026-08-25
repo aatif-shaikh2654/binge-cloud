@@ -1,15 +1,15 @@
 "use client";
 
-import { TMDB_IMAGE_BASE_URL } from "@/app/constants/tmdb";
-import { type TMDBPerson, type TMDBPersonCredits } from "@/app/types/tmdb";
+import { TMDB_IMAGE_BASE_URL } from "@/features/media/constants/tmdb";
+import { type TMDBPerson, type TMDBPersonCredits } from "@/features/media/types/tmdb";
 import { User } from "lucide-react";
 import Image from "next/image";
 import { useMemo } from "react";
-import PersonBio from "./_components/PersonBio";
-import PersonFilmography from "./_components/PersonFilmography";
-import PersonalInfo from "./_components/PersonalInfo";
+import PersonBio from "./PersonBio";
+import PersonFilmography from "./PersonFilmography";
+import PersonalInfo from "./PersonalInfo";
 import { useQuery } from "@tanstack/react-query";
-import { getPersonCredits } from "@/app/services/all.service";
+import { getPersonCredits } from "@/features/media/services/all.service";
 
 interface PersonDetailsProps {
   person: TMDBPerson;

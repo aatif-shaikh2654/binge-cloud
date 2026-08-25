@@ -1,10 +1,10 @@
 "use client";
 
-import { useMediaCardMetadata } from "@/app/hooks/useMediaCardMetadata";
-import { MediaType, UnifiedMediaItem } from "@/app/types/common";
-import { TMDBMovie } from "@/app/types/tmdb";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useMediaCardMetadata } from "@/features/media/hooks/useMediaCardMetadata";
+import { MediaType, UnifiedMediaItem } from "@/shared/types/common";
+import { TMDBMovie } from "@/features/media/types/tmdb";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import {
   Bookmark,
   BookmarkMinus,

@@ -1,8 +1,8 @@
-import { getAnimeDetails } from "@/app/services/anilist.service";
+import { getAnimeDetails } from "@/features/anime/services/anilist.service";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import AnimeWatch from "./AnimeWatch";
+import { AnimeWatch } from "@/features/anime";
 
 export const dynamic = "force-dynamic";
 

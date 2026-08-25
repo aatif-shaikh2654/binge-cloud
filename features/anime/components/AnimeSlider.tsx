@@ -1,8 +1,8 @@
 "use client";
 
-import { type AniListMedia } from "@/app/types/anilist";
+import { type AniListMedia } from "@/features/anime/types/anilist";
 import dynamic from "next/dynamic";
-import SliderSkeleton from "./SliderSkeleton";
+import SliderSkeleton from "@/shared/components/sliders/SliderSkeleton";
 
 interface AnimeSliderProps {
   anime: AniListMedia[];

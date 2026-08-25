@@ -1,15 +1,15 @@
 "use client";
 
-import { getFilteredAnime } from "@/app/services/anilist.service";
-import { useFilterStore } from "@/app/store/useFilterStore";
+import { getFilteredAnime } from "@/features/anime/services/anilist.service";
+import { useFilterStore } from "@/features/search/store/useFilterStore";
 import {
   AnimeCategory,
   type AniListPageResponse,
   type AniListSort,
-} from "@/app/types/anilist";
-import AnimeCard from "@/components/common/AnimeCard";
-import AnimeFilterFields from "@/components/common/AnimeFilterFields";
-import FilterBarContainer from "@/components/common/FilterBarContainer";
+} from "@/features/anime/types/anilist";
+import AnimeCard from "@/features/anime/components/AnimeCard";
+import AnimeFilterFields from "@/features/anime/components/AnimeFilterFields";
+import FilterBarContainer from "@/features/search/components/FilterBarContainer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import React, { useCallback, useRef } from "react";

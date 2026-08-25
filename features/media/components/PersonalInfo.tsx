@@ -1,4 +1,4 @@
-import { type TMDBPerson } from "@/app/types/tmdb";
+import { type TMDBPerson } from "@/features/media/types/tmdb";
 import React from "react";
 
 interface PersonalInfoProps {

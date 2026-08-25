@@ -5,18 +5,18 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/shared/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/select";
+import { cn } from "@/shared/lib/utils";
 import { ChevronDown, X } from "lucide-react";
 import React from "react";
-import { ANILIST_GENRES } from "@/app/constants/anilist";
+import { ANILIST_GENRES } from "@/features/anime/constants/anilist";
 
 interface AnimeFilterFieldsProps {
   selectedGenres: string[];

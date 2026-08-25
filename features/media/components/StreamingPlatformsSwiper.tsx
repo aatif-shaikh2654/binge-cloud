@@ -1,11 +1,11 @@
 "use client";
 
-import { PLATFORMS } from "@/app/constants/platforms";
-import { cn } from "@/lib/utils";
+import { PLATFORMS } from "@/features/media/constants/platforms";
+import { cn } from "@/shared/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { SwiperSlide } from "swiper/react";
-import BaseSwiperSlider from "./BaseSwiperSlider";
+import BaseSwiperSlider from "@/shared/components/sliders/BaseSwiperSlider";
 
 export default function StreamingPlatformsSwiper() {
   const PLATFORMS_BREAKPOINTS = {
