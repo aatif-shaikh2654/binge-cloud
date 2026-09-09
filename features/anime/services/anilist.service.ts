@@ -1,8 +1,9 @@
 import {
+  ANILIST_ENDPOINT,
+  APOLLO_STUDIO_ORIGIN,
   ANIME_DETAIL_QUERY,
   ANIME_GENRE_QUERY,
   ANIME_PAGE_QUERY,
-  ANILIST_ENDPOINT,
 } from "@/features/anime/constants/anilist";
 import {
   type AniListDetailResponse,
@@ -24,22 +25,28 @@ const fetchAniList = async <T extends AniListResponse | AniListDetailResponse>(
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      ...(isServer && process.env.ANILIST_CLIENT_SECRET
+      ...(isServer
         ? {
-            Authorization: `Bearer ${process.env.ANILIST_CLIENT_SECRET}`,
+            Origin: APOLLO_STUDIO_ORIGIN,
+            Referer: `${APOLLO_STUDIO_ORIGIN}/`,
+            "User-Agent":
+              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           }
         : {}),
     },
     body: JSON.stringify({ query, variables }),
   });
 
+  const data = await response.json().catch(() => null);
+
   if (!response.ok) {
-    throw new Error(`AniList request failed with status ${response.status}`);
+    const message =
+      data?.errors?.[0]?.message ||
+      `AniList request failed with status ${response.status}`;
+    throw new Error(message);
   }
 
-  const data = await response.json();
-
-  if (data.errors?.length) {
+  if (data?.errors?.length) {
     throw new Error(data.errors[0].message);
   }
 

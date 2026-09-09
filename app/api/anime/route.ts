@@ -1,11 +1,14 @@
-import { ANILIST_ENDPOINT } from "@/features/anime/constants/anilist";
+import {
+  ANILIST_ENDPOINT,
+  APOLLO_STUDIO_ORIGIN,
+} from "@/features/anime/constants/anilist";
 import { AsyncWrapper, ErrorHandler } from "@/shared/lib/api-handler";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Proxy for AniList GraphQL API.
  * Forwards POST requests with { query, variables } to AniList,
- * keeping the client_secret server-side only.
+ * keeping server headers and tokens protected server-side.
  */
 export const POST = AsyncWrapper(async (request: NextRequest) => {
   let body: unknown;
@@ -20,11 +23,10 @@ export const POST = AsyncWrapper(async (request: NextRequest) => {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      ...(process.env.ANILIST_CLIENT_SECRET
-        ? {
-            Authorization: `Bearer ${process.env.ANILIST_CLIENT_SECRET}`,
-          }
-        : {}),
+      Origin: APOLLO_STUDIO_ORIGIN,
+      Referer: `${APOLLO_STUDIO_ORIGIN}/`,
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     },
     body: JSON.stringify(body),
   });

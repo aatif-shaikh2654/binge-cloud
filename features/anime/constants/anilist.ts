@@ -1,4 +1,5 @@
 export const ANILIST_ENDPOINT = "https://graphql.anilist.co";
+export const APOLLO_STUDIO_ORIGIN = "https://studio.apollographql.com";
 
 export const ANIME_MEDIA_FRAGMENT = `
   id
