@@ -1,10 +1,10 @@
 "use client";
 
 import { useMediaCardMetadata } from "@/features/media/hooks/useMediaCardMetadata";
-import { MediaType, UnifiedMediaItem } from "@/shared/types/common";
 import { TMDBMovie } from "@/features/media/types/tmdb";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import { MediaType, UnifiedMediaItem } from "@/shared/types/common";
 import {
   Bookmark,
   BookmarkMinus,
@@ -212,8 +212,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
             {movie.title || movie.name}
           </h3>
           <p className="text-[11px] font-medium text-white/40 tracking-tight">
-            {releaseYear} • {currentMediaType}
-            {isWatchLaterPage && latestAiredEp && ` • Latest: ${latestAiredEp}`}
+            {releaseYear}
           </p>
         </Link>
       </div>
