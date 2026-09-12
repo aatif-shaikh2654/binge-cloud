@@ -1,9 +1,9 @@
 import {
   ANILIST_ENDPOINT,
-  APOLLO_STUDIO_ORIGIN,
   ANIME_DETAIL_QUERY,
   ANIME_GENRE_QUERY,
   ANIME_PAGE_QUERY,
+  APOLLO_STUDIO_ORIGIN,
 } from "@/features/anime/constants/anilist";
 import {
   type AniListDetailResponse,
@@ -40,6 +40,7 @@ const fetchAniList = async <T extends AniListResponse | AniListDetailResponse>(
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
+    console.log(response);
     const message =
       data?.errors?.[0]?.message ||
       `AniList request failed with status ${response.status}`;
