@@ -16,7 +16,7 @@ export interface PlayerServer {
     imdbId?: string,
     title?: string,
   ) => string;
-  trackingType?: "vidnest" | "vidsrc" | "vidfast";
+  trackingType?: "vidnest" | "vidsrc" | "vidfast" | "vidbolt";
   description?: string;
   icon?: LucideIcon;
 }
@@ -62,12 +62,9 @@ export const PLAYER_SERVERS: PlayerServer[] = [
     name: "Server 2",
     id: "server-2",
     movieUrl: (tmdbId: string) =>
-      `https://www.vidsrc.wtf/2/movie/${tmdbId}?color=2563eb`,
+      `https://player.vidlove.cc/embed/movie/${tmdbId}`,
     tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://www.vidsrc.wtf/2/tv/${tmdbId}/${season}/${episode}?color=2563eb`,
-    description: "Multi-Language",
-    icon: Globe,
-    trackingType: "vidsrc",
+      `https://player.vidlove.cc/embed/tv/${tmdbId}/${season}/${episode}`,
   },
   {
     name: "Server 3",
@@ -83,7 +80,6 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       `https://vidfast.pro/tv/${tmdbId}/${season}/${episode}?theme=2563eb${startAt ? `&startAt=${startAt}` : ""}`,
     trackingType: "vidfast",
   },
-
   {
     name: "Server 4",
     id: "server-4",
@@ -111,9 +107,16 @@ export const PLAYER_SERVERS: PlayerServer[] = [
   {
     name: "Server 7",
     id: "server-7",
-    movieUrl: (tmdbId: string) => `https://vidlink.pro/movie/${tmdbId}`,
-    tvUrl: (tmdbId: string, season: number, episode: number) =>
-      `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`,
+    movieUrl: (tmdbId: string, startAt?: number) =>
+      `https://vidbolt.xyz/movie/${tmdbId}?theme=2563eb${startAt ? `&startAt=${startAt}` : ""}`,
+    tvUrl: (
+      tmdbId: string,
+      season: number,
+      episode: number,
+      startAt?: number,
+    ) =>
+      `https://vidbolt.xyz/tv/${tmdbId}/${season}/${episode}?theme=2563eb${startAt ? `&startAt=${startAt}` : ""}`,
+    trackingType: "vidbolt",
   },
   {
     name: "Server 8",
@@ -138,5 +141,22 @@ export const PLAYER_SERVERS: PlayerServer[] = [
       `https://streams.iqsmartgames.com/embed/tv/${tmdbId}/${season}/${episode}?key=e11a7debaaa4f5d25b671706ffe4d2acb56efbd4`,
     description: "Multi-Language",
     icon: Globe,
+  },
+  {
+    name: "Server 10",
+    id: "server-10",
+    movieUrl: (tmdbId: string) =>
+      `https://embed.vidrift.in/embed/movie/${tmdbId}?brand=Binge%20Cloud&brandColor=2563eb`,
+    tvUrl: (
+      tmdbId: string,
+      season: number,
+      episode: number,
+      _startAt?: number,
+      _imdbId?: string,
+      title?: string,
+    ) => {
+      const titleParam = title ? `&title=${encodeURIComponent(title)}` : "";
+      return `https://embed.vidrift.in/embed/tv/${tmdbId}/${season}/${episode}?brand=Binge%20Cloud&brandColor=2563eb${titleParam}`;
+    },
   },
 ];

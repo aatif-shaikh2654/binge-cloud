@@ -58,4 +58,16 @@ export const ANIME_SERVERS: AnimeServer[] = [
     lang: "dub",
     baseUrl: "https://vidnest.fun/animepahe",
   },
+  {
+    id: "server-5-sub",
+    name: "Server 5",
+    lang: "sub",
+    baseUrl: "https://vidbolt.xyz/anime",
+  },
+  {
+    id: "server-5-dub",
+    name: "Server 5",
+    lang: "dub",
+    baseUrl: "https://vidbolt.xyz/anime",
+  },
 ];

@@ -12,11 +12,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { VidnestServer } from "./VidnestServer";
 import { VidsrcServer } from "./VidsrcServer";
 import { VidfastServer } from "./VidfastServer";
+import { VidboltServer } from "./VidboltServer";
 
 const TRACKING_COMPONENTS = {
   vidnest: VidnestServer,
   vidsrc: VidsrcServer,
   vidfast: VidfastServer,
+  vidbolt: VidboltServer,
 } as const;
 
 interface PlayerProps {
@@ -219,6 +221,7 @@ const Player: React.FC<PlayerProps> = ({
       )}
 
       <iframe
+        id={currentServer.id === "server-7" ? "vidbolt-player" : undefined}
         key={videoUrl}
         ref={iframeRef}
         src={videoUrl}

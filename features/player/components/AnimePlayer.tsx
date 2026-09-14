@@ -87,8 +87,19 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
   let videoUrl = `${currentServer.baseUrl}/${id}/${ep}/${currentServer.lang}`;
 
-  // Apply Resume Parameters for Server 3 & Server 4 (Vidnest & Vidnest Pahe)
-  if (
+  // Apply Resume / Query Parameters for Server 3, Server 4, and Server 5 (Vidbolt)
+  if (currentServer.id.startsWith("server-5")) {
+    const params = new URLSearchParams();
+    params.set("theme", "2563eb");
+    if (initialStartTime !== null && initialStartTime > 0) {
+      params.set("startAt", initialStartTime.toString());
+    }
+    const queryString = params.toString();
+    if (queryString) {
+      const separator = videoUrl.includes("?") ? "&" : "?";
+      videoUrl += `${separator}${queryString}`;
+    }
+  } else if (
     (currentServer.id.startsWith("server-3") ||
       currentServer.id.startsWith("server-4")) &&
     initialStartTime !== null &&
@@ -248,7 +259,27 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
         return;
       }
 
-      // 2. Handle Tryembed Player Events (PLAYER_EVENT)
+      // 2. Handle VidBolt Player Events
+      if (event.origin === "https://vidbolt.xyz") {
+        if (data.type === "timeupdate") {
+          const currentTime = data.time;
+          if (currentTime !== undefined) {
+            trackProgress(currentTime, latestProgressRef.current.duration || 0);
+          }
+        } else if (data.type === "durationchange") {
+          const duration = data.duration;
+          if (duration !== undefined) {
+            latestProgressRef.current.duration = duration;
+          }
+        } else if (data.type === "ended") {
+          if (currentProps.ep < currentProps.totalCount) {
+            currentProps.navigate(currentProps.ep + 1);
+          }
+        }
+        return;
+      }
+
+      // 3. Handle Tryembed Player Events (PLAYER_EVENT)
       if (data.type === "PLAYER_EVENT") {
         const playerEvent = data.data;
         const eventType = playerEvent.event;
@@ -325,6 +356,7 @@ const AnimePlayer: React.FC<AnimePlayerProps> = ({
 
       {/* Player */}
       <iframe
+        id={currentServer.id.startsWith("server-5") ? "vidbolt-player" : undefined}
         key={videoUrl}
         src={videoUrl}
         className={cn(
