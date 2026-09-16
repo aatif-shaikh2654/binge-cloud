@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import PageHeader from "@/components/common/PageHeader";
-import { discoverMedia } from "@/app/services/all.service";
-import { TMDB_GENRES } from "@/app/constants/tmdb";
-import MediaList from "../MediaList";
+import PageHeader from "@/shared/components/layout/PageHeader";
+import { discoverMedia } from "@/features/media/services/all.service";
+import { TMDB_GENRES } from "@/features/media/constants/tmdb";
+import { MediaList } from "@/features/media";
 
 // Normalize and find genre helper
 export function findTmdbGenre(slug: string): { id: number; name: string } | undefined {

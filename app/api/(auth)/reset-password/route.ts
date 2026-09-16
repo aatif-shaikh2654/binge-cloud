@@ -1,5 +1,5 @@
-import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
-import { User } from "@/models/User";
+import { AsyncWrapper, ErrorHandler } from "@/shared/lib/api-handler";
+import { User } from "@/features/auth/server/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";

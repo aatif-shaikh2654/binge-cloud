@@ -1,7 +1,7 @@
-import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
-import { getUserFromCookies } from "@/app/lib/auth";
-import { HistoryItem } from "@/app/store/useHistoryStore";
-import { History } from "@/models/History";
+import { AsyncWrapper, ErrorHandler } from "@/shared/lib/api-handler";
+import { getUserFromCookies } from "@/features/auth/server/auth";
+import { HistoryItem } from "@/features/history/store/useHistoryStore";
+import { History } from "@/features/history/server/History";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 

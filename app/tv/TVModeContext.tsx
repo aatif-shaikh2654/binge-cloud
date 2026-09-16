@@ -20,6 +20,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -97,24 +98,26 @@ const TVModeContext = createContext<TVModeContextValue>({
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
+const subscribeTVMode = () => () => {};
+
 export function TVModeProvider({ children }: { children: React.ReactNode }) {
-  const [isTVMode, setIsTVMode] = useState(false);
+  const isTVMode = useSyncExternalStore(
+    subscribeTVMode,
+    detectTVMode,
+    () => false,
+  );
   const [focusedId, setFocusedId] = useState<string | null>(null);
 
   // Registry: Map<id, TVFocusable> — kept in a ref to avoid re-render on
   // register/unregister and to always have the latest snapshot in callbacks.
   const registryRef = useRef<Map<string, TVFocusable>>(new Map());
 
-  // Detect TV once on mount (client-side only)
+  // Brand the <html> element so tv.css can activate TV-specific styles
   useEffect(() => {
-    const detected = detectTVMode();
-    setIsTVMode(detected);
-
-    if (detected) {
-      // Brand the <html> element so tv.css can activate TV-specific styles
+    if (isTVMode) {
       document.documentElement.setAttribute("data-tv-mode", "true");
     }
-  }, []);
+  }, [isTVMode]);
 
   const setFocused = useCallback((id: string | null) => {
     setFocusedId(id);

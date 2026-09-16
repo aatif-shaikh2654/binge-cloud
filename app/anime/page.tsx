@@ -1,8 +1,8 @@
 import { getHistory } from "@/app/actions";
-import AnimeHero from "@/components/common/AnimeHero";
-import AnimeSearch from "@/components/common/AnimeSearch";
-import { SliderSkeleton } from "@/components/sliders/SliderSkeleton";
-import { WatchHistorySkeleton } from "@/components/sliders/WatchHistory";
+import AnimeHero from "@/features/anime/components/AnimeHero";
+import AnimeSearch from "@/features/anime/components/AnimeSearch";
+import { SliderSkeleton } from "@/shared/components/sliders/SliderSkeleton";
+import { WatchHistorySkeleton } from "@/features/history/components/WatchHistory";
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
 import {
@@ -10,13 +10,13 @@ import {
   getTopRatedAnime,
   getTrendingAnime,
   getAnimeMovies,
-} from "../services/anilist.service";
+} from "@/features/anime";
 
 const WatchHistory = nextDynamic(
-  () => import("@/components/sliders/WatchHistory"),
+  () => import("@/features/history/components/WatchHistory"),
 );
 const AnimeSlider = nextDynamic(
-  () => import("@/components/sliders/AnimeSlider"),
+  () => import("@/features/anime/components/AnimeSlider"),
 );
 
 export const dynamic = "force-dynamic";

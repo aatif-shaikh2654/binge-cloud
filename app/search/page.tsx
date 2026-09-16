@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Search from "./Search";
+import { Search } from "@/features/search";
 
 export const metadata: Metadata = {
   title: "Search",

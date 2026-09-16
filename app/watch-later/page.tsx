@@ -1,5 +1,5 @@
 import { getWatchlist } from "@/app/actions";
-import WatchLater from "./WatchLater";
+import { WatchLater } from "@/features/watchlist";
 
 export const dynamic = "force-dynamic";
 

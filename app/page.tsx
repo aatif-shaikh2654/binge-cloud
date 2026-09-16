@@ -1,7 +1,7 @@
 import { getHistory } from "@/app/actions";
-import Herosection from "@/components/common/Herosection";
-import { SliderSkeleton } from "@/components/sliders/SliderSkeleton";
-import { WatchHistorySkeleton } from "@/components/sliders/WatchHistory";
+import Herosection from "@/features/media/components/Herosection";
+import { SliderSkeleton } from "@/shared/components/sliders/SliderSkeleton";
+import { WatchHistorySkeleton } from "@/features/history/components/WatchHistory";
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
 import {
@@ -9,16 +9,17 @@ import {
   getMediaList,
   getTrendingMedia,
   getTrendingMovies,
-} from "./services/all.service";
+  type TMDBMovie,
+} from "@/features/media";
 
 const WatchHistory = nextDynamic(
-  () => import("@/components/sliders/WatchHistory"),
+  () => import("@/features/history/components/WatchHistory"),
 );
 const MediaSlider = nextDynamic(
-  () => import("@/components/sliders/MediaSlider"),
+  () => import("@/features/media/components/MediaSlider"),
 );
 const StreamingPlatforms = nextDynamic(
-  () => import("@/components/sliders/StreamingPlatforms"),
+  () => import("@/features/media/components/StreamingPlatforms"),
 );
 
 export const dynamic = "force-dynamic";
@@ -96,7 +97,7 @@ async function BollywoodMoviesWrapper() {
     "primary_release_date.lte": todayStr,
     page: 1,
   });
-  const bollywoodMovies = (bollywoodMoviesData?.results?.slice(0, 20) || []).map((m) => ({
+  const bollywoodMovies = (bollywoodMoviesData?.results?.slice(0, 20) || []).map((m: TMDBMovie) => ({
     ...m,
     media_type: "movie" as const,
   }));

@@ -1,5 +1,5 @@
-import { TMDB_BASE_URL } from "@/app/constants/tmdb";
-import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
+import { TMDB_BASE_URL } from "@/features/media/constants/tmdb";
+import { AsyncWrapper, ErrorHandler } from "@/shared/lib/api-handler";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

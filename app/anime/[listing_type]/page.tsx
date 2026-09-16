@@ -4,12 +4,12 @@ import {
   getTrendingAnime,
   getAnimeByGenre,
   getAnimeMovies,
-} from "@/app/services/anilist.service";
-import { AnimeCategory, type AniListPageResponse } from "@/app/types/anilist";
-import PageHeader from "@/components/common/PageHeader";
+} from "@/features/anime/services/anilist.service";
+import { AnimeCategory, type AniListPageResponse } from "@/features/anime/types/anilist";
+import PageHeader from "@/shared/components/layout/PageHeader";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import AnimeList from "../_components/AnimeList";
+import { AnimeList } from "@/features/anime";
 
 export const dynamic = "force-dynamic";
 

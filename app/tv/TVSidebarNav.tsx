@@ -10,24 +10,22 @@
  * Each nav item uses `useTVFocus` so the D-pad can navigate into / out of it.
  */
 
-import { useTVMode } from "./TVModeContext";
-import { useTVFocus } from "./useTVFocus";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import {
   Bookmark,
   Clock,
   Film,
   Home,
+  Monitor,
   Search,
   Sparkles,
   Tv,
-  Monitor,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
 import { MdOutlineMovie } from "react-icons/md";
+import { useTVMode } from "./TVModeContext";
+import { useTVFocus } from "./useTVFocus";
 
 // ─── Nav items (mirrors Sidebar.tsx) ─────────────────────────────────────────
 
@@ -54,12 +52,9 @@ function TVNavItem({
   isExpanded: boolean;
 }) {
   const router = useRouter();
-  const { focusProps, isFocused } = useTVFocus({
+  const { ref, focusProps, isFocused } = useTVFocus<HTMLButtonElement>({
     id: `tv-nav-${item.label}`,
     group: -1, // nav items have high priority
-    onFocus: () => {
-      // When nav item gains focus, reveal the sidebar
-    },
   });
 
   const handleClick = () => {
@@ -70,8 +65,8 @@ function TVNavItem({
 
   return (
     <button
-      {...(focusProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-      ref={focusProps.ref as React.RefObject<HTMLButtonElement>}
+      ref={ref}
+      {...focusProps}
       onClick={handleClick}
       className={cn(
         "tv-nav-btn",
@@ -82,7 +77,8 @@ function TVNavItem({
         isActive
           ? "bg-blue-600/20 border-blue-500/40 text-white"
           : "text-white/60 hover:text-white hover:bg-white/5",
-        isFocused && "bg-blue-600/18 border-blue-500/50 text-white scale-[1.04]"
+        isFocused &&
+          "bg-blue-600/18 border-blue-500/50 text-white scale-[1.04]",
       )}
       aria-current={isActive ? "page" : undefined}
     >
@@ -90,14 +86,14 @@ function TVNavItem({
         <Icon
           className={cn(
             "w-6 h-6 transition-colors",
-            isActive || isFocused ? "text-blue-400" : "text-white/50"
+            isActive || isFocused ? "text-blue-400" : "text-white/50",
           )}
         />
       </span>
       <span
         className={cn(
           "text-base font-bold tracking-wide whitespace-nowrap overflow-hidden transition-all duration-300",
-          isExpanded ? "opacity-100 max-w-[160px]" : "opacity-0 max-w-0"
+          isExpanded ? "opacity-100 max-w-[160px]" : "opacity-0 max-w-0",
         )}
       >
         {item.label}
@@ -114,17 +110,8 @@ function TVNavItem({
 export function TVSidebarNav() {
   const { isTVMode, focusedId } = useTVMode();
   const pathname = usePathname();
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  // Expand sidebar when a nav item inside it is focused
-  useEffect(() => {
-    if (!focusedId) {
-      setIsExpanded(false);
-      return;
-    }
-    const isNavFocused = focusedId.startsWith("tv-nav-");
-    setIsExpanded(isNavFocused);
-  }, [focusedId]);
+  const isExpanded = Boolean(focusedId?.startsWith("tv-nav-"));
 
   if (!isTVMode) return null;
 
@@ -133,7 +120,7 @@ export function TVSidebarNav() {
       className={cn(
         "fixed left-0 top-0 h-full z-[200] flex flex-col py-8 transition-all duration-300 ease-in-out",
         "bg-black/80 backdrop-blur-2xl border-r border-white/5",
-        isExpanded ? "w-64" : "w-20"
+        isExpanded ? "w-64" : "w-20",
       )}
     >
       {/* Logo */}
@@ -150,7 +137,7 @@ export function TVSidebarNav() {
         <span
           className={cn(
             "font-black text-lg tracking-tighter text-white whitespace-nowrap transition-all duration-300",
-            isExpanded ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
+            isExpanded ? "opacity-100" : "opacity-0 w-0 overflow-hidden",
           )}
         >
           BINGE<span className="text-blue-500">CLOUD</span>
@@ -163,14 +150,14 @@ export function TVSidebarNav() {
           className={cn(
             "flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/15 border border-blue-500/20",
             "transition-all duration-300",
-            isExpanded ? "justify-start" : "justify-center"
+            isExpanded ? "justify-start" : "justify-center",
           )}
         >
           <Monitor className="w-4 h-4 text-blue-400 shrink-0" />
           <span
             className={cn(
               "text-[10px] font-black uppercase tracking-widest text-blue-400 whitespace-nowrap transition-all duration-300",
-              isExpanded ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
+              isExpanded ? "opacity-100" : "opacity-0 w-0 overflow-hidden",
             )}
           >
             TV Mode
@@ -194,7 +181,7 @@ export function TVSidebarNav() {
       <div
         className={cn(
           "px-3 mt-4 transition-all duration-300",
-          isExpanded ? "opacity-100" : "opacity-0"
+          isExpanded ? "opacity-100" : "opacity-0",
         )}
       >
         <div className="bg-white/5 rounded-xl p-3 border border-white/5">

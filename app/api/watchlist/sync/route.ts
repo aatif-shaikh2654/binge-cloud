@@ -1,7 +1,7 @@
-import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
-import { getUserFromCookies } from "@/app/lib/auth";
-import { WatchlistItem } from "@/app/store/useWatchlistStore";
-import { Watchlist } from "@/models/Watchlist";
+import { AsyncWrapper, ErrorHandler } from "@/shared/lib/api-handler";
+import { getUserFromCookies } from "@/features/auth/server/auth";
+import { WatchlistItem } from "@/features/watchlist/store/useWatchlistStore";
+import { Watchlist } from "@/features/watchlist/server/Watchlist";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 

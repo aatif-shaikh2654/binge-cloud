@@ -1,6 +1,6 @@
-import { AsyncWrapper, ErrorHandler } from "@/app/lib/api-handler";
-import { getUserFromCookies } from "@/app/lib/auth";
-import { User } from "@/models/User";
+import { AsyncWrapper, ErrorHandler } from "@/shared/lib/api-handler";
+import { getUserFromCookies } from "@/features/auth/server/auth";
+import { User } from "@/features/auth/server/User";
 import { NextResponse } from "next/server";
 
 export const GET = AsyncWrapper(async () => {

@@ -1,7 +1,7 @@
-import { getAnimeDetails } from "@/app/services/anilist.service";
+import { getAnimeDetails } from "@/features/anime/services/anilist.service";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import AnimeDetail from "./AnimeDetail";
+import { AnimeDetail } from "@/features/anime";
 export const dynamic = "force-dynamic";
 
 interface PageProps {

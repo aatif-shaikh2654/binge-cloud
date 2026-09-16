@@ -28,10 +28,11 @@ interface UseTVFocusOptions {
   onBlur?: () => void;
 }
 
-interface UseTVFocusReturn {
+interface UseTVFocusReturn<T extends HTMLElement = HTMLElement> {
+  /** The ref to attach to the DOM element */
+  ref: React.RefObject<T | null>;
   /** Spread these props onto the focusable DOM element */
   focusProps: {
-    ref: React.RefObject<HTMLElement | null>;
     tabIndex: number;
     "data-tv-focusable": string;
     "data-tv-focused": boolean;
@@ -42,21 +43,21 @@ interface UseTVFocusReturn {
   isFocused: boolean;
 }
 
-export function useTVFocus({
+export function useTVFocus<T extends HTMLElement = HTMLElement>({
   id,
   group = 0,
   onFocus,
   onBlur,
-}: UseTVFocusOptions): UseTVFocusReturn {
+}: UseTVFocusOptions): UseTVFocusReturn<T> {
   const { isTVMode, focusedId, setFocused, register, unregister } =
     useTVMode();
 
-  const ref = useRef<HTMLElement | null>(null);
+  const ref = useRef<T | null>(null);
 
   // Register this element in the TV navigation registry
   useEffect(() => {
     if (!isTVMode) return;
-    register({ id, ref, group });
+    register({ id, ref: ref as React.RefObject<HTMLElement | null>, group });
     return () => {
       unregister(id);
     };
@@ -86,8 +87,8 @@ export function useTVFocus({
   }, []);
 
   return {
+    ref,
     focusProps: {
-      ref,
       tabIndex: isTVMode ? 0 : -1,
       "data-tv-focusable": id,
       "data-tv-focused": isFocused,

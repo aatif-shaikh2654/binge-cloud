@@ -1,7 +1,7 @@
 import React from "react";
-import { discoverMedia } from "@/app/services/all.service";
-import PageHeader from "@/components/common/PageHeader";
-import MediaList from "@/app/[media_type]/MediaList";
+import { discoverMedia } from "@/features/media/services/all.service";
+import PageHeader from "@/shared/components/layout/PageHeader";
+import MediaList from "@/features/media/components/MediaList";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

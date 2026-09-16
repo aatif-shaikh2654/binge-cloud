@@ -1,4 +1,4 @@
-import HistoryGrid from "./HistoryGrid";
+import { HistoryGrid } from "@/features/history";
 import { getHistory } from "@/app/actions";
 
 export const dynamic = "force-dynamic";

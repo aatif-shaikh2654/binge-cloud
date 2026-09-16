@@ -1,0 +1,87 @@
+"use client";
+
+import { resolveEpisodeCount } from "@/features/anime/components/AnimeEpisodeSectionContent";
+import AnimeEpisodeSwitcher from "@/features/anime/components/AnimeEpisodeSwitcher";
+import AnimePlayer from "@/features/player/components/AnimePlayer";
+import AnimeServerSwitcher from "@/features/player/components/AnimeServerSwitcher";
+import { ANIME_SERVERS } from "@/features/anime/constants/anime";
+import { useWatchNavigation } from "@/features/player/hooks/useWatchNavigation";
+import { type AniListMediaDetail } from "@/features/anime/types/anilist";
+import { ArrowLeft } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useCallback } from "react";
+
+interface AnimeWatchProps {
+  id: string;
+  initialDetails: AniListMediaDetail;
+}
+
+const AnimeWatch: React.FC<AnimeWatchProps> = ({ id, initialDetails }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { handleBack } = useWatchNavigation();
+
+  const totalCount = resolveEpisodeCount(
+    initialDetails.episodes,
+    initialDetails.nextAiringEpisode,
+    initialDetails.streamingEpisodes.length,
+  );
+
+  const epParam = searchParams.get("ep");
+  const ep = epParam ? Math.max(1, Number(epParam)) : totalCount;
+  const serverId = searchParams.get("server") || ANIME_SERVERS[0];
+
+  const currentServer =
+    ANIME_SERVERS.find((s) => s.id === serverId) || ANIME_SERVERS[0];
+
+  const navigate = useCallback(
+    (newEp?: number, newServer?: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (newEp !== undefined) params.set("ep", newEp.toString());
+      if (newServer !== undefined) params.set("server", newServer);
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
+
+  return (
+    <div className="fixed inset-0 z-1000 bg-background">
+      {/* Back */}
+      <button
+        onClick={() => handleBack(`/anime/detail?id=${id}`)}
+        className="absolute top-6 left-6 z-100 p-3 bg-zinc-900 border border-white/10 rounded-full text-white hover:bg-zinc-800 transition-all group shadow-2xl"
+      >
+        <ArrowLeft className="w-6 h-6 transition-transform group-hover:-translate-x-1" />
+      </button>
+
+      {/* Controls — top right */}
+      <div className="absolute top-6 right-6 z-100 flex items-center gap-2">
+        {/* Episode switcher sheet */}
+        <AnimeEpisodeSwitcher
+          animeId={id}
+          currentEp={ep}
+          onEpisodeChange={(newEp) => navigate(newEp)}
+          initialDetails={initialDetails}
+        />
+        {/* Server switcher sheet */}
+        <AnimeServerSwitcher
+          currentServer={currentServer}
+          onServerChange={(server) => navigate(undefined, server.id)}
+        />
+      </div>
+
+      {/* Player Area */}
+      <AnimePlayer
+        id={id}
+        ep={ep}
+        currentServer={currentServer}
+        totalCount={totalCount}
+        navigate={navigate}
+        initialDetails={initialDetails}
+      />
+    </div>
+  );
+};
+
+export default AnimeWatch;

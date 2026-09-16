@@ -1,0 +1,129 @@
+import {
+  addToHistory as apiAddToHistory,
+  removeFromHistory as apiRemoveFromHistory,
+} from "@/features/history/services/history.service";
+import { del, get, set } from "idb-keyval";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+export interface HistoryItem {
+  id: number;
+  media_type: "movie" | "tv" | "anime";
+  title: string;
+  poster_path: string;
+  backdrop_path: string;
+  server: string;
+  season?: number;
+  episode?: number;
+  watchedAt: number;
+  currentTime?: number;
+  duration?: number;
+}
+
+interface HistoryState {
+  history: HistoryItem[];
+  setHistory: (items: HistoryItem[]) => void;
+  addToHistory: (item: HistoryItem) => void;
+  removeFromHistory: (id: number, media_type: string) => void;
+  clearHistory: () => void;
+}
+
+// Custom storage for IndexedDB using idb-keyval
+const idbStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    const isClient = typeof document !== "undefined";
+    const isLoggedIn = isClient && document.cookie.includes("token=");
+    if (isLoggedIn) {
+      return null;
+    }
+    const value = await get(name);
+    return value ? JSON.stringify(value) : null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    const isClient = typeof document !== "undefined";
+    const isLoggedIn = isClient && document.cookie.includes("token=");
+    if (isLoggedIn) {
+      await del(name);
+      return;
+    }
+    await set(name, JSON.parse(value));
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await del(name);
+  },
+};
+
+export const useHistoryStore = create<HistoryState>()(
+  persist(
+    (set) => ({
+      history: [],
+      setHistory: (items) => set({ history: items }),
+      addToHistory: (item) => {
+        set((state) => {
+          const existingItem = state.history.find(
+            (h) => h.id === item.id && h.media_type === item.media_type,
+          );
+
+          const mergedItem = { ...item };
+          if (existingItem) {
+            const isSameEpisode =
+              item.media_type === "anime"
+                ? existingItem.episode === item.episode
+                : item.media_type === "tv"
+                ? existingItem.season === item.season && existingItem.episode === item.episode
+                : true;
+
+            if (isSameEpisode) {
+              if (mergedItem.currentTime === undefined && existingItem.currentTime !== undefined) {
+                mergedItem.currentTime = existingItem.currentTime;
+              }
+              if (mergedItem.duration === undefined && existingItem.duration !== undefined) {
+                mergedItem.duration = existingItem.duration;
+              }
+            }
+          }
+
+          // Remove existing item if it exists (check both id and media_type)
+          const filteredHistory = state.history.filter(
+            (h) => !(h.id === item.id && h.media_type === item.media_type),
+          );
+          // Add new item and sort by watchedAt descending
+          const newHistory = [mergedItem, ...filteredHistory].sort(
+            (a, b) => b.watchedAt - a.watchedAt,
+          );
+          return {
+            history: newHistory,
+          };
+        });
+        if (
+          typeof document !== "undefined" &&
+          document.cookie.includes("token=")
+        ) {
+          apiAddToHistory(item).catch(() => {
+            /* ignore error */
+          });
+        }
+      },
+      removeFromHistory: (id, media_type) => {
+        set((state) => ({
+          history: state.history.filter(
+            (h) => !(h.id === id && h.media_type === media_type),
+          ),
+        }));
+        if (
+          typeof document !== "undefined" &&
+          document.cookie.includes("token=")
+        ) {
+          apiRemoveFromHistory(id, media_type).catch(() => {
+            /* ignore error */
+          });
+        }
+      },
+      clearHistory: () => set({ history: [] }),
+    }),
+    {
+      name: "binge-watch-history",
+      storage: createJSONStorage(() => idbStorage),
+    },
+  ),
+);
