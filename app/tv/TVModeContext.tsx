@@ -62,6 +62,24 @@ interface TVModeContextValue {
 function detectTVMode(): boolean {
   if (typeof window === "undefined") return false;
 
+  // Allow explicit URL / storage override for testing and QA (e.g. localhost:3000?tv=true)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("tv") === "true" || urlParams.get("tv") === "1") {
+      sessionStorage.setItem("tv_mode", "true");
+      return true;
+    }
+    if (urlParams.get("tv") === "false" || urlParams.get("tv") === "0") {
+      sessionStorage.removeItem("tv_mode");
+      return false;
+    }
+    if (sessionStorage.getItem("tv_mode") === "true") {
+      return true;
+    }
+  } catch {
+    // Ignore storage/URL errors in restricted environments
+  }
+
   const ua = navigator.userAgent;
 
   // Explicit TV platform UA markers

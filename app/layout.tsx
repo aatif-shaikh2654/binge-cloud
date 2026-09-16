@@ -1,6 +1,5 @@
 import { TVModeProvider } from "@/app/tv/TVModeContext";
 import { TVNavigationController } from "@/app/tv/TVNavigationController";
-import { TVSidebarNav } from "@/app/tv/TVSidebarNav";
 import BravePrompt from "@/shared/components/feedback/BravePrompt";
 import DisableInspect from "@/shared/components/feedback/DisableInspect";
 import Footer from "@/shared/components/layout/Footer";
@@ -85,14 +84,11 @@ export default function RootLayout({
         />
         <Toaster />
         <TVModeProvider>
-          {/* TV: D-pad keyboard listener (no-op on non-TV) */}
+          {/* TV: D-pad keyboard listener */}
           <TVNavigationController />
           <QueryProvider>
             <AuthProvider>
-              {/* Standard sidebar — hidden on TV via tv.css */}
               <Sidebar />
-              {/* TV-only sidebar nav — hidden on non-TV via isTVMode check */}
-              <TVSidebarNav />
               <div className="flex-1 flex flex-col min-w-0 lg:pl-20">
                 <main className="flex-1">{children}</main>
                 <Footer />

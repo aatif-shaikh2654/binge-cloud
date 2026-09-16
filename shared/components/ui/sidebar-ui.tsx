@@ -1,3 +1,4 @@
+import { useTVFocus } from "@/app/tv/useTVFocus";
 import { cn } from "@/shared/lib/utils";
 import { Bookmark, Clock, Download, LogIn, LogOut, type LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -25,16 +26,24 @@ export function SidebarLink({
   onClick,
   badgeCount,
 }: SidebarLinkProps) {
+  const { ref, focusProps, isFocused } = useTVFocus<HTMLAnchorElement>({
+    id: `sidebar-${label.toLowerCase().replace(/\s+/g, "-")}`,
+    group: -1,
+  });
+
   return (
     <Link
+      ref={ref}
+      {...focusProps}
       href={href}
       onClick={onClick}
       className={cn(
         "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group",
-        isActive
+        isActive || isFocused
           ? "bg-white/10 text-white"
           : "text-[#8197a4] hover:text-white hover:bg-white/5",
         isHovered ? "w-full gap-5" : "justify-center",
+        isFocused && "ring-2 ring-blue-500 bg-white/15 text-white",
       )}
     >
       <div className="relative flex items-center justify-center shrink-0">
@@ -62,7 +71,7 @@ export function SidebarLink({
       </div>
 
       {/* Active Indicator Bar - Discrete version */}
-      {isActive && (
+      {(isActive || isFocused) && (
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-white rounded-r-full z-20" />
       )}
     </Link>
@@ -87,11 +96,19 @@ export function SidebarButton({
   iconClassName,
   ...props
 }: SidebarButtonProps) {
+  const { ref, focusProps, isFocused } = useTVFocus<HTMLButtonElement>({
+    id: `sidebar-btn-${label.toLowerCase().replace(/\s+/g, "-")}`,
+    group: -1,
+  });
+
   return (
     <button
+      ref={ref}
+      {...focusProps}
       className={cn(
         "flex items-center h-14 px-5 transition-all duration-300 relative rounded-[18px] group text-[#8197a4] hover:text-white hover:bg-white/5 cursor-pointer w-full text-left outline-none border border-transparent",
         isHovered ? "w-full gap-5" : "",
+        isFocused && "ring-2 ring-blue-500 bg-white/15 text-white",
         className,
       )}
       {...props}

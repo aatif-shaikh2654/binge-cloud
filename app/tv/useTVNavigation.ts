@@ -14,8 +14,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useTVMode } from "./TVModeContext";
 import type { TVFocusable } from "./TVModeContext";
+import { useTVMode } from "./TVModeContext";
 
 // ─── Direction types ──────────────────────────────────────────────────────────
 
@@ -29,7 +29,7 @@ function centerOf(rect: DOMRect) {
 
 function distance(
   a: { x: number; y: number },
-  b: { x: number; y: number }
+  b: { x: number; y: number },
 ): number {
   return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
 }
@@ -41,7 +41,7 @@ function distance(
 function isInDirection(
   current: DOMRect,
   candidate: DOMRect,
-  direction: Direction
+  direction: Direction,
 ): boolean {
   const TOLERANCE = 4;
   switch (direction) {
@@ -61,7 +61,7 @@ function isInDirection(
 function findNearest(
   focusedEl: HTMLElement,
   candidates: TVFocusable[],
-  direction: Direction
+  direction: Direction,
 ): TVFocusable | null {
   const currentRect = focusedEl.getBoundingClientRect();
   const currentCenter = centerOf(currentRect);
@@ -94,9 +94,46 @@ function findNearest(
 
 const KEY_DIRECTION_MAP: Record<string, Direction> = {
   ArrowUp: "up",
+  Up: "up",
   ArrowDown: "down",
+  Down: "down",
   ArrowLeft: "left",
+  Left: "left",
   ArrowRight: "right",
+  Right: "right",
+};
+
+const getDirectionFromEvent = (e: KeyboardEvent): Direction | null => {
+  if (KEY_DIRECTION_MAP[e.key]) return KEY_DIRECTION_MAP[e.key];
+  // Remote D-pad keyCodes: 19 (Up), 20 (Down), 21 (Left), 22 (Right)
+  if (e.keyCode === 19 || e.which === 19) return "up";
+  if (e.keyCode === 20 || e.which === 20) return "down";
+  if (e.keyCode === 21 || e.which === 21) return "left";
+  if (e.keyCode === 22 || e.which === 22) return "right";
+  return null;
+};
+
+const isSelectKey = (e: KeyboardEvent): boolean => {
+  return (
+    e.key === "Enter" ||
+    e.key === "Return" ||
+    e.key === "Select" ||
+    e.key === "Ok" ||
+    e.keyCode === 13 ||
+    e.which === 13
+  );
+};
+
+const isBackKey = (e: KeyboardEvent): boolean => {
+  return (
+    e.key === "Escape" ||
+    e.key === "Backspace" ||
+    e.key === "GoBack" ||
+    e.keyCode === 27 ||
+    e.keyCode === 8 ||
+    e.keyCode === 10009 || // Samsung Tizen Return
+    e.keyCode === 461 // LG WebOS Back
+  );
 };
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -108,36 +145,46 @@ export function useTVNavigation() {
     if (!isTVMode) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      const direction = KEY_DIRECTION_MAP[e.key];
+      const direction = getDirectionFromEvent(e);
 
-      // ── Arrow key navigation ────────────────────────────────────────────────
+      // ── Arrow key / D-pad navigation ────────────────────────────────────────
       if (direction) {
         e.preventDefault();
 
         const focusables = getFocusables();
         if (focusables.length === 0) return;
 
-        // If nothing is focused yet, focus the first registered element
-        if (!focusedId) {
-          const first = focusables[0];
-          if (first) {
+        // Sort candidates by priority group if initial focus
+        const sortedFocusables = [...focusables].sort(
+          (a, b) => (a.group ?? 0) - (b.group ?? 0),
+        );
+
+        // If nothing is focused yet or current focused item is unmounted
+        const currentItem = focusedId
+          ? focusables.find((f) => f.id === focusedId)
+          : null;
+        const currentEl = currentItem?.ref.current;
+
+        if (!currentEl) {
+          const first = sortedFocusables[0];
+          if (first?.ref.current) {
             setFocused(first.id);
-            first.ref.current?.focus({ preventScroll: false });
+            first.ref.current.focus({ preventScroll: false });
+            first.ref.current.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "nearest",
+            });
           }
           return;
         }
 
-        // Find currently focused item
-        const currentItem = focusables.find((f) => f.id === focusedId);
-        const currentEl = currentItem?.ref.current;
-        if (!currentEl) return;
-
         const next = findNearest(currentEl, focusables, direction);
-        if (next) {
+        if (next && next.ref.current) {
           setFocused(next.id);
-          next.ref.current?.focus({ preventScroll: false });
+          next.ref.current.focus({ preventScroll: false });
           // Scroll focused element into view smoothly
-          next.ref.current?.scrollIntoView({
+          next.ref.current.scrollIntoView({
             behavior: "smooth",
             block: "nearest",
             inline: "nearest",
@@ -147,16 +194,19 @@ export function useTVNavigation() {
       }
 
       // ── Enter / OK — click the focused element ──────────────────────────────
-      if (e.key === "Enter" || e.key === "Return") {
+      if (isSelectKey(e)) {
         if (!focusedId) return;
         const focusables = getFocusables();
         const item = focusables.find((f) => f.id === focusedId);
-        item?.ref.current?.click();
+        if (item?.ref.current) {
+          e.preventDefault();
+          item.ref.current.click();
+        }
         return;
       }
 
       // ── Back / Escape — blur current focus ─────────────────────────────────
-      if (e.key === "Escape" || e.key === "Backspace") {
+      if (isBackKey(e)) {
         setFocused(null);
       }
     };
