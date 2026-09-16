@@ -49,8 +49,7 @@ export function useTVFocus<T extends HTMLElement = HTMLElement>({
   onFocus,
   onBlur,
 }: UseTVFocusOptions): UseTVFocusReturn<T> {
-  const { isTVMode, focusedId, setFocused, register, unregister } =
-    useTVMode();
+  const { isTVMode, focusedId, setFocused, register, unregister } = useTVMode();
 
   const ref = useRef<T | null>(null);
 
