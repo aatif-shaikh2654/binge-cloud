@@ -37,8 +37,13 @@ const normalizeError = (error: AxiosError<ApiError>) => {
 
 // ✅ Request interceptor for direct TMDB calls
 tmdbInstance.interceptors.request.use((config) => {
-  if (typeof window === "undefined" && process.env.AUTH_TOKEN) {
-    config.headers.Authorization = `Bearer ${process.env.AUTH_TOKEN}`;
+  if (typeof window === "undefined") {
+    if (process.env.TMDB_BASE_URL) {
+      config.baseURL = process.env.TMDB_BASE_URL;
+    }
+    if (process.env.AUTH_TOKEN) {
+      config.headers.Authorization = `Bearer ${process.env.AUTH_TOKEN}`;
+    }
   }
   config.headers.accept = "application/json";
   return config;
@@ -55,22 +60,64 @@ axiosInstance.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error),
 );
 
-// ✅ Response interceptor: handle data and errors for both instances
-const responseInterceptor = (response: AxiosResponse) => response.data;
-const errorInterceptor = async (error: AxiosError<ApiError>) => {
-  const normalizedError = normalizeError(error);
+// ✅ Response interceptor: handle data and errors for local instance
+axiosInstance.interceptors.response.use(
+  (response: AxiosResponse) => response.data,
+  async (error: AxiosError<ApiError>) => {
+    const normalizedError = normalizeError(error);
+    if (typeof window !== "undefined") {
+      toast.error(normalizedError.message);
+    } else {
+      console.error(`[API Error] ${error.config?.url}:`, normalizedError.message);
+    }
+    return Promise.reject(normalizedError);
+  },
+);
 
-  // Only show toasts on the client
-  if (typeof window !== "undefined") {
-    toast.error(normalizedError.message);
-  } else {
-    console.error(`[API Error] ${error.config?.url}:`, normalizedError.message);
-  }
+// ✅ Response interceptor with automatic domain fallback for TMDB instance
+tmdbInstance.interceptors.response.use(
+  (response: AxiosResponse) => response.data,
+  async (error: AxiosError<ApiError>) => {
+    const config = error.config as (InternalAxiosRequestConfig & { _retryCount?: number }) | undefined;
+    const isNetworkError =
+      !error.response ||
+      error.code === "ECONNRESET" ||
+      error.code === "ETIMEDOUT" ||
+      error.code === "ERR_NETWORK" ||
+      error.message?.includes("ECONNRESET");
 
-  return Promise.reject(normalizedError);
-};
+    // Attempt fallback from api.themoviedb.org to api.tmdb.org or vice-versa on network/reset errors
+    if (config && isNetworkError && (!config._retryCount || config._retryCount < 1)) {
+      config._retryCount = (config._retryCount || 0) + 1;
+      const currentBaseURL = config.baseURL || TMDB_BASE_URL;
 
-axiosInstance.interceptors.response.use(responseInterceptor, errorInterceptor);
-tmdbInstance.interceptors.response.use(responseInterceptor, errorInterceptor);
+      let fallbackBaseURL: string | null = null;
+      if (currentBaseURL.includes("api.themoviedb.org")) {
+        fallbackBaseURL = currentBaseURL.replace("api.themoviedb.org", "api.tmdb.org");
+      } else if (currentBaseURL.includes("api.tmdb.org")) {
+        fallbackBaseURL = currentBaseURL.replace("api.tmdb.org", "api.themoviedb.org");
+      }
+
+      if (fallbackBaseURL && fallbackBaseURL !== currentBaseURL) {
+        config.baseURL = fallbackBaseURL;
+        try {
+          return await tmdbInstance.request(config);
+        } catch (fallbackError) {
+          // Fall through to standard error handler
+        }
+      }
+    }
+
+    const normalizedError = normalizeError(error);
+
+    if (typeof window !== "undefined") {
+      toast.error(normalizedError.message);
+    } else {
+      console.error(`[API Error] ${error.config?.url}:`, normalizedError.message);
+    }
+
+    return Promise.reject(normalizedError);
+  },
+);
 
 export default axiosInstance;
